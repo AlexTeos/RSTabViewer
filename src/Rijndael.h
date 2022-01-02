@@ -1,6 +1,3 @@
-
-//Rijndael.h
-
 #ifndef __RIJNDAEL_H__
 #define __RIJNDAEL_H__
 

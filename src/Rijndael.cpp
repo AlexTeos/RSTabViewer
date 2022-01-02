@@ -1,6 +1,3 @@
-
-//Rijndael.cpp
-
 #include "Rijndael.h"
 
 #include <cstring>
