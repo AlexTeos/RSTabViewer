@@ -4,9 +4,14 @@ const QStringList archiveNames = {"stro1251_p.psarc", "somebodytold_p.psarc", "W
 
 void TestPSARC::initTestCase() {}
 
-void TestPSARC::cleanupTestCase()
-{
-    foreach(auto archiveName, archiveNames) { QVERIFY(psarc.unarchive(archiveName)); }
-}
+void TestPSARC::cleanupTestCase() {}
 
-void TestPSARC::testUnarchive() {}
+void TestPSARC::testUnarchive()
+{
+    foreach(auto archiveName, archiveNames)
+    {
+        PSARC psarc;
+        psarc.setPsarcFile(archiveName);
+        QVERIFY(psarc.unarchive());
+    }
+}

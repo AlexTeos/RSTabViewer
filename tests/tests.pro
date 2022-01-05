@@ -8,11 +8,15 @@ TEMPLATE = app
 
 SOURCES += \
     ../src/Rijndael.cpp \
+    ../src/common.cpp \
     ../src/psarc.cpp \
+    ../src/sng.cpp \
     main.cpp \
-    tst_psarc.cpp
+    tst_psarc.cpp \
+    tst_sng.cpp
 
 HEADERS += \
-    ../src/Rijndael.h \
     ../src/psarc.h \
-    tst_psarc.h
+    ../src/sng.h \
+    tst_psarc.h \
+    tst_sng.h

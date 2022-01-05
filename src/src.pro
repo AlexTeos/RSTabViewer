@@ -9,8 +9,10 @@ CONFIG -= app_bundle
 
 SOURCES += \
         Rijndael.cpp \
+        common.cpp \
         main.cpp \
-        psarc.cpp
+        psarc.cpp \
+        sng.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -19,5 +21,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     Rijndael.h \
-    psarc.h
+    common.h \
+    psarc.h \
+    sng.h
 
