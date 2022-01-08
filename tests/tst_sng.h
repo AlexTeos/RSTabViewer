@@ -11,4 +11,5 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
     void testDecrypt();
+    void testParse();
 };

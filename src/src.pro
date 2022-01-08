@@ -9,6 +9,7 @@ CONFIG -= app_bundle
 
 SOURCES += \
         Rijndael.cpp \
+        arrangement.cpp \
         common.cpp \
         main.cpp \
         psarc.cpp \
@@ -21,6 +22,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     Rijndael.h \
+    arrangement.h \
     common.h \
     psarc.h \
     sng.h

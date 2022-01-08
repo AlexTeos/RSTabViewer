@@ -3,7 +3,6 @@
 #include <QFileInfo>
 
 #include "Rijndael.h"
-#include "common.h"
 #include "psarc.h"
 
 static const unsigned char SngKeyPC[32] = {0xCB, 0x64, 0x8D, 0xF3, 0xD1, 0x2A, 0x16, 0xBF, 0x71, 0x70, 0x14,
@@ -25,8 +24,6 @@ bool SNG::decrypt()
                 uint8_t    blockLength = 16;
                 QByteArray decryptedSng;
                 decryptedSng.resize(m_sngFile.size() + 32);
-                //entry.setDecryptedLength(entry.getLength());
-                //entry.setDecryptedData(decryptedSng);
                 char iv[16];
                 for (int i = 0; i < 16; i++)
                 {
@@ -57,13 +54,13 @@ bool SNG::decrypt()
                 decryptedSng.erase(decryptedSng.begin(), decryptedSng.begin() + 4);
                 uncompress(uncompressedData, uncompressedSize, decryptedSng);
 
-                QFile resultFile(m_sngFile.fileName().insert(
+                m_sngDecryptedFile.setFileName(m_sngFile.fileName().insert(
                     m_sngFile.fileName().length() - QFileInfo(m_sngFile).suffix().length() - 1, "_uncompressed"));
 
-                if (resultFile.open(QIODevice::WriteOnly))
+                if (m_sngDecryptedFile.open(QIODevice::WriteOnly))
                 {
-                    resultFile.write(uncompressedData);
-                    resultFile.close();
+                    m_sngDecryptedFile.write(uncompressedData);
+                    m_sngDecryptedFile.close();
                     return true;
                 }
             }
@@ -72,7 +69,98 @@ bool SNG::decrypt()
     return false;
 }
 
+bool SNG::parse()
+{
+    if (m_sngDecryptedFile.open(QIODevice::ReadOnly))
+    {
+        // Beat
+        uint32_t beatCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 16 * beatCount);
+
+        // Phrase
+        uint32_t phraseCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 44 * phraseCount);
+
+        // Chord
+        uint32_t chordsCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 72 * chordsCount);
+
+        // ChordsNote
+        uint32_t chordsNotesCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 388 * chordsNotesCount);
+
+        // Vocals
+        uint32_t vocalsCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 60 * vocalsCount);
+        if (vocalsCount > 0)
+        {
+            uint32_t headersCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+            m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 32 * headersCount);
+
+            uint32_t texturesCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+            m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 144 * texturesCount);
+
+            uint32_t definitionsCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+            m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 44 * definitionsCount);
+        }
+
+        // PhrasesIter
+        uint32_t phrasesIterCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 24 * phrasesIterCount);
+
+        // PhraseExtraInfo
+        uint32_t phraseExtraInfoCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 16 * phraseExtraInfoCount);
+
+        // LinkedDifficulty
+        uint32_t linkedDifficultysCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos());
+        for (uint32_t i = 0; i < linkedDifficultysCount; ++i)
+        {
+            m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 4);
+            uint32_t ndlPhraseCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+            m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 4 * ndlPhraseCount);
+        }
+
+        // Action
+        uint32_t actionsCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 256 * actionsCount);
+
+        // Event
+        uint32_t eventsCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 260 * eventsCount);
+
+        // Tone
+        uint32_t tonesCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 8 * tonesCount);
+        // DNA
+        uint32_t dnaCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 8 * dnaCount);
+
+        // Section
+        uint32_t sectionsCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 88 * sectionsCount);
+
+        // Arrangement
+        arrangements = parseArrangements(m_sngDecryptedFile);
+
+        // Metadata
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 79);
+        uint32_t tuningsCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 12 + 2 * tuningsCount);
+
+        return true;
+    }
+
+    return false;
+}
+
 void SNG::setSngFile(const QString& newSngFileName)
 {
     m_sngFile.setFileName(newSngFileName);
+}
+
+void SNG::setSngDecryptedFile(const QString& newSngDecryptedFileName)
+{
+    m_sngDecryptedFile.setFileName(newSngDecryptedFileName);
 }

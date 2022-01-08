@@ -8,6 +8,7 @@ TEMPLATE = app
 
 SOURCES += \
     ../src/Rijndael.cpp \
+    ../src/arrangement.cpp \
     ../src/common.cpp \
     ../src/psarc.cpp \
     ../src/sng.cpp \
