@@ -10,69 +10,69 @@
 
 struct AnchorExtension
 {
-    uint32_t beatTime;
-    uint8_t  fret;
-    uint8_t  unknown[7];
+    uint32_t m_beatTime;
+    uint8_t  m_fret;
+    uint8_t  m_unknown[7];
 };
 
 struct Anchor
 {
-    float    startBeat;
-    float    endBeat;
-    uint8_t  unknown[8];
-    uint32_t fret;
-    uint32_t width;
-    uint32_t phraseIter;
+    float    m_startBeat;
+    float    m_endBeat;
+    uint8_t  m_unknown[8];
+    uint32_t m_fret;
+    uint32_t m_width;
+    uint32_t m_phraseIter;
 };
 
 struct FingerPrint
 {
-    uint32_t chord;
-    float    start;
-    float    end;
-    uint8_t  unknown[8];
+    uint32_t m_chord;
+    float    m_start;
+    float    m_end;
+    uint8_t  m_unknown[8];
 };
 
 struct BendData
 {
-    float   time;
-    float   step;
-    uint8_t unknown[4];
+    float   m_time;
+    float   m_step;
+    uint8_t m_unknown[4];
 };
 
 struct Note
 {
-    uint32_t          mask[2];
-    uint8_t           u0[4];
-    float             time;
-    uint8_t           string;
-    uint8_t           fret[2];
-    uint8_t           u1;
-    uint32_t          chord;
-    uint32_t          chordNotes;
-    uint32_t          phrase;
-    uint32_t          phraseIter;
-    uint16_t          fingerprints[2];
-    uint16_t          u2[3];
-    uint8_t           fingers[4];
-    uint8_t           pickDir;
-    uint8_t           slap;
-    uint8_t           pluck;
-    uint16_t          vibrato;
-    float             sustain;
-    float             maxbend;
-    QVector<BendData> bends;
+    uint32_t          m_mask[2];
+    uint8_t           m_u0[4];
+    float             m_time;
+    uint8_t           m_string;
+    uint8_t           m_fret[2];
+    uint8_t           m_u1;
+    uint32_t          m_chord;
+    uint32_t          m_chordNotes;
+    uint32_t          m_phrase;
+    uint32_t          m_phraseIter;
+    uint16_t          m_fingerprints[2];
+    uint16_t          m_u2[3];
+    uint8_t           m_fingers[4];
+    uint8_t           m_pickDir;
+    uint8_t           m_slap;
+    uint8_t           m_pluck;
+    uint16_t          m_vibrato;
+    float             m_sustain;
+    float             m_maxbend;
+    QVector<BendData> m_bends;
 };
 
 struct Arrangement
 {
-    uint32_t                 difficulty;
-    QVector<Anchor>          anchors;
-    QVector<AnchorExtension> anchorExtensions;
-    QVector<FingerPrint>     fingerPrints[2];
-    QVector<Note>            notes;
-    QVector<float>           averageNotePerIters;
-    QVector<uint32_t>        notesInIters[2];
+    uint32_t                 m_difficulty;
+    QVector<Anchor>          m_anchors;
+    QVector<AnchorExtension> m_anchorExtensions;
+    QVector<FingerPrint>     m_fingerPrints[2];
+    QVector<Note>            m_notes;
+    QVector<float>           m_averageNotePerIters;
+    QVector<uint32_t>        m_notesInIters[2];
 };
 
 #pragma pack(pop)

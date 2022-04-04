@@ -20,7 +20,7 @@ public:
 private:
     QFile                m_sngFile;
     QFile                m_sngDecryptedFile;
-    QVector<Arrangement> arrangements;
+    QVector<Arrangement> m_arrangements;
 };
 
 #endif // SNG_H

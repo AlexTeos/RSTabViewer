@@ -11,12 +11,12 @@ void TestSNG::cleanupTestCase() {}
 
 void TestSNG::testDecrypt()
 {
-    //foreach(auto sngName, sngNames)
-    //{
-    //    SNG sng;
-    //    sng.setSngFile(sngName);
-    //    QVERIFY(sng.decrypt());
-    //}
+    foreach(auto sngName, sngNames)
+    {
+        SNG sng;
+        sng.setSngFile(sngName);
+        QVERIFY(sng.decrypt());
+    }
 }
 
 void TestSNG::testParse()
@@ -25,6 +25,6 @@ void TestSNG::testParse()
     {
         SNG sng;
         sng.setSngDecryptedFile(sngDecryptedName);
-        sng.parse();
+        QVERIFY(sng.parse());
     }
 }

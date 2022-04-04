@@ -142,7 +142,7 @@ bool SNG::parse()
         m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 88 * sectionsCount);
 
         // Arrangement
-        arrangements = parseArrangements(m_sngDecryptedFile);
+        m_arrangements = parseArrangements(m_sngDecryptedFile);
 
         // Metadata
         m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 79);
