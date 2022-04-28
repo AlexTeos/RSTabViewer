@@ -87,7 +87,7 @@ bool SNG::parse()
 
         // ChordsNote
         uint32_t chordsNotesCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
-        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 388 * chordsNotesCount);
+        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 2376 * chordsNotesCount);
 
         // Vocals
         uint32_t vocalsCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
