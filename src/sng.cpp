@@ -82,8 +82,7 @@ bool SNG::parse()
         m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 44 * phraseCount);
 
         // Chord
-        uint32_t chordsCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
-        m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 72 * chordsCount);
+        if (not parseChords(m_sngDecryptedFile, m_chords)) return false;
 
         // ChordsNote
         uint32_t chordsNotesCount = READ_LE_UINT32((uint8_t*)m_sngDecryptedFile.read(4).constData());
@@ -142,7 +141,7 @@ bool SNG::parse()
         m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 88 * sectionsCount);
 
         // Arrangement
-        m_arrangements = parseArrangements(m_sngDecryptedFile);
+        if (not parseArrangements(m_sngDecryptedFile, m_arrangements)) return false;
 
         // Metadata
         m_sngDecryptedFile.seek(m_sngDecryptedFile.pos() + 79);

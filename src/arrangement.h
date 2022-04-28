@@ -77,6 +77,6 @@ struct Arrangement
 
 #pragma pack(pop)
 
-QVector<Arrangement> parseArrangements(QIODevice& input);
+bool parseArrangements(QIODevice& input, QVector<Arrangement>& arrangements);
 
 #endif // ARRANGEMENT_H

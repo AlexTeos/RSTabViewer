@@ -5,6 +5,7 @@
 #include <QString>
 
 #include "arrangement.h"
+#include "chord.h"
 
 class SNG
 {
@@ -20,6 +21,7 @@ public:
 private:
     QFile                m_sngFile;
     QFile                m_sngDecryptedFile;
+    QVector<Chord>       m_chords;
     QVector<Arrangement> m_arrangements;
 };
 

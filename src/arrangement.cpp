@@ -1,9 +1,8 @@
 #include "arrangement.h"
 
-QVector<Arrangement> parseArrangements(QIODevice& input)
+bool parseArrangements(QIODevice& input, QVector<Arrangement>& arrangements)
 {
-    QVector<Arrangement> arrangements;
-    uint32_t             arrangementsCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+    uint32_t arrangementsCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
     arrangements.resize(arrangementsCount);
     for (uint32_t i = 0; i < arrangementsCount; ++i)
     {
@@ -66,5 +65,5 @@ QVector<Arrangement> parseArrangements(QIODevice& input)
         }
     }
 
-    return arrangements;
+    return true;
 }
