@@ -2,6 +2,7 @@
 #include <QtTest>
 
 #include "../src/psarc.h"
+#include "../src/sng.h"
 
 class TestPSARC : public QObject
 {
@@ -11,4 +12,9 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
     void testUnarchive();
+    void testDecrypt();
+    void testParse();
+
+private:
+    QStringList archiveNames;
 };

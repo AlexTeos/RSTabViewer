@@ -14,12 +14,10 @@ SOURCES += \
     ../src/psarc.cpp \
     ../src/sng.cpp \
     main.cpp \
-    tst_psarc.cpp \
-    tst_sng.cpp
+    tst_psarc.cpp
 
 HEADERS += \
     ../src/chord.h \
     ../src/psarc.h \
     ../src/sng.h \
-    tst_psarc.h \
-    tst_sng.h
+    tst_psarc.h

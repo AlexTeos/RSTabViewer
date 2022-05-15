@@ -19,6 +19,8 @@ public:
     void setSngDecryptedFile(const QString& newSngDecryptedFileName);
 
 private:
+    bool dummyRead(QIODevice& input, const qint64& structureSize, const qint64& additionalSize, uint32_t& count);
+
     QFile                m_sngFile;
     QFile                m_sngDecryptedFile;
     QVector<Chord>       m_chords;

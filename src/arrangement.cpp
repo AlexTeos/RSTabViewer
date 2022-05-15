@@ -8,6 +8,7 @@ bool parseArrangements(QIODevice& input, QVector<Arrangement>& arrangements)
     {
         // Difficulty
         arrangements[i].m_difficulty = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+        if (arrangements[i].m_difficulty != i) return false;
 
         // Anchors
         int32_t anchorsCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
