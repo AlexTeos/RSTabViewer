@@ -7,22 +7,23 @@
 #include "arrangement.h"
 #include "chord.h"
 
+struct Beat
+{
+    uint8_t m_frets[6];
+};
+
 class SNG
 {
 public:
-    SNG(){};
-    SNG(const QString& sngFileName);
-    bool decrypt();
-    bool parse();
+    bool decrypt(const QString& sngFileName);
+    bool parse(const QString& decryptedSngFileName);
 
-    void setSngFile(const QString& newSngFileName);
-    void setSngDecryptedFile(const QString& newSngDecryptedFileName);
+    QMap<float, Note> getNotes() const;
+    QMap<float, Beat> getTablature() const;
 
 private:
     bool dummyRead(QIODevice& input, const qint64& structureSize, const qint64& additionalSize, uint32_t& count);
 
-    QFile                m_sngFile;
-    QFile                m_sngDecryptedFile;
     QVector<Chord>       m_chords;
     QVector<Arrangement> m_arrangements;
 };

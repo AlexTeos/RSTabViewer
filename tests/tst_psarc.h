@@ -14,7 +14,9 @@ private slots:
     void testUnarchive();
     void testDecrypt();
     void testParse();
+    void testGetTablature();
 
 private:
-    QStringList archiveNames;
+    QStringList  m_archiveNames;
+    QVector<SNG> m_parsedSng;
 };
