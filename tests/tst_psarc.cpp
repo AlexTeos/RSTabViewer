@@ -19,7 +19,7 @@ void TestPSARC::testUnarchive()
 {
     foreach(auto archiveName, m_archiveNames)
     {
-        PSARC psarc;
+        RS::PSARC psarc;
         psarc.setPsarcFile(archiveName);
         QVERIFY(psarc.unarchive());
     }
@@ -34,7 +34,7 @@ void TestPSARC::testDecrypt()
         QVERIFY(m_archiveNames.size());
 
         QString sngName = sngNames[0];
-        SNG     sng;
+        RS::SNG sng;
         QVERIFY(sng.decrypt(archiveName.first(archiveName.size() - 6) + "\\songs\\bin\\generic\\" + sngName));
     }
 }
@@ -48,7 +48,7 @@ void TestPSARC::testParse()
         QVERIFY(m_archiveNames.size());
 
         QString sngName = sngNames[0];
-        SNG     sng;
+        RS::SNG sng;
         QVERIFY(sng.parse(archiveName.first(archiveName.size() - 6) + "\\songs\\bin\\generic\\" + sngName));
         m_parsedSng.push_back(sng);
     }

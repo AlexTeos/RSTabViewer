@@ -1,6 +1,6 @@
 #include "chord.h"
 
-bool parseChords(QIODevice& input, QVector<Chord>& chords)
+bool RS::parseChords(QIODevice& input, QVector<Chord>& chords)
 {
     uint32_t chordsCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
     chords.resize(chordsCount);

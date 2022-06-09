@@ -9,7 +9,7 @@ static const unsigned char SngKeyPC[32] = {0xCB, 0x64, 0x8D, 0xF3, 0xD1, 0x2A, 0
                                            0x14, 0xE6, 0x96, 0x19, 0xEC, 0x17, 0x1C, 0xCA, 0x5D, 0x2A, 0x14,
                                            0x2E, 0x3E, 0x59, 0xDE, 0x7A, 0xDD, 0xA1, 0x8A, 0x3A, 0x30};
 
-bool SNG::decrypt(const QString& sngFileName)
+bool RS::SNG::decrypt(const QString& sngFileName)
 {
     QFile sngFile(sngFileName);
     if (sngFile.open(QIODevice::ReadOnly))
@@ -68,7 +68,7 @@ bool SNG::decrypt(const QString& sngFileName)
     return false;
 }
 
-bool SNG::dummyRead(QIODevice& input, const qint64& structureSize, const qint64& additionalSize, uint32_t& count)
+bool RS::SNG::dummyRead(QIODevice& input, const qint64& structureSize, const qint64& additionalSize, uint32_t& count)
 {
     qint64 fileSize = input.size();
     count           = READ_LE_UINT32((uint8_t*)input.read(4).constData());
@@ -76,7 +76,7 @@ bool SNG::dummyRead(QIODevice& input, const qint64& structureSize, const qint64&
     return input.pos() <= fileSize;
 }
 
-bool SNG::parse(const QString& decryptedSngFileName)
+bool RS::SNG::parse(const QString& decryptedSngFileName)
 {
     QFile sngDecryptedFile(decryptedSngFileName);
     if (sngDecryptedFile.open(QIODevice::ReadOnly))
@@ -119,7 +119,7 @@ bool SNG::parse(const QString& decryptedSngFileName)
     return false;
 }
 
-QMap<float, Note> SNG::getNotes() const
+QMap<float, RS::Note> RS::SNG::getNotes() const
 {
     QMap<float, Note> notes;
 
@@ -135,7 +135,7 @@ QMap<float, Note> SNG::getNotes() const
     return notes;
 }
 
-QMap<float, Beat> SNG::getTablature() const
+QMap<float, Beat> RS::SNG::getTablature() const
 {
     QMap<float, Beat> tablature;
     for (const auto& note : getNotes())

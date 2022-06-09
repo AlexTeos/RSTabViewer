@@ -7,13 +7,13 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        Rijndael.cpp \
-        arrangement.cpp \
-        chord.cpp \
-        common.cpp \
+        RS/Rijndael.cpp \
+        RS/arrangement.cpp \
+        RS/chord.cpp \
+        RS/common.cpp \
         main.cpp \
-        psarc.cpp \
-        sng.cpp
+        RS/psarc.cpp \
+        RS/sng.cpp
 
 RESOURCES += ui/qml.qrc
 
@@ -23,10 +23,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    Rijndael.h \
-    arrangement.h \
-    chord.h \
-    common.h \
-    psarc.h \
-    sng.h
+    RS/Rijndael.h \
+    RS/arrangement.h \
+    RS/chord.h \
+    RS/common.h \
+    RS/psarc.h \
+    RS/sng.h
 

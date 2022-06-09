@@ -7,17 +7,17 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += \
-    ../src/Rijndael.cpp \
-    ../src/arrangement.cpp \
-    ../src/chord.cpp \
-    ../src/common.cpp \
-    ../src/psarc.cpp \
-    ../src/sng.cpp \
+    ../src/RS/Rijndael.cpp \
+    ../src/RS/arrangement.cpp \
+    ../src/RS/chord.cpp \
+    ../src/RS/common.cpp \
+    ../src/RS/psarc.cpp \
+    ../src/RS/sng.cpp \
     main.cpp \
     tst_psarc.cpp
 
 HEADERS += \
-    ../src/chord.h \
-    ../src/psarc.h \
-    ../src/sng.h \
+    ../src/RS/chord.h \
+    ../src/RS/psarc.h \
+    ../src/RS/sng.h \
     tst_psarc.h

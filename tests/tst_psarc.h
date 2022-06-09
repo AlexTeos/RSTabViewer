@@ -1,8 +1,8 @@
 #include <QtAlgorithms>
 #include <QtTest>
 
-#include "../src/psarc.h"
-#include "../src/sng.h"
+#include "../src/RS/psarc.h"
+#include "../src/RS/sng.h"
 
 class TestPSARC : public QObject
 {
@@ -17,6 +17,6 @@ private slots:
     void testGetTablature();
 
 private:
-    QStringList  m_archiveNames;
-    QVector<SNG> m_parsedSng;
+    QStringList      m_archiveNames;
+    QVector<RS::SNG> m_parsedSng;
 };

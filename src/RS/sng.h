@@ -12,6 +12,8 @@ struct Beat
     uint8_t m_frets[6];
 };
 
+namespace RS
+{
 class SNG
 {
 public:
@@ -27,5 +29,6 @@ private:
     QVector<Chord>       m_chords;
     QVector<Arrangement> m_arrangements;
 };
+}
 
 #endif // SNG_H

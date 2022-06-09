@@ -9,11 +9,11 @@ static const unsigned char PsarcKey[32] = {0xC5, 0x3D, 0xB2, 0x38, 0x70, 0xA1, 0
                                            0x06, 0x1F, 0xDD, 0x0E, 0x11, 0x57, 0x30, 0x9D, 0xC8, 0x52, 0x04,
                                            0xD4, 0xC5, 0xBF, 0xDF, 0x25, 0x09, 0x0D, 0xF2, 0x57, 0x2C};
 
-bool PSARC::inflateEntry(uint32_t&          entry,
-                         QVector<uint32_t>& zBlocks,
-                         uint32_t&          cBlockSize,
-                         QString            fileName,
-                         QFile&             file)
+bool RS::PSARC::inflateEntry(uint32_t&          entry,
+                             QVector<uint32_t>& zBlocks,
+                             uint32_t&          cBlockSize,
+                             QString            fileName,
+                             QFile&             file)
 {
     if (entry == 0) fileName = "psarc.temp";
 
@@ -80,14 +80,14 @@ bool PSARC::inflateEntry(uint32_t&          entry,
     return false;
 }
 
-void PSARC::setPsarcFile(const QString& newPsarcFileName)
+void RS::PSARC::setPsarcFile(const QString& newPsarcFileName)
 {
     m_psarcFile.setFileName(newPsarcFileName);
 }
 
-PSARC::PSARC(const QString& archiveName) : m_psarcFile(archiveName) {}
+RS::PSARC::PSARC(const QString& archiveName) : m_psarcFile(archiveName) {}
 
-bool PSARC::unarchive()
+bool RS::PSARC::unarchive()
 {
     if (m_psarcFile.open(QIODevice::ReadOnly))
     {

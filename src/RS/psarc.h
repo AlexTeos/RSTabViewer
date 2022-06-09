@@ -14,6 +14,8 @@ struct PSARCEntry
     uint64_t m_zOffset;
 };
 
+namespace RS
+{
 class PSARC
 {
 public:
@@ -32,5 +34,6 @@ private:
     QFile               m_psarcFile;
     QVector<PSARCEntry> m_entries;
 };
+}
 
 #endif // PSARC_H__

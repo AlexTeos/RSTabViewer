@@ -8,6 +8,8 @@
 
 #pragma pack(push, 1)
 
+namespace RS
+{
 struct AnchorExtension
 {
     uint32_t m_beatTime;
@@ -78,5 +80,5 @@ struct Arrangement
 #pragma pack(pop)
 
 bool parseArrangements(QIODevice& input, QVector<Arrangement>& arrangements);
-
+}
 #endif // ARRANGEMENT_H

@@ -8,6 +8,8 @@
 
 #pragma pack(push, 1)
 
+namespace RS
+{
 struct Chord
 {
     uint32_t m_mask;
@@ -20,5 +22,5 @@ struct Chord
 #pragma pack(pop)
 
 bool parseChords(QIODevice& input, QVector<Chord>& chords);
-
+}
 #endif // CHORD_H
