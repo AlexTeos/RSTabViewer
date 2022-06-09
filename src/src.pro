@@ -1,7 +1,6 @@
-QT -= gui
+QT += quick network
 
-CONFIG += c++11 console
-CONFIG -= app_bundle
+CONFIG += c++11
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -15,6 +14,8 @@ SOURCES += \
         main.cpp \
         psarc.cpp \
         sng.cpp
+
+RESOURCES += ui/qml.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
