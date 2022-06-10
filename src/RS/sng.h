@@ -6,26 +6,17 @@
 
 #include "arrangement.h"
 #include "chord.h"
-
-struct Beat
-{
-    uint8_t m_frets[6];
-};
+#include "metadata.h"
 
 namespace RS
 {
-class SNG
+struct SNG
 {
-public:
     bool decrypt(const QString& sngFileName);
     bool parse(const QString& decryptedSngFileName);
-
-    QMap<float, Note> getNotes() const;
-    QMap<float, Beat> getTablature() const;
-
-private:
     bool dummyRead(QIODevice& input, const qint64& structureSize, const qint64& additionalSize, uint32_t& count);
 
+    Metadata             m_metadata;
     QVector<Chord>       m_chords;
     QVector<Arrangement> m_arrangements;
 };

@@ -14,7 +14,6 @@ private slots:
     void testUnarchive();
     void testDecrypt();
     void testParse();
-    void testGetTablature();
 
 private:
     QStringList      m_archiveNames;

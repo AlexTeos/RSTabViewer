@@ -53,11 +53,3 @@ void TestPSARC::testParse()
         m_parsedSng.push_back(sng);
     }
 }
-
-void TestPSARC::testGetTablature()
-{
-    for (const auto& sng : m_parsedSng)
-    {
-        QVERIFY(sng.getTablature().size());
-    }
-}

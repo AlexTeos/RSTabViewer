@@ -14,9 +14,9 @@ bool RS::SNG::decrypt(const QString& sngFileName)
     QFile sngFile(sngFileName);
     if (sngFile.open(QIODevice::ReadOnly))
     {
-        if (READ_LE_UINT32((uint8_t*)sngFile.read(4).constData()) == 0x4a)
+        if (((uint32_t*)sngFile.read(4).constData())[0] == 0x4a)
         {
-            if (READ_LE_UINT32((uint8_t*)sngFile.read(4).constData()) == 0x03)
+            if (((uint32_t*)sngFile.read(4).constData())[0] == 0x03)
             {
                 qsizetype  offset      = 8;
                 uint64_t   writeOffset = 0;
@@ -49,7 +49,7 @@ bool RS::SNG::decrypt(const QString& sngFileName)
                 sngFile.close();
 
                 QByteArray uncompressedData;
-                uLongf     uncompressedSize = READ_LE_UINT32((uint8_t*)decryptedSng.constData());
+                uLongf     uncompressedSize = ((uint32_t*)decryptedSng.constData())[0];
                 decryptedSng.erase(decryptedSng.begin(), decryptedSng.begin() + 4);
                 uncompress(uncompressedData, uncompressedSize, decryptedSng);
 
@@ -71,7 +71,7 @@ bool RS::SNG::decrypt(const QString& sngFileName)
 bool RS::SNG::dummyRead(QIODevice& input, const qint64& structureSize, const qint64& additionalSize, uint32_t& count)
 {
     qint64 fileSize = input.size();
-    count           = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+    count           = *((uint32_t*)input.read(4).constData());
     input.seek(input.pos() + additionalSize + structureSize * count);
     return input.pos() <= fileSize;
 }
@@ -110,48 +110,11 @@ bool RS::SNG::parse(const QString& decryptedSngFileName)
         if (not dummyRead(sngDecryptedFile, 8, 0, count)) return false;            // DNA
         if (not dummyRead(sngDecryptedFile, 88, 0, count)) return false;           // Section
         if (not parseArrangements(sngDecryptedFile, m_arrangements)) return false; // Arrangement
-        sngDecryptedFile.seek(sngDecryptedFile.pos() + 79);                        // Metadata
+        if (not parseMetadata(sngDecryptedFile, m_metadata)) return false;         // Metadata
         if (not dummyRead(sngDecryptedFile, 2, 12, count)) return false;           // Tuning
 
         return sngDecryptedFile.pos() == sngDecryptedFile.size();
     }
 
     return false;
-}
-
-QMap<float, RS::Note> RS::SNG::getNotes() const
-{
-    QMap<float, Note> notes;
-
-    for (auto it = m_arrangements.crbegin(); it != m_arrangements.crend(); ++it)
-    {
-        for (const auto& note : (*it).m_notes)
-        {
-            Note tmp = note;
-            if (not notes.contains(note.m_time)) notes.insert(tmp.m_time, tmp);
-        }
-    }
-
-    return notes;
-}
-
-QMap<float, Beat> RS::SNG::getTablature() const
-{
-    QMap<float, Beat> tablature;
-    for (const auto& note : getNotes())
-    {
-        Beat beat;
-        memset(&beat, 0xFF, sizeof(beat));
-        if (note.m_chord == 0xFFFFFFFF)
-        {
-            beat.m_frets[note.m_string] = note.m_fret[0];
-        }
-        else
-        {
-            memcpy(beat.m_frets, m_chords[note.m_chord].m_frets, sizeof(beat.m_frets));
-        }
-        tablature.insert(note.m_time, beat);
-    }
-
-    return tablature;
 }

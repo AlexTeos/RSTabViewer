@@ -2,23 +2,23 @@
 
 bool RS::parseArrangements(QIODevice& input, QVector<Arrangement>& arrangements)
 {
-    uint32_t arrangementsCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+    uint32_t arrangementsCount = *((uint32_t*)input.read(4).constData());
     arrangements.resize(arrangementsCount);
     for (uint32_t i = 0; i < arrangementsCount; ++i)
     {
         // Difficulty
-        arrangements[i].m_difficulty = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+        arrangements[i].m_difficulty = *((uint32_t*)input.read(4).constData());
         if (arrangements[i].m_difficulty != i) return false;
 
         // Anchors
-        int32_t anchorsCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+        int32_t anchorsCount = *((uint32_t*)input.read(4).constData());
         arrangements[i].m_anchors.resize(anchorsCount);
         memcpy(arrangements[i].m_anchors.data(),
                input.read(sizeof(Anchor) * anchorsCount).constData(),
                sizeof(Anchor) * anchorsCount);
 
         // AnchorExtension
-        uint32_t anchorsExtentionsCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+        uint32_t anchorsExtentionsCount = *((uint32_t*)input.read(4).constData());
         arrangements[i].m_anchorExtensions.resize(anchorsExtentionsCount);
         memcpy(arrangements[i].m_anchorExtensions.data(),
                input.read(sizeof(AnchorExtension) * anchorsExtentionsCount).constData(),
@@ -27,7 +27,7 @@ bool RS::parseArrangements(QIODevice& input, QVector<Arrangement>& arrangements)
         // FingerPrints
         for (int k = 0; k < 2; ++k)
         {
-            uint32_t fingerPrintsCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+            uint32_t fingerPrintsCount = *((uint32_t*)input.read(4).constData());
             arrangements[i].m_fingerPrints[k].resize(fingerPrintsCount);
             memcpy(arrangements[i].m_fingerPrints[k].data(),
                    input.read(sizeof(FingerPrint) * fingerPrintsCount).constData(),
@@ -35,13 +35,13 @@ bool RS::parseArrangements(QIODevice& input, QVector<Arrangement>& arrangements)
         }
 
         // Notes
-        uint32_t notesCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+        uint32_t notesCount = *((uint32_t*)input.read(4).constData());
         arrangements[i].m_notes.resize(notesCount);
         for (uint32_t k = 0; k < notesCount; ++k)
         {
             memcpy(&arrangements[i].m_notes[k], input.read(63).constData(), 63);
 
-            uint32_t bendsCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+            uint32_t bendsCount = *((uint32_t*)input.read(4).constData());
             arrangements[i].m_notes[k].m_bends.resize(bendsCount);
             memcpy(arrangements[i].m_notes[k].m_bends.data(),
                    input.read(sizeof(float) * bendsCount).constData(),
@@ -49,7 +49,7 @@ bool RS::parseArrangements(QIODevice& input, QVector<Arrangement>& arrangements)
         }
 
         // AverageNotePerIters
-        uint32_t averageNotePerItersCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+        uint32_t averageNotePerItersCount = *((uint32_t*)input.read(4).constData());
         arrangements[i].m_averageNotePerIters.resize(averageNotePerItersCount);
         memcpy(arrangements[i].m_averageNotePerIters.data(),
                input.read(sizeof(float) * averageNotePerItersCount).constData(),
@@ -58,7 +58,7 @@ bool RS::parseArrangements(QIODevice& input, QVector<Arrangement>& arrangements)
         // NotesInIters
         for (int k = 0; k < 2; ++k)
         {
-            uint32_t notesInItersCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+            uint32_t notesInItersCount = *((uint32_t*)input.read(4).constData());
             arrangements[i].m_notesInIters[k].resize(notesInItersCount);
             memcpy(arrangements[i].m_notesInIters[k].data(),
                    input.read(sizeof(uint32_t) * notesInItersCount).constData(),

@@ -2,7 +2,7 @@
 
 bool RS::parseChords(QIODevice& input, QVector<Chord>& chords)
 {
-    uint32_t chordsCount = READ_LE_UINT32((uint8_t*)input.read(4).constData());
+    uint32_t chordsCount = ((uint32_t*)input.read(4).constData())[0];
     chords.resize(chordsCount);
 
     memcpy(chords.data(), input.read(sizeof(Chord) * chordsCount).constData(), sizeof(Chord) * chordsCount);

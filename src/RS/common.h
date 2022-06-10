@@ -29,10 +29,5 @@ inline uint64_t READ_BE_INT40(const uint8_t* ptr)
     return res;
 }
 
-inline uint32_t READ_LE_UINT32(const uint8_t* ptr)
-{
-    return (ptr[3] << 24) | (ptr[2] << 16) | (ptr[1] << 8) | ptr[0];
-}
-
 bool uncompress(QByteArray& dest, uLongf destLen, QByteArray& source);
 #endif // COMMON_H
