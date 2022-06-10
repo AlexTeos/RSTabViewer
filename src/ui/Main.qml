@@ -51,15 +51,15 @@ ApplicationWindow {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        height: parent.height/2
+        height: applicationWindow.height/2
         color: "#f2d0ea"
 
         Component {
             id: noteDelegate
             Item {
                 //color: "#e594eb"
-                width: (timeEnd - timeStart) * 300
-                height: parent.height
+                width: duration * 150
+                height: applicationWindow.height/2
                 //opacity: 0.5
                 //radius: 10
                 Column {
@@ -86,12 +86,12 @@ ApplicationWindow {
                         radius: width/2
                         color: "white"
                         Text {
-                            text: fret0
+                            text: frets[0]
                             anchors.centerIn: parent
                             font.pixelSize: parent.height
                             color: "black"
                             }
-                        opacity: fret0 !== 255 ? 100 : 0
+                        opacity: frets[0] !== 0xFF ? 100 : 0
                     }
 
                     Rectangle{
@@ -100,12 +100,12 @@ ApplicationWindow {
                         radius: width/2
                         color: "white"
                         Text {
-                            text: fret1
+                            text: frets[1]
                             anchors.centerIn: parent
                             font.pixelSize: parent.height
                             color: "black"
                             }
-                        opacity: fret1 !== 255 ? 100 : 0
+                        opacity: frets[1] !== 0xFF ? 100 : 0
                     }
 
                     Rectangle{
@@ -114,12 +114,12 @@ ApplicationWindow {
                         radius: width/2
                         color: "white"
                         Text {
-                            text: fret2
+                            text: frets[2]
                             anchors.centerIn: parent
                             font.pixelSize: parent.height
                             color: "black"
                             }
-                        opacity: fret2 !== 255 ? 100 : 0
+                        opacity: frets[2] !== 0xFF ? 100 : 0
                     }
 
                     Rectangle{
@@ -128,12 +128,12 @@ ApplicationWindow {
                         radius: width/2
                         color: "white"
                         Text {
-                            text: fret3
+                            text: frets[3]
                             anchors.centerIn: parent
                             font.pixelSize: parent.height
                             color: "black"
                             }
-                        opacity: fret3 !== 255 ? 100 : 0
+                        opacity: frets[3] !== 0xFF ? 100 : 0
                     }
 
                     Rectangle{
@@ -142,12 +142,12 @@ ApplicationWindow {
                         radius: width/2
                         color: "white"
                         Text {
-                            text: fret4
+                            text: frets[4]
                             anchors.centerIn: parent
                             font.pixelSize: parent.height
                             color: "black"
                             }
-                        opacity: fret4 !== 255 ? 100 : 0
+                        opacity: frets[4] !== 0xFF ? 100 : 0
                     }
 
                     Rectangle{
@@ -156,12 +156,12 @@ ApplicationWindow {
                         radius: width/2
                         color: "white"
                         Text {
-                            text: fret5
+                            text: frets[5]
                             anchors.centerIn: parent
                             font.pixelSize: parent.height
                             color: "black"
                             }
-                        opacity: fret5 !== 255 ? 100 : 0
+                        opacity: frets[5] !== 0xFF ? 100 : 0
                     }
                 }
             }
@@ -247,7 +247,7 @@ ApplicationWindow {
         ListView {
             id: tablatureView
             anchors.fill: parent
-            model: noteModel
+            model: tablature
             delegate: noteDelegate
             orientation: ListView.Horizontal
 
@@ -265,256 +265,4 @@ ApplicationWindow {
             }
         }
     }
-
-    ListModel {
-        id: noteModel
-
-        ListElement {
-            name: ""
-            timeStart: 15.375
-            timeEnd: 15.593
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 7
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 15.593
-            timeEnd: 15.703
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 255
-            fret4: 255
-            fret5: 10
-        }
-        ListElement {
-            name: ""
-            timeStart: 15.703
-            timeEnd: 15.812
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 255
-            fret4: 255
-            fret5: 7
-        }
-        ListElement {
-            name: ""
-            timeStart: 15.812
-            timeEnd: 15.921
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 255
-            fret4: 10
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 15.921
-            timeEnd: 16.031
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 255
-            fret4: 7
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 16.031
-            timeEnd: 16.141
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 9
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 16.141
-            timeEnd: 16.25
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 7
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 16.25
-            timeEnd: 16.36
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 255
-            fret4: 10
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 16.36
-            timeEnd: 16.468
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 255
-            fret4: 7
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 16.468
-            timeEnd: 16.579
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 9
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 16.579
-            timeEnd: 16.687
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 7
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 16.687
-            timeEnd: 16.798
-            fret0: 255
-            fret1: 255
-            fret2: 9
-            fret3: 255
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 16.798
-            timeEnd: 16.906
-            fret0: 255
-            fret1: 255
-            fret2: 7
-            fret3: 255
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 16.906
-            timeEnd: 17.017
-            fret0: 255
-            fret1: 9
-            fret2: 255
-            fret3: 255
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 17.017
-            timeEnd: 17.125
-            fret0: 255
-            fret1: 7
-            fret2: 255
-            fret3: 255
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: ""
-            timeStart: 17.125
-            timeEnd: 20.538
-            fret0: 255
-            fret1: 5
-            fret2: 255
-            fret3: 255
-            fret4: 255
-            fret5: 255
-        }
-        // A3
-        ListElement {
-            name: "A3"
-            timeStart: 20.538
-            timeEnd: 20.75
-            fret0: 255
-            fret1: 4
-            fret2: 7
-            fret3: 255
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: "A3"
-            timeStart: 20.75
-            timeEnd: 23.927
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 4
-            fret4: 7
-            fret5: 255
-        }
-        // B5
-        ListElement {
-            name: "B5"
-            timeStart: 23.927
-            timeEnd: 24.146
-            fret0: 255
-            fret1: 2
-            fret2: 4
-            fret3: 255
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: "B5"
-            timeStart: 24.146
-            timeEnd: 27.385
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 2
-            fret4: 4
-            fret5: 255
-        }
-        // A5
-        ListElement {
-            name: "A5"
-            timeStart: 27.385
-            timeEnd: 27.600
-            fret0: 255
-            fret1: 0
-            fret2: 2
-            fret3: 255
-            fret4: 255
-            fret5: 255
-        }
-        ListElement {
-            name: "A5"
-            timeStart: 27.600
-            timeEnd: 30.239
-            fret0: 255
-            fret1: 255
-            fret2: 255
-            fret3: 0
-            fret4: 2
-            fret5: 255
-        }
-    }
-
-
 }

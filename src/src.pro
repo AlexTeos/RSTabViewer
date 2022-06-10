@@ -11,9 +11,11 @@ SOURCES += \
         RS/arrangement.cpp \
         RS/chord.cpp \
         RS/common.cpp \
+        RS/metadata.cpp \
         main.cpp \
         RS/psarc.cpp \
-        RS/sng.cpp
+        RS/sng.cpp \
+        tablature.cpp
 
 RESOURCES += ui/qml.qrc
 
@@ -27,6 +29,8 @@ HEADERS += \
     RS/arrangement.h \
     RS/chord.h \
     RS/common.h \
+    RS/metadata.h \
     RS/psarc.h \
-    RS/sng.h
+    RS/sng.h \
+    tablature.h
 
