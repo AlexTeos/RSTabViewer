@@ -10,7 +10,8 @@ void TestPSARC::cleanupTestCase()
 {
     foreach(QString archiveName, m_archiveNames)
     {
-        QDir dir(archiveName.first(archiveName.size() - 6));
+        archiveName.truncate(archiveName.size() - 6);
+        QDir dir(archiveName);
         dir.removeRecursively();
     }
 }
@@ -29,13 +30,14 @@ void TestPSARC::testDecrypt()
 {
     foreach(QString archiveName, m_archiveNames)
     {
-        QStringList sngNames = QDir(archiveName.first(archiveName.size() - 6) + "\\songs\\bin\\generic")
-                                   .entryList(QStringList() << "*_lead.sng", QDir::Files);
+        archiveName.truncate(archiveName.size() - 6);
+        QStringList sngNames =
+            QDir(archiveName + "\\songs\\bin\\generic").entryList(QStringList() << "*_lead.sng", QDir::Files);
         QVERIFY(m_archiveNames.size());
 
         QString sngName = sngNames[0];
         RS::SNG sng;
-        QVERIFY(sng.decrypt(archiveName.first(archiveName.size() - 6) + "\\songs\\bin\\generic\\" + sngName));
+        QVERIFY(sng.decrypt(archiveName + "\\songs\\bin\\generic\\" + sngName));
     }
 }
 
@@ -43,13 +45,14 @@ void TestPSARC::testParse()
 {
     foreach(QString archiveName, m_archiveNames)
     {
-        QStringList sngNames = QDir(archiveName.first(archiveName.size() - 6) + "\\songs\\bin\\generic")
-                                   .entryList(QStringList() << "*_uncompressed.sng", QDir::Files);
+        archiveName.truncate(archiveName.size() - 6);
+        QStringList sngNames =
+            QDir(archiveName + "\\songs\\bin\\generic").entryList(QStringList() << "*_uncompressed.sng", QDir::Files);
         QVERIFY(m_archiveNames.size());
 
         QString sngName = sngNames[0];
         RS::SNG sng;
-        QVERIFY(sng.parse(archiveName.first(archiveName.size() - 6) + "\\songs\\bin\\generic\\" + sngName));
+        QVERIFY(sng.parse(archiveName + "\\songs\\bin\\generic\\" + sngName));
         m_parsedSng.push_back(sng);
     }
 }

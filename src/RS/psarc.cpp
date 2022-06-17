@@ -41,7 +41,7 @@ bool RS::PSARC::inflateEntry(uint32_t&          entry,
                         QByteArray uncompressedData;
                         uncompress(uncompressedData,
                                    qMin(m_entries[entry].m_length - (zIndex - m_entries[entry].m_zIndex) * cBlockSize,
-                                        cBlockSize),
+                                        (uint64_t)cBlockSize),
                                    compressedData);
                         stream.write(uncompressedData);
                     }

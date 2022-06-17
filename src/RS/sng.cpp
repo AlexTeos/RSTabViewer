@@ -50,7 +50,7 @@ bool RS::SNG::decrypt(const QString& sngFileName)
 
                 QByteArray uncompressedData;
                 uLongf     uncompressedSize = ((uint32_t*)decryptedSng.constData())[0];
-                decryptedSng.erase(decryptedSng.begin(), decryptedSng.begin() + 4);
+                decryptedSng.remove(0, 4);
                 uncompress(uncompressedData, uncompressedSize, decryptedSng);
 
                 QFile sngDecryptedFile(sngFile.fileName().insert(
@@ -111,7 +111,6 @@ bool RS::SNG::parse(const QString& decryptedSngFileName)
         if (not dummyRead(sngDecryptedFile, 88, 0, count)) return false;           // Section
         if (not parseArrangements(sngDecryptedFile, m_arrangements)) return false; // Arrangement
         if (not parseMetadata(sngDecryptedFile, m_metadata)) return false;         // Metadata
-        if (not dummyRead(sngDecryptedFile, 2, 12, count)) return false;           // Tuning
 
         return sngDecryptedFile.pos() == sngDecryptedFile.size();
     }
