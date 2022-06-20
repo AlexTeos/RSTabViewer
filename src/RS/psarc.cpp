@@ -2,7 +2,7 @@
 
 #include <QDir>
 
-#include "Rijndael.h"
+#include "3rdparty/Rijndael/Rijndael.h"
 #include "common.h"
 
 static const unsigned char PsarcKey[32] = {0xC5, 0x3D, 0xB2, 0x38, 0x70, 0xA1, 0xA2, 0xF7, 0x1C, 0xAE, 0x64,

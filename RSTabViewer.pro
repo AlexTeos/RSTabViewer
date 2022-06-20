@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     src \
-    tests
+    tests \
+    src/RS/3rdparty

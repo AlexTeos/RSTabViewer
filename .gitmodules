@@ -1,0 +1,9 @@
+[submodule "src/RS/3rdparty/ww2oggQt/ww2ogg"]
+	path = src/RS/3rdparty/ww2oggQt/ww2ogg
+	url = https://github.com/hcs64/ww2ogg.git
+[submodule "src/RS/3rdparty/revorb/oggQt/ogg"]
+	path = src/RS/3rdparty/revorb/oggQt/ogg
+	url = https://github.com/gcp/libogg.git
+[submodule "src/RS/3rdparty/revorb/vorbisQt/vorbis"]
+	path = src/RS/3rdparty/revorb/vorbisQt/vorbis
+	url = https://github.com/xiph/vorbis.git

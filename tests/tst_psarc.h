@@ -14,6 +14,8 @@ private slots:
     void testUnarchive();
     void testDecrypt();
     void testParse();
+    void testWW2OGG();
+    void testRevorb();
 
 private:
     QStringList      m_archiveNames;

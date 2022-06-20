@@ -2,7 +2,7 @@
 
 #include <QFileInfo>
 
-#include "Rijndael.h"
+#include "3rdparty/Rijndael/Rijndael.h"
 #include "psarc.h"
 
 static const unsigned char SngKeyPC[32] = {0xCB, 0x64, 0x8D, 0xF3, 0xD1, 0x2A, 0x16, 0xBF, 0x71, 0x70, 0x14,

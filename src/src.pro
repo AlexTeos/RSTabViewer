@@ -7,7 +7,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        RS/Rijndael.cpp \
+        RS/3rdparty/Rijndael/Rijndael.cpp \
         RS/arrangement.cpp \
         RS/chord.cpp \
         RS/common.cpp \
@@ -25,7 +25,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    RS/Rijndael.h \
+    RS/3rdparty/Rijndael/Rijndael.h \
     RS/arrangement.h \
     RS/chord.h \
     RS/common.h \
