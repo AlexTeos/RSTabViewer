@@ -59,6 +59,12 @@ bool Tablature::collectAllNotes()
     m_notes.clear();
     QMap<float, RS::Note> notes;
 
+    RS::Note firstNote;
+    firstNote.m_time   = 0;
+    firstNote.m_chord  = 0xFFFFFFFF;
+    firstNote.m_string = 0xFF;
+    notes.insert(0, firstNote);
+
     for (auto it = m_sng.m_arrangements.crbegin(); it != m_sng.m_arrangements.crend(); ++it)
     {
         for (const auto& note : (*it).m_notes)

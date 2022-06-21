@@ -1,4 +1,4 @@
-QT += quick network
+QT += quick network multimedia
 
 CONFIG += c++11
 

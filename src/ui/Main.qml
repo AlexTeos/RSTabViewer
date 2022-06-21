@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtMultimedia 5.15
 
 ApplicationWindow {
     width: 800
@@ -15,15 +16,33 @@ ApplicationWindow {
         AppSettings.wHeight = Qt.binding(function() {return height})
     }
 
+    property real musicPositionInPixels: tablatureView.contentX
+    property real pixelsPerSecond: 200
+
+    function recalculatePositionAfterMovement(){
+        musicPositionInPixels = tablatureView.contentX
+        playMusic.seek((musicPositionInPixels + (applicationWindow.width/4 + cursor.width)) * 1000 / pixelsPerSecond)
+    }
+
     Timer {
         id: flickTimer
-        interval: 50;
-        running: false;
+        interval: 25
+        running: false
         repeat: true
-        onTriggered: tablatureView.flick(-200, 0)
+        onTriggered: {
+            musicPositionInPixels += pixelsPerSecond * interval / 1000
+            tablatureView.contentX = musicPositionInPixels
+        }
+    }
+
+    Audio {
+       id: playMusic
+       autoLoad: true
+       source: "123732889.ogg"
     }
 
     Button{
+        id:startButton
         anchors.left: parent.left
         anchors.top: parent.top
         width: 50
@@ -31,11 +50,13 @@ ApplicationWindow {
         text: 'start'
 
         onClicked: {
+            playMusic.play()
             flickTimer.start()
         }
     }
 
     Button{
+        id:stopButton
         anchors.right: parent.right
         anchors.top: parent.top
         width: 50
@@ -43,6 +64,7 @@ ApplicationWindow {
         text: 'stop'
 
         onClicked: {
+            playMusic.pause()
             flickTimer.stop()
         }
     }
@@ -56,14 +78,16 @@ ApplicationWindow {
 
         Component {
             id: noteDelegate
-            Item {
-                //color: "#e594eb"
-                width: duration * 150
+            Rectangle {
+                color: "#e594eb"
+                width: duration * pixelsPerSecond
                 height: applicationWindow.height/2
-                //opacity: 0.5
-                //radius: 10
+                opacity: 0.75
+                radius: 20
                 Column {
-                    anchors.fill: parent
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter: parent.left
 
                     Rectangle{
                         height: parent.height/7
@@ -168,17 +192,6 @@ ApplicationWindow {
         }
 
         Rectangle {
-            id: cursor
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.leftMargin: parent.width/4
-            width: 5
-            color: "green"
-            opacity: 0.5
-        }
-
-        Rectangle {
             id: fret0Cursor
             anchors.right: parent.right
             anchors.left: parent.left
@@ -250,6 +263,22 @@ ApplicationWindow {
             model: tablature
             delegate: noteDelegate
             orientation: ListView.Horizontal
+            cacheBuffer:1000
+
+            onMovementStarted:{
+                stopButton.clicked()
+            }
+            onFlickStarted:{
+                stopButton.clicked()
+            }
+            onMovementEnded:{
+                recalculatePositionAfterMovement()
+                startButton.clicked()
+            }
+            onFlickEnded:{
+                recalculatePositionAfterMovement()
+                startButton.clicked()
+            }
 
             header:
                 Rectangle{
@@ -263,6 +292,17 @@ ApplicationWindow {
                 //height: parent.height
                 width: applicationWindow.width - applicationWindow.width/4
             }
+        }
+
+        Rectangle {
+            id: cursor
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.leftMargin: parent.width/4
+            width: 5
+            color: "green"
+            opacity: 0.5
         }
     }
 }
