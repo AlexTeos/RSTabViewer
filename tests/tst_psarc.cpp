@@ -22,12 +22,7 @@ void TestPSARC::cleanupTestCase()
 
 void TestPSARC::testUnarchive()
 {
-    foreach(auto archiveName, m_archiveNames)
-    {
-        RS::PSARC psarc;
-        psarc.setPsarcFile(archiveName);
-        QVERIFY(psarc.unarchive());
-    }
+    foreach(auto archiveName, m_archiveNames) { QVERIFY(RS::PSARCArchive::unarchive(archiveName)); }
 }
 
 void TestPSARC::testDecrypt()

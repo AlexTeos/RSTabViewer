@@ -9,11 +9,12 @@ static const unsigned char PsarcKey[32] = {0xC5, 0x3D, 0xB2, 0x38, 0x70, 0xA1, 0
                                            0x06, 0x1F, 0xDD, 0x0E, 0x11, 0x57, 0x30, 0x9D, 0xC8, 0x52, 0x04,
                                            0xD4, 0xC5, 0xBF, 0xDF, 0x25, 0x09, 0x0D, 0xF2, 0x57, 0x2C};
 
-bool RS::PSARC::inflateEntry(uint32_t&          entry,
-                             QVector<uint32_t>& zBlocks,
-                             uint32_t&          cBlockSize,
-                             QString            fileName,
-                             QFile&             file)
+bool RS::PSARCArchive::inflateEntry(uint32_t&            entry,
+                                    QVector<uint32_t>&   zBlocks,
+                                    uint32_t&            cBlockSize,
+                                    QString              fileName,
+                                    QFile&               file,
+                                    QVector<PSARCEntry>& entries)
 {
     if (entry == 0) fileName = "psarc.temp";
 
@@ -22,10 +23,10 @@ bool RS::PSARC::inflateEntry(uint32_t&          entry,
     QFile stream(fileName);
     if (stream.open(QIODevice::WriteOnly))
     {
-        if (m_entries[entry].m_length != 0)
+        if (entries[entry].m_length != 0)
         {
-            file.seek(m_entries[entry].m_zOffset);
-            uint32_t zIndex = m_entries[entry].m_zIndex;
+            file.seek(entries[entry].m_zOffset);
+            uint32_t zIndex = entries[entry].m_zIndex;
             do
             {
                 if (zBlocks[zIndex] == 0)
@@ -40,7 +41,7 @@ bool RS::PSARC::inflateEntry(uint32_t&          entry,
                     {
                         QByteArray uncompressedData;
                         uncompress(uncompressedData,
-                                   qMin(m_entries[entry].m_length - (zIndex - m_entries[entry].m_zIndex) * cBlockSize,
+                                   qMin(entries[entry].m_length - (zIndex - entries[entry].m_zIndex) * cBlockSize,
                                         (uint64_t)cBlockSize),
                                    compressedData);
                         stream.write(uncompressedData);
@@ -49,7 +50,7 @@ bool RS::PSARC::inflateEntry(uint32_t&          entry,
                         stream.write(compressedData, zBlocks[zIndex]);
                 }
                 zIndex++;
-            } while (stream.pos() < m_entries[entry].m_length);
+            } while (stream.pos() < entries[entry].m_length);
         }
 
         if (entry == 0)
@@ -59,12 +60,12 @@ bool RS::PSARC::inflateEntry(uint32_t&          entry,
             QFile reader(fileName);
             reader.open(QIODevice::ReadOnly);
 
-            m_entries[0].m_name = (char*)"NamesBlock.bin";
-            for (uint32_t i = 1; i < m_entries.size(); i++)
+            entries[0].m_name = (char*)"NamesBlock.bin";
+            for (uint32_t i = 1; i < entries.size(); i++)
             {
-                m_entries[i].m_name = reader.readLine();
-                m_entries[i].m_name.remove(m_entries[i].m_name.length() - 1, 1);
-                m_entries[i].m_name.replace("/", "\\");
+                entries[i].m_name = reader.readLine();
+                entries[i].m_name.remove(entries[i].m_name.length() - 1, 1);
+                entries[i].m_name.replace("/", "\\");
             }
 
             reader.close();
@@ -80,27 +81,23 @@ bool RS::PSARC::inflateEntry(uint32_t&          entry,
     return false;
 }
 
-void RS::PSARC::setPsarcFile(const QString& newPsarcFileName)
+bool RS::PSARCArchive::unarchive(const QString& archiveName, const QString& unpackDir)
 {
-    m_psarcFile.setFileName(newPsarcFileName);
-}
+    QVector<PSARCEntry> entries;
 
-RS::PSARC::PSARC(const QString& archiveName) : m_psarcFile(archiveName) {}
-
-bool RS::PSARC::unarchive()
-{
-    if (m_psarcFile.open(QIODevice::ReadOnly))
+    QFile psarcFile(archiveName);
+    if (psarcFile.open(QIODevice::ReadOnly))
     {
-        if (READ_BE_UINT32((uint8_t*)m_psarcFile.read(4).constData()) == kPSARCMagicNumber)
+        if (READ_BE_UINT32((uint8_t*)psarcFile.read(4).constData()) == kPSARCMagicNumber)
         {
-            m_psarcFile.seek(8);
-            if (READ_BE_UINT32((uint8_t*)m_psarcFile.read(4).constData()) == 0x7a6c6962)
+            psarcFile.seek(8);
+            if (READ_BE_UINT32((uint8_t*)psarcFile.read(4).constData()) == 0x7a6c6962)
             {
-                uint32_t zSize = READ_BE_UINT32((uint8_t*)m_psarcFile.read(4).constData());
-                m_psarcFile.seek(headerSize);
-                uint32_t _numEntries = READ_BE_UINT32((uint8_t*)m_psarcFile.read(4).constData());
-                m_psarcFile.seek(24);
-                uint32_t cBlockSize = READ_BE_UINT32((uint8_t*)m_psarcFile.read(4).constData());
+                uint32_t zSize = READ_BE_UINT32((uint8_t*)psarcFile.read(4).constData());
+                psarcFile.seek(headerSize);
+                uint32_t _numEntries = READ_BE_UINT32((uint8_t*)psarcFile.read(4).constData());
+                psarcFile.seek(24);
+                uint32_t cBlockSize = READ_BE_UINT32((uint8_t*)psarcFile.read(4).constData());
 
                 uint8_t  zType = 1;
                 uint32_t i     = 256;
@@ -110,33 +107,33 @@ bool RS::PSARC::unarchive()
                     zType = (uint8_t)(zType + 1);
                 } while (i < cBlockSize);
 
-                m_psarcFile.seek(32);
+                psarcFile.seek(32);
 
                 QByteArray decryptedToc;
                 decryptedToc.resize(zSize);
                 CRijndael rijndael;
 
                 rijndael.MakeKey(PsarcKey, (unsigned char*)CRijndael::sm_chain0, 32, 16);
-                rijndael.Decrypt((unsigned char*)m_psarcFile.read(zSize - 32).constData(),
+                rijndael.Decrypt((unsigned char*)psarcFile.read(zSize - 32).constData(),
                                  (unsigned char*)decryptedToc.data(),
                                  zSize & ~31,
                                  CRijndael::CFB);
 
                 qsizetype decryptedTocOffset = 0;
-                m_entries.resize(_numEntries);
-                for (uint32_t i = 0; i < m_entries.size(); i++)
+                entries.resize(_numEntries);
+                for (uint32_t i = 0; i < entries.size(); i++)
                 {
                     decryptedTocOffset += 16;
 
-                    m_entries[i].m_id = i;
+                    entries[i].m_id = i;
 
-                    m_entries[i].m_zIndex = READ_BE_UINT32((uint8_t*)decryptedToc.constData() + decryptedTocOffset);
+                    entries[i].m_zIndex = READ_BE_UINT32((uint8_t*)decryptedToc.constData() + decryptedTocOffset);
                     decryptedTocOffset += 4;
 
-                    m_entries[i].m_length = READ_BE_INT40((uint8_t*)decryptedToc.constData() + decryptedTocOffset);
+                    entries[i].m_length = READ_BE_INT40((uint8_t*)decryptedToc.constData() + decryptedTocOffset);
                     decryptedTocOffset += 5;
 
-                    m_entries[i].m_zOffset = READ_BE_INT40((uint8_t*)decryptedToc.constData() + decryptedTocOffset);
+                    entries[i].m_zOffset = READ_BE_INT40((uint8_t*)decryptedToc.constData() + decryptedTocOffset);
                     decryptedTocOffset += 5;
                 }
 
@@ -164,17 +161,16 @@ bool RS::PSARC::unarchive()
                     }
                 }
 
-                QString unpackDir = QFileInfo(m_psarcFile).completeBaseName();
-                for (uint32_t i = 0; i < m_entries.size(); i++)
+                for (uint32_t i = 0; i < entries.size(); i++)
                 {
-                    inflateEntry(i, zBlocks, cBlockSize, unpackDir + "\\" + m_entries[i].m_name, m_psarcFile);
+                    inflateEntry(i, zBlocks, cBlockSize, unpackDir + "\\" + entries[i].m_name, psarcFile, entries);
                 }
 
                 return true;
             }
         }
 
-        m_psarcFile.close();
+        psarcFile.close();
     }
     return false;
 }
