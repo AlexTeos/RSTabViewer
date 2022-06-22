@@ -3,5 +3,7 @@
         <file>AppSettings.qml</file>
         <file>qmldir</file>
         <file>Main.qml</file>
+        <file>Library.qml</file>
+        <file>Song.qml</file>
     </qresource>
 </RCC>

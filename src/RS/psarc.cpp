@@ -1,6 +1,8 @@
 #include "psarc.h"
 
 #include <QDir>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include "3rdparty/Rijndael/Rijndael.h"
 #include "common.h"
@@ -173,4 +175,75 @@ bool RS::PSARCArchive::unarchive(const QString& archiveName, const QString& unpa
         psarcFile.close();
     }
     return false;
+}
+
+RS::PSARC::PSARC(const QString psarcDir) : m_filesDir(psarcDir)
+{
+    QDir manifestDir(m_filesDir.path() + "\\manifests");
+    manifestDir.setPath(manifestDir.path() + "\\" + manifestDir.entryList(QStringList() << "songs_*", QDir::Dirs)[0]);
+    QStringList manifestsFileNames = manifestDir.entryList(QStringList() << "*.json", QDir::Files);
+    QFile       manifest(manifestDir.path() + "\\" + manifestsFileNames[0]);
+    if (manifest.open(QIODevice::ReadOnly))
+    {
+        QByteArray arr = manifest.readAll();
+
+        QJsonDocument replyJsonDocument(QJsonDocument::fromJson(arr));
+
+        if (replyJsonDocument.isObject())
+        {
+            QJsonObject replyJsonObject = replyJsonDocument.object();
+            if (replyJsonObject.contains("Entries") && replyJsonObject["Entries"].isObject())
+            {
+                QJsonObject entryObject = replyJsonObject["Entries"].toObject();
+                if (entryObject.keys().size() > 0)
+                {
+                    entryObject = entryObject[entryObject.keys()[0]].toObject();
+                    if (entryObject.contains("Attributes") && entryObject["Attributes"].isObject())
+                    {
+                        m_songAtributes = entryObject["Attributes"].toObject();
+                    }
+                }
+            }
+        }
+    }
+}
+
+QString RS::PSARC::songName() const
+{
+    if (m_songAtributes.contains("SongName") && m_songAtributes["SongName"].isString())
+        return m_songAtributes["SongName"].toString();
+
+    return "";
+}
+
+QString RS::PSARC::artistName() const
+{
+    if (m_songAtributes.contains("ArtistName") && m_songAtributes["ArtistName"].isString())
+        return m_songAtributes["ArtistName"].toString();
+
+    return "";
+}
+
+QString RS::PSARC::albumName() const
+{
+    if (m_songAtributes.contains("AlbumName") && m_songAtributes["AlbumName"].isString())
+        return m_songAtributes["AlbumName"].toString();
+
+    return "";
+}
+
+int RS::PSARC::duration() const
+{
+    if (m_songAtributes.contains("SongLength") && m_songAtributes["SongLength"].isDouble())
+        return m_songAtributes["SongLength"].toDouble();
+
+    return 0;
+}
+
+int RS::PSARC::songYear() const
+{
+    if (m_songAtributes.contains("SongYear") && m_songAtributes["SongYear"].isDouble())
+        return m_songAtributes["SongYear"].toInt();
+
+    return 0;
 }

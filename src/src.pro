@@ -15,6 +15,7 @@ SOURCES += \
         main.cpp \
         RS/psarc.cpp \
         RS/sng.cpp \
+        musiclibrary.cpp \
         tablature.cpp
 
 RESOURCES += ui/qml.qrc
@@ -32,5 +33,6 @@ HEADERS += \
     RS/metadata.h \
     RS/psarc.h \
     RS/sng.h \
+    musiclibrary.h \
     tablature.h
 

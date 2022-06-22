@@ -4,6 +4,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
+#include "musiclibrary.h"
 #include "tablature.h"
 
 int main(int argc, char* argv[])
@@ -12,13 +13,8 @@ int main(int argc, char* argv[])
 
     QQmlApplicationEngine engine;
 
-    RS::SNG sng;
-    sng.parse("stro1251_lead_uncompressed.sng");
-    Tablature tablature;
-    tablature.m_sng = sng;
-    tablature.collectAllNotes();
-
-    engine.rootContext()->setContextProperty("tablature", &tablature);
+    MusicLibrary library(QDir(""));
+    engine.rootContext()->setContextProperty("songs", &library);
 
     engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
 
