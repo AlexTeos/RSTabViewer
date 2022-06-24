@@ -24,7 +24,8 @@ void TestPSARC::testUnarchive()
 {
     foreach(auto archiveName, m_archiveNames)
     {
-        QVERIFY(RS::PSARCArchive::unarchive(archiveName, QFileInfo(archiveName).completeBaseName()));
+        QVERIFY2(RS::PSARCArchive::unarchive(archiveName, QFileInfo(archiveName).completeBaseName()),
+                 archiveName.toLatin1());
     }
 }
 
@@ -34,12 +35,14 @@ void TestPSARC::testDecrypt()
     {
         archiveName.truncate(archiveName.size() - 6);
         QStringList sngNames =
-            QDir(archiveName + "\\songs\\bin\\generic").entryList(QStringList() << "*_lead.sng", QDir::Files);
-        QVERIFY(m_archiveNames.size());
+            QDir(archiveName + "\\songs\\bin\\generic").entryList(QStringList() << "*.sng", QDir::Files);
+        QVERIFY2(sngNames.size(), archiveName.toLatin1());
 
-        QString sngName = sngNames[0];
-        RS::SNG sng;
-        QVERIFY(sng.decrypt(archiveName + "\\songs\\bin\\generic\\" + sngName));
+        for (const auto& sngName : sngNames)
+        {
+            RS::SNG sng;
+            QVERIFY2(sng.decrypt(archiveName + "\\songs\\bin\\generic\\" + sngName), archiveName.toLatin1());
+        }
     }
 }
 
@@ -49,13 +52,14 @@ void TestPSARC::testParse()
     {
         archiveName.truncate(archiveName.size() - 6);
         QStringList sngNames =
-            QDir(archiveName + "\\songs\\bin\\generic").entryList(QStringList() << "*_uncompressed.sng", QDir::Files);
-        QVERIFY(m_archiveNames.size());
+            QDir(archiveName + "\\songs\\bin\\generic").entryList(QStringList() << "*.snguc", QDir::Files);
+        QVERIFY2(sngNames.size(), archiveName.toLatin1());
 
-        QString sngName = sngNames[0];
-        RS::SNG sng;
-        QVERIFY(sng.parse(archiveName + "\\songs\\bin\\generic\\" + sngName));
-        m_parsedSng.push_back(sng);
+        for (const auto& sngName : sngNames)
+        {
+            RS::SNG sng;
+            QVERIFY2(sng.parse(archiveName + "\\songs\\bin\\generic\\" + sngName), archiveName.toLatin1());
+        }
     }
 }
 
@@ -66,14 +70,14 @@ void TestPSARC::testWW2OGG()
         archiveName.truncate(archiveName.size() - 6);
         QStringList audioNames =
             QDir(archiveName + "\\audio\\windows").entryList(QStringList() << "*.wem", QDir::Files);
-        QVERIFY(m_archiveNames.size());
+        QVERIFY2(audioNames.size(), archiveName.toLatin1());
 
         for (const QString& audio : audioNames)
         {
             QString filePath    = archiveName + "\\audio\\windows\\" + audio;
             QString outFilePath = filePath;
             outFilePath.replace(QStringLiteral(".wem"), QStringLiteral(".ogg"), Qt::CaseInsensitive);
-            QVERIFY(ww2ogg(filePath.toStdString(), outFilePath.toStdString()));
+            QVERIFY2(ww2ogg(filePath.toStdString(), outFilePath.toStdString()), archiveName.toLatin1());
         }
     }
 }
@@ -85,11 +89,11 @@ void TestPSARC::testRevorb()
         archiveName.truncate(archiveName.size() - 6);
         QStringList audioNames =
             QDir(archiveName + "\\audio\\windows").entryList(QStringList() << "*.ogg", QDir::Files);
-        QVERIFY(m_archiveNames.size());
+        QVERIFY2(audioNames.size(), archiveName.toLatin1());
 
         for (const QString& audio : audioNames)
         {
-            QVERIFY(revorb((archiveName + "\\audio\\windows\\" + audio).toStdString()));
+            QVERIFY2(revorb((archiveName + "\\audio\\windows\\" + audio).toStdString()), archiveName.toLatin1());
         }
     }
 }

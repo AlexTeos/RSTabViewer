@@ -18,6 +18,5 @@ private slots:
     void testRevorb();
 
 private:
-    QStringList      m_archiveNames;
-    QVector<RS::SNG> m_parsedSng;
+    QStringList m_archiveNames;
 };

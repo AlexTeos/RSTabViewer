@@ -52,6 +52,12 @@ bool RS::PSARCArchive::inflateEntry(uint32_t&            entry,
                         stream.write(compressedData, zBlocks[zIndex]);
                 }
                 zIndex++;
+                if (zIndex >= zBlocks.size())
+                {
+                    // TODO: handle somehow
+                    qWarning() << "Error during uncompression [" << fileName << "]";
+                    break;
+                }
             } while (stream.pos() < entries[entry].m_length);
         }
 

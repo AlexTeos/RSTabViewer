@@ -53,8 +53,7 @@ bool RS::SNG::decrypt(const QString& sngFileName)
                 decryptedSng.remove(0, 4);
                 uncompress(uncompressedData, uncompressedSize, decryptedSng);
 
-                QFile sngDecryptedFile(sngFile.fileName().insert(
-                    sngFile.fileName().length() - QFileInfo(sngFile).suffix().length() - 1, "_uncompressed"));
+                QFile sngDecryptedFile(sngFile.fileName() + "uc");
 
                 if (sngDecryptedFile.open(QIODevice::WriteOnly))
                 {
