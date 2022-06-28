@@ -4,6 +4,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include <ww2ogg.h>
+
+#include "../src/RS/3rdparty/revorb/revorb.h"
 #include "3rdparty/Rijndael/Rijndael.h"
 #include "common.h"
 
@@ -185,33 +188,9 @@ bool RS::PSARCArchive::unarchive(const QString& archiveName, const QString& unpa
 
 RS::PSARC::PSARC(const QString psarcDir) : m_filesDir(psarcDir)
 {
-    QDir manifestDir(m_filesDir.path() + "\\manifests");
-    manifestDir.setPath(manifestDir.path() + "\\" + manifestDir.entryList(QStringList() << "songs_*", QDir::Dirs)[0]);
-    QStringList manifestsFileNames = manifestDir.entryList(QStringList() << "*.json", QDir::Files);
-    QFile       manifest(manifestDir.path() + "\\" + manifestsFileNames[0]);
-    if (manifest.open(QIODevice::ReadOnly))
-    {
-        QByteArray arr = manifest.readAll();
-
-        QJsonDocument replyJsonDocument(QJsonDocument::fromJson(arr));
-
-        if (replyJsonDocument.isObject())
-        {
-            QJsonObject replyJsonObject = replyJsonDocument.object();
-            if (replyJsonObject.contains("Entries") && replyJsonObject["Entries"].isObject())
-            {
-                QJsonObject entryObject = replyJsonObject["Entries"].toObject();
-                if (entryObject.keys().size() > 0)
-                {
-                    entryObject = entryObject[entryObject.keys()[0]].toObject();
-                    if (entryObject.contains("Attributes") && entryObject["Attributes"].isObject())
-                    {
-                        m_songAtributes = entryObject["Attributes"].toObject();
-                    }
-                }
-            }
-        }
-    }
+    initializeAtributes();
+    initializeSngs();
+    initializeTracks();
 }
 
 QString RS::PSARC::songName() const
@@ -252,4 +231,121 @@ int RS::PSARC::songYear() const
         return m_songAtributes["SongYear"].toInt();
 
     return 0;
+}
+
+QString RS::PSARC::track() const
+{
+    return m_tracks.second;
+}
+
+QString RS::PSARC::trackTeaser() const
+{
+    return m_tracks.first;
+}
+
+bool RS::PSARC::initializeAtributes()
+{
+    QDir manifestDir(m_filesDir.path() + "\\manifests");
+    manifestDir.setPath(manifestDir.path() + "\\" + manifestDir.entryList(QStringList() << "songs_*", QDir::Dirs)[0]);
+    QStringList manifestsFileNames = manifestDir.entryList(QStringList() << "*.json", QDir::Files);
+    QFile       manifest(manifestDir.path() + "\\" + manifestsFileNames[0]);
+    if (manifest.open(QIODevice::ReadOnly))
+    {
+        QByteArray arr = manifest.readAll();
+
+        QJsonDocument replyJsonDocument(QJsonDocument::fromJson(arr));
+
+        if (replyJsonDocument.isObject())
+        {
+            QJsonObject replyJsonObject = replyJsonDocument.object();
+            if (replyJsonObject.contains("Entries") && replyJsonObject["Entries"].isObject())
+            {
+                QJsonObject entryObject = replyJsonObject["Entries"].toObject();
+                if (entryObject.keys().size() > 0)
+                {
+                    entryObject = entryObject[entryObject.keys()[0]].toObject();
+                    if (entryObject.contains("Attributes") && entryObject["Attributes"].isObject())
+                    {
+                        m_songAtributes = entryObject["Attributes"].toObject();
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+bool RS::PSARC::initializeSngs()
+{
+    QDir        sngsDir(m_filesDir.path() + "\\songs\\bin\\generic");
+    QStringList sngNames = sngsDir.entryList(QStringList() << "*.sng", QDir::Files);
+    for (QString sngName : sngNames)
+    {
+        RS::SNG sng;
+        if (not sngsDir.exists(sngName + "uc"))
+        {
+            // TODO: do only on demand
+            if (not sng.decrypt(sngsDir.path() + "\\" + sngName)) continue;
+        }
+
+        SngType sngType;
+        if (sngName.contains("lead", Qt::CaseInsensitive))
+            sngType = SngType::Lead;
+        else if (sngName.contains("bass", Qt::CaseInsensitive))
+            sngType = SngType::Bass;
+        else if (sngName.contains("rhythm", Qt::CaseInsensitive))
+            sngType = SngType::Rhythm;
+        else
+            continue;
+
+        if (sng.parse(sngsDir.path() + "\\" + sngName + "uc"))
+        {
+            m_sngs.insert(sngType, sng);
+        }
+    }
+
+    return m_sngs.size();
+}
+
+bool RS::PSARC::initializeTracks()
+{
+    QVector<QFileInfo> tracks;
+    QDir               tracksDir(m_filesDir.path() + "\\audio\\windows");
+    QStringList        trackNames = tracksDir.entryList(QStringList() << "*.wem", QDir::Files);
+    for (QString trackName : trackNames)
+    {
+        QString filePath = tracksDir.path() + "\\" + trackName;
+        trackName.replace(QStringLiteral(".wem"), QStringLiteral(".ogg"), Qt::CaseInsensitive);
+        QString outFilePath = tracksDir.path() + "\\" + trackName;
+
+        if (not tracksDir.exists(trackName))
+        {
+            // TODO: do only on demand
+            // TODO: remove wem
+            if (ww2ogg(filePath.toStdString(), outFilePath.toStdString()))
+                if (revorb(outFilePath.toStdString())) tracks.append(QFileInfo(outFilePath));
+        }
+        else
+        {
+            tracks.append(QFileInfo(outFilePath));
+        }
+    }
+
+    if (not tracks.size()) return false;
+
+    if (tracks.size() > 1)
+    {
+        sort(tracks.begin(), tracks.end(), [](const QFileInfo& a, const QFileInfo& b) { return a.size() < b.size(); });
+        m_tracks.first  = tracks[0].filePath();
+        m_tracks.second = tracks[1].filePath();
+    }
+    else
+    {
+        m_tracks.first  = tracks[0].filePath();
+        m_tracks.second = tracks[0].filePath();
+    }
+
+    return true;
 }

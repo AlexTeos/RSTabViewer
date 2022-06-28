@@ -3,7 +3,6 @@
 #include <QFileInfo>
 
 #include "3rdparty/Rijndael/Rijndael.h"
-#include "psarc.h"
 
 static const unsigned char SngKeyPC[32] = {0xCB, 0x64, 0x8D, 0xF3, 0xD1, 0x2A, 0x16, 0xBF, 0x71, 0x70, 0x14,
                                            0x14, 0xE6, 0x96, 0x19, 0xEC, 0x17, 0x1C, 0xCA, 0x5D, 0x2A, 0x14,
@@ -11,6 +10,7 @@ static const unsigned char SngKeyPC[32] = {0xCB, 0x64, 0x8D, 0xF3, 0xD1, 0x2A, 0
 
 bool RS::SNG::decrypt(const QString& sngFileName)
 {
+    // TODO: Add filter for file types
     QFile sngFile(sngFileName);
     if (sngFile.open(QIODevice::ReadOnly))
     {

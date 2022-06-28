@@ -17,6 +17,8 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
 
     switch (role)
     {
+        case StartTimeRole:
+            return m_notes[index.row()].m_time;
         case NameRole:
             return isChord ? QVariant(m_sng.m_chords[m_notes[index.row()].m_chord].m_name) : "";
         case DurationRole:
@@ -47,11 +49,20 @@ Qt::ItemFlags Tablature::flags(const QModelIndex& index) const
 QHash<int, QByteArray> Tablature::roleNames() const
 {
     QHash<int, QByteArray> names;
-    names[NameRole]     = "name";
-    names[DurationRole] = "duration";
-    names[FretsRole]    = "frets";
+    names[NameRole]      = "name";
+    names[DurationRole]  = "duration";
+    names[FretsRole]     = "frets";
+    names[StartTimeRole] = "startTime";
 
     return names;
+}
+
+bool Tablature::setSNG(const RS::SNG& sng)
+{
+    beginResetModel();
+    m_sng = sng;
+    collectAllNotes();
+    endResetModel();
 }
 
 bool Tablature::collectAllNotes()

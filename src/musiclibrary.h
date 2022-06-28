@@ -1,10 +1,11 @@
-#ifndef DICTIONARYMODEL_H
-#define DICTIONARYMODEL_H
+#ifndef MUSICLIBRARYMODEL_H
+#define MUSICLIBRARYMODEL_H
 
 #include <QAbstractListModel>
 #include <QDir>
 
 #include "RS/psarc.h"
+#include "tablature.h"
 
 class MusicLibrary : public QAbstractListModel
 {
@@ -18,19 +19,27 @@ public:
     Qt::ItemFlags                  flags(const QModelIndex& index) const override;
     virtual QHash<int, QByteArray> roleNames() const override;
 
-    enum DictionaryRoles
+    enum MusicLibraryRoles
     {
         SongNameRole = Qt::UserRole + 1,
         ArtistNameRole,
         AlbumNameRole,
         DurationRole,
         SongYearRole,
+        TablatureRole,
+        TrackRole,
+        TrackTeaserRole
     };
 
-private:
+    Tablature* tablature();
+public slots:
+    void setTablature(int index, int type);
+
+public: //private:
     void collectArchives(const QDir& dir);
 
     QVector<RS::PSARC> m_psarcs;
+    Tablature          m_tablature;
 };
 
-#endif // DICTIONARYMODEL_H
+#endif // MUSICLIBRARYMODEL_H

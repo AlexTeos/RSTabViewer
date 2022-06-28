@@ -5,13 +5,19 @@ import QtQuick.Layouts 1.15
 import QtMultimedia 5.15
 
 Page {
-    property real musicPositionInPixels: tablatureView.contentX
-    property real pixelsPerSecond: 200
+    property bool musicPlayed: false
+    property real pixelsPerSecond: 100
 
-    function recalculatePositionAfterMovement(){
-        musicPositionInPixels = tablatureView.contentX
-        playMusic.seek((musicPositionInPixels + (applicationWindow.width/4 + cursor.width)) * 1000 / pixelsPerSecond)
+    function recalculateMusicPositionAfterMovement(){
+        playMusic.seek((tablatureView.contentX - tablatureView.originX) * 1000 / pixelsPerSecond)
     }
+
+    function recalculateViewPositionAfterScale(){
+        tablatureView.contentX = playMusic.position * pixelsPerSecond / 1000 + tablatureView.originX
+    }
+
+    property int maxScale:      400
+    property int minScale:      100
 
     Timer {
         id: flickTimer
@@ -19,15 +25,48 @@ Page {
         running: false
         repeat: true
         onTriggered: {
-            musicPositionInPixels += pixelsPerSecond * interval / 1000
-            tablatureView.contentX = musicPositionInPixels
+            tablatureView.contentX += pixelsPerSecond * interval / 1000
         }
     }
 
-    Audio {
-       id: playMusic
-       autoLoad: true
-       source: "123732889.ogg"
+    Timer {
+        id: recalculateViewPositionAfterScaleTimer
+        interval: 10
+        running: false
+        repeat: false
+        onTriggered: {
+            recalculateViewPositionAfterScale()
+        }
+    }
+
+    Button{
+        id:plusButton
+        anchors.right: minusButton.left
+        anchors.top: parent.top
+        width: 50
+        height: 50
+        text: '+'
+        enabled: pixelsPerSecond < maxScale
+
+        onClicked: {
+            pixelsPerSecond *= 2
+            recalculateViewPositionAfterScaleTimer.start()
+        }
+    }
+
+    Button{
+        id:minusButton
+        anchors.right: parent.right
+        anchors.top: parent.top
+        width: 50
+        height: 50
+        text: '-'
+        enabled: pixelsPerSecond > minScale
+
+        onClicked: {
+            pixelsPerSecond /= 2
+            recalculateViewPositionAfterScaleTimer.start()
+        }
     }
 
     Button{
@@ -45,15 +84,31 @@ Page {
     }
 
     Button{
+        id:pauseButton
+        anchors.left: startButton.right
+        anchors.top: parent.top
+        width: 50
+        height: 50
+        text: 'pause'
+
+        onClicked: {
+            playMusic.pause()
+            flickTimer.stop()
+        }
+    }
+
+    Button{
         id:stopButton
-        anchors.right: parent.right
+        anchors.left: pauseButton.right
         anchors.top: parent.top
         width: 50
         height: 50
         text: 'stop'
 
         onClicked: {
-            playMusic.pause()
+            tablatureView.contentX = -(applicationWindow.width/4 + cursor.width)
+            mainSwipeView.setCurrentIndex(kLibraryPage)
+            playMusic.stop()
             flickTimer.stop()
         }
     }
@@ -93,157 +148,37 @@ Page {
                         opacity: name !== ""
                     }
 
-                    Rectangle{
-                        height: parent.height/7
-                        width: height
-                        radius: width/2
-                        color: "white"
-                        Text {
-                            text: frets[0]
-                            anchors.centerIn: parent
-                            font.pixelSize: parent.height
-                            color: "black"
-                            }
-                        opacity: frets[0] !== 0xFF ? 100 : 0
-                    }
-
-                    Rectangle{
-                        height: parent.height/7
-                        width: height
-                        radius: width/2
-                        color: "white"
-                        Text {
-                            text: frets[1]
-                            anchors.centerIn: parent
-                            font.pixelSize: parent.height
-                            color: "black"
-                            }
-                        opacity: frets[1] !== 0xFF ? 100 : 0
-                    }
-
-                    Rectangle{
-                        height: parent.height/7
-                        width: height
-                        radius: width/2
-                        color: "white"
-                        Text {
-                            text: frets[2]
-                            anchors.centerIn: parent
-                            font.pixelSize: parent.height
-                            color: "black"
-                            }
-                        opacity: frets[2] !== 0xFF ? 100 : 0
-                    }
-
-                    Rectangle{
-                        height: parent.height/7
-                        width: height
-                        radius: width/2
-                        color: "white"
-                        Text {
-                            text: frets[3]
-                            anchors.centerIn: parent
-                            font.pixelSize: parent.height
-                            color: "black"
-                            }
-                        opacity: frets[3] !== 0xFF ? 100 : 0
-                    }
-
-                    Rectangle{
-                        height: parent.height/7
-                        width: height
-                        radius: width/2
-                        color: "white"
-                        Text {
-                            text: frets[4]
-                            anchors.centerIn: parent
-                            font.pixelSize: parent.height
-                            color: "black"
-                            }
-                        opacity: frets[4] !== 0xFF ? 100 : 0
-                    }
-
-                    Rectangle{
-                        height: parent.height/7
-                        width: height
-                        radius: width/2
-                        color: "white"
-                        Text {
-                            text: frets[5]
-                            anchors.centerIn: parent
-                            font.pixelSize: parent.height
-                            color: "black"
-                            }
-                        opacity: frets[5] !== 0xFF ? 100 : 0
+                    Repeater {
+                       model: 6
+                       delegate: Rectangle{
+                           height: parent.height/7
+                           width: height
+                           radius: width/2
+                           color: "white"
+                           Text {
+                               text: frets[index]
+                               anchors.centerIn: parent
+                               font.pixelSize: parent.height
+                               color: "black"
+                               }
+                           opacity: frets[index] !== 0xFF ? 100 : 0
+                       }
                     }
                 }
             }
         }
 
-        Rectangle {
-            id: fret0Cursor
-            anchors.right: parent.right
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.topMargin: parent.height/7 * 1.5
-            height: 5
-            color: "black"
-            opacity: 0.5
-        }
-
-        Rectangle {
-            id: fret1Cursor
-            anchors.right: parent.right
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.topMargin: parent.height/7 * 2.5
-            height: 5
-            color: "black"
-            opacity: 0.5
-        }
-
-        Rectangle {
-            id: fret2Cursor
-            anchors.right: parent.right
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.topMargin: parent.height/7 * 3.5
-            height: 5
-            color: "black"
-            opacity: 0.5
-        }
-
-        Rectangle {
-            id: fret3Cursor
-            anchors.right: parent.right
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.topMargin: parent.height/7 * 4.5
-            height: 5
-            color: "black"
-            opacity: 0.5
-        }
-
-        Rectangle {
-            id: fret4Cursor
-            anchors.right: parent.right
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.topMargin: parent.height/7 * 5.5
-            height: 5
-            color: "black"
-            opacity: 0.5
-        }
-
-        Rectangle {
-            id: fret5Cursor
-            anchors.right: parent.right
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.topMargin: parent.height/7 * 6.5
-            height: 5
-            color: "black"
-            opacity: 0.5
+        Repeater {
+           model: 6
+           delegate: Rectangle {
+                   anchors.right: parent.right
+                   anchors.left: parent.left
+                   anchors.top: parent.top
+                   anchors.topMargin: parent.height/7 * (1.5 + index)
+                   height: 5
+                   color: "black"
+                   opacity: 0.5
+            }
         }
 
         ListView {
@@ -252,21 +187,28 @@ Page {
             model: tablature
             delegate: noteDelegate
             orientation: ListView.Horizontal
-            cacheBuffer:1000
+            cacheBuffer: 1000000
+            clip: true
 
             onMovementStarted:{
-                stopButton.clicked()
+                musicPlayed |= (playMusic.playbackState === Audio.PlayingState)
+                pauseButton.clicked()
             }
             onFlickStarted:{
-                stopButton.clicked()
+                musicPlayed |= (playMusic.playbackState === Audio.PlayingState)
+                pauseButton.clicked()
             }
             onMovementEnded:{
-                recalculatePositionAfterMovement()
-                startButton.clicked()
+                recalculateMusicPositionAfterMovement()
+                if(musicPlayed)
+                    startButton.clicked()
+                musicPlayed = false
             }
             onFlickEnded:{
-                recalculatePositionAfterMovement()
-                startButton.clicked()
+                recalculateMusicPositionAfterMovement()
+                if(musicPlayed)
+                    startButton.clicked()
+                musicPlayed = false
             }
 
             header:

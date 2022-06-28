@@ -11,16 +11,24 @@ ApplicationWindow {
     title: qsTr("Booktionary")
     id: applicationWindow
 
+    property int kLibraryPage         : 0
+    property int kSongPage            : 1
+
     Component.onCompleted: {
         AppSettings.wWidth = Qt.binding(function() {return width})
         AppSettings.wHeight = Qt.binding(function() {return height})
     }
 
+    Audio {
+       id: playMusic
+       autoLoad: true
+    }
+
     SwipeView {
-          id: swipeView
+          id: mainSwipeView
           anchors.fill: parent
 
-          interactive: true
+          interactive: false
 
           Library{
               id: libraryPage

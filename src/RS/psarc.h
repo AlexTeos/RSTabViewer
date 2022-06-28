@@ -7,6 +7,8 @@
 #include <QString>
 #include <QVector>
 
+#include "sng.h"
+
 namespace RS
 {
 class PSARCArchive
@@ -36,13 +38,25 @@ private:
                              QVector<PSARCEntry>& entries);
 };
 
+enum SngType
+{
+    Bass,
+    Lead,
+    Rhythm,
+    Vocals,
+    Combo,
+    Showlights
+};
+
 class PSARC
 {
     Q_PROPERTY(QString songName READ songName)
     Q_PROPERTY(QString artistName READ artistName)
-    Q_PROPERTY(int albumName READ albumName)
+    Q_PROPERTY(QString albumName READ albumName)
     Q_PROPERTY(int duration READ duration)
     Q_PROPERTY(int songYear READ songYear)
+    Q_PROPERTY(QString songYear READ songYear)
+    Q_PROPERTY(QString songYear READ songYear)
 public:
     PSARC(const QString psarcDir);
     QString songName() const;
@@ -50,10 +64,18 @@ public:
     QString albumName() const;
     int     duration() const;
     int     songYear() const;
+    QString track() const;
+    QString trackTeaser() const;
 
-private:
-    QJsonObject m_songAtributes;
-    QDir        m_filesDir;
+    //private:
+    bool initializeAtributes();
+    bool initializeSngs();
+    bool initializeTracks();
+
+    QJsonObject             m_songAtributes;
+    QDir                    m_filesDir;
+    QMap<SngType, RS::SNG>  m_sngs;
+    QPair<QString, QString> m_tracks;
 };
 }
 

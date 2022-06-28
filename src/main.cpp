@@ -5,7 +5,6 @@
 #include <QQmlContext>
 
 #include "musiclibrary.h"
-#include "tablature.h"
 
 int main(int argc, char* argv[])
 {
@@ -15,6 +14,7 @@ int main(int argc, char* argv[])
 
     MusicLibrary library(QDir(""));
     engine.rootContext()->setContextProperty("songs", &library);
+    engine.rootContext()->setContextProperty("tablature", library.tablature());
 
     engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
 

@@ -1,5 +1,5 @@
-#ifndef DICTIONARYMODEL_H
-#define DICTIONARYMODEL_H
+#ifndef TABLATUREYMODEL_H
+#define TABLATUREYMODEL_H
 
 #include <QAbstractListModel>
 
@@ -21,8 +21,11 @@ public:
     {
         NameRole = Qt::UserRole + 1,
         DurationRole,
-        FretsRole
+        FretsRole,
+        StartTimeRole
     };
+
+    bool setSNG(const RS::SNG& sng);
 
     //private:
     bool collectAllNotes();
@@ -31,4 +34,4 @@ public:
     QVector<RS::Note> m_notes;
 };
 
-#endif // DICTIONARYMODEL_H
+#endif // TABLATUREYMODEL_H

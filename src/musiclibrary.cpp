@@ -28,6 +28,10 @@ QVariant MusicLibrary::data(const QModelIndex& index, int role) const
             return m_psarcs[index.row()].duration();
         case SongYearRole:
             return m_psarcs[index.row()].songYear();
+        case TrackRole:
+            return m_psarcs[index.row()].track();
+        case TrackTeaserRole:
+            return m_psarcs[index.row()].trackTeaser();
     }
 
     return QVariant();
@@ -42,11 +46,14 @@ Qt::ItemFlags MusicLibrary::flags(const QModelIndex& index) const
 QHash<int, QByteArray> MusicLibrary::roleNames() const
 {
     QHash<int, QByteArray> names;
-    names[SongNameRole]   = "songName";
-    names[ArtistNameRole] = "artistName";
-    names[AlbumNameRole]  = "albumName";
-    names[DurationRole]   = "duration";
-    names[SongYearRole]   = "songYear";
+    names[SongNameRole]    = "songName";
+    names[ArtistNameRole]  = "artistName";
+    names[AlbumNameRole]   = "albumName";
+    names[DurationRole]    = "duration";
+    names[SongYearRole]    = "songYear";
+    names[TablatureRole]   = "tablature";
+    names[TrackRole]       = "track";
+    names[TrackTeaserRole] = "trackTeaser";
 
     return names;
 }
@@ -60,4 +67,14 @@ void MusicLibrary::collectArchives(const QDir& dir)
             RS::PSARCArchive::unarchive(archiveName, QFileInfo(archiveName).completeBaseName());
         m_psarcs.append(QFileInfo(archiveName).completeBaseName());
     }
+}
+
+Tablature* MusicLibrary::tablature()
+{
+    return &m_tablature;
+}
+
+void MusicLibrary::setTablature(int index, int type)
+{
+    m_tablature.setSNG(m_psarcs[index].m_sngs[RS::SngType::Lead]);
 }

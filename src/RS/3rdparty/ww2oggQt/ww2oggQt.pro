@@ -9,9 +9,9 @@ CONFIG += c++11
 
 
 SOURCES += \
+    ww2ogg.cpp \
     ww2ogg/src/codebook.cpp \
     ww2ogg/src/crc.c \
-    ww2ogg/src/ww2ogg.cpp \
     ww2ogg/src/wwriff.cpp
 
 HEADERS += \

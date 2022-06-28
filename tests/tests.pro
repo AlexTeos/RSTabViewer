@@ -9,6 +9,7 @@ TEMPLATE = app
 SOURCES += \
     ../src/RS/3rdparty/Rijndael/Rijndael.cpp \
     ../src/RS/3rdparty/revorb/revorb.cpp \
+    ../src/RS/3rdparty/ww2oggQt/ww2ogg.cpp \
     ../src/RS/arrangement.cpp \
     ../src/RS/chord.cpp \
     ../src/RS/common.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
 HEADERS += \
     ../src/RS/3rdparty/Rijndael/Rijndael.h \
     ../src/RS/3rdparty/revorb/revorb.h \
+    ../src/RS/3rdparty/ww2oggQt/ww2ogg.h \
     ../src/RS/arrangement.h \
     ../src/RS/chord.h \
     ../src/RS/common.h \
