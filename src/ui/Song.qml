@@ -8,29 +8,30 @@ Page {
     property bool musicPlayed: false
     property real pixelsPerSecond: 100
 
-    function recalculateMusicPositionAfterMovement(){
-        playMusic.seek((tablatureView.contentX - tablatureView.originX) * 1000 / pixelsPerSecond)
+    function recalculateMusicPositionAfterMovement() {
+        playMusic.seek(
+                    (tablatureView.contentX - tablatureView.originX) * 1000 / pixelsPerSecond)
     }
 
-    function recalculateViewPositionAfterScale(){
+    function recalculateViewPositionAfterScale() {
         tablatureView.contentX = playMusic.position * pixelsPerSecond / 1000 + tablatureView.originX
     }
 
-    function startPlay(){
+    function startPlay() {
         playMusic.play()
         flickTimer.start()
     }
 
-    function pausePlay(){
+    function pausePlay() {
         playMusic.pause()
         flickTimer.stop()
     }
 
-    property int maxScale:      400
-    property int minScale:      25
-    property var stringColors: ["red", "yellow", "blue", "orange", "green", "purple"];
+    property int maxScale: 400
+    property int minScale: 25
+    property var stringColors: ["red", "yellow", "blue", "orange", "green", "purple"]
 
-    Rectangle{
+    Rectangle {
         anchors.fill: parent
         color: AppSettings.backgroundColor
     }
@@ -41,7 +42,7 @@ Page {
         running: false
         repeat: true
         onTriggered: {
-            if(tablatureView.contentX - tablatureView.originX >= songDurationT * pixelsPerSecond)
+            if (tablatureView.contentX - tablatureView.originX >= songDurationT * pixelsPerSecond)
                 stop()
             else
                 tablatureView.contentX += pixelsPerSecond * interval / 1000
@@ -64,15 +65,24 @@ Page {
         anchors.top: parent.top
         anchors.left: parent.left
 
-        Rectangle{
+        Rectangle {
             id: songHeader
             anchors.fill: parent
             color: "grey"
 
             gradient: Gradient {
-                GradientStop { position: 0.0; color: "transparent" }
-                GradientStop { position: 0.5; color: Qt.lighter(songHeader.color, 0.75) }
-                GradientStop { position: 1.0; color: "transparent" }
+                GradientStop {
+                    position: 0.0
+                    color: "transparent"
+                }
+                GradientStop {
+                    position: 0.5
+                    color: Qt.lighter(songHeader.color, 0.75)
+                }
+                GradientStop {
+                    position: 1.0
+                    color: "transparent"
+                }
             }
         }
 
@@ -88,14 +98,14 @@ Page {
             border.width: 1
             border.color: "black"
 
-            Image{
+            Image {
                 anchors.centerIn: parent
                 width: parent.width / 2
                 height: width
                 source: "qrc:/icons/plus.png"
             }
 
-            MouseArea{
+            MouseArea {
                 anchors.fill: parent
                 onClicked: {
                     pixelsPerSecond *= 2
@@ -112,6 +122,7 @@ Page {
                 running: true
                 onTriggered: {
                     parent.opacity = 1
+                    parent.color = "transparent"
                 }
             }
         }
@@ -128,7 +139,7 @@ Page {
             border.width: 1
             border.color: "black"
 
-            Image{
+            Image {
                 anchors.centerIn: parent
                 width: parent.width / 2
                 height: width
@@ -136,7 +147,7 @@ Page {
                 source: "qrc:/icons/minus.png"
             }
 
-            MouseArea{
+            MouseArea {
                 anchors.fill: parent
 
                 onClicked: {
@@ -170,7 +181,7 @@ Page {
             border.width: 1
             border.color: "black"
 
-            Image{
+            Image {
                 anchors.centerIn: parent
                 width: parent.width / 2
                 height: width
@@ -178,11 +189,11 @@ Page {
                 source: "qrc:/icons/stop.png"
             }
 
-            MouseArea{
+            MouseArea {
                 anchors.fill: parent
 
                 onClicked: {
-                    tablatureView.contentX = -(applicationWindow.width/4 + cursor.width)
+                    tablatureView.contentX = -(applicationWindow.width / 4 + cursor.width)
                     mainSwipeView.setCurrentIndex(kLibraryPage)
                     playMusic.stop()
                     flickTimer.stop()
@@ -215,7 +226,7 @@ Page {
             border.color: "black"
             visible: playMusic.playbackState !== Audio.PlayingState
 
-            Image{
+            Image {
                 anchors.centerIn: parent
                 width: parent.width / 2
                 height: width
@@ -223,7 +234,7 @@ Page {
                 source: "qrc:/icons/play.png"
             }
 
-            MouseArea{
+            MouseArea {
                 id: playButtonArea
                 anchors.fill: parent
 
@@ -258,7 +269,7 @@ Page {
             border.color: "black"
             visible: playMusic.playbackState === Audio.PlayingState
 
-            Image{
+            Image {
                 anchors.centerIn: parent
                 width: parent.width / 2
                 height: width
@@ -266,7 +277,7 @@ Page {
                 source: "qrc:/icons/pause.png"
             }
 
-            MouseArea{
+            MouseArea {
                 id: pauseButtonArea
                 anchors.fill: parent
 
@@ -292,7 +303,9 @@ Page {
         Text {
             anchors.top: parent.top
             anchors.centerIn: parent
-            text: secsToMinAndSecs((tablatureView.contentX - tablatureView.originX) / pixelsPerSecond) + "/" + secsToMinAndSecs(songDurationT)
+            text: secsToMinAndSecs(
+                      (tablatureView.contentX - tablatureView.originX)
+                      / pixelsPerSecond) + "/" + secsToMinAndSecs(songDurationT)
             color: "white"
             font.pixelSize: parent.height / 1.5
         }
@@ -304,15 +317,24 @@ Page {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
 
-        Rectangle{
+        Rectangle {
             id: songFooter
             anchors.fill: parent
             color: "grey"
 
             gradient: Gradient {
-                GradientStop { position: 0.0; color: "transparent" }
-                GradientStop { position: 0.5; color: Qt.lighter(songHeader.color, 0.75) }
-                GradientStop { position: 1.0; color: "transparent" }
+                GradientStop {
+                    position: 0.0
+                    color: "transparent"
+                }
+                GradientStop {
+                    position: 0.5
+                    color: Qt.lighter(songHeader.color, 0.75)
+                }
+                GradientStop {
+                    position: 1.0
+                    color: "transparent"
+                }
             }
         }
 
@@ -335,12 +357,12 @@ Page {
             Text {
                 text: albumNameT
                 color: "white"
-                font.pixelSize: parent.height/3
+                font.pixelSize: parent.height / 3
             }
             Text {
                 text: songYearT
                 color: "white"
-                font.pixelSize: parent.height/3
+                font.pixelSize: parent.height / 3
             }
         }
 
@@ -355,14 +377,14 @@ Page {
 
                 text: songNameT
                 color: "white"
-                font.pixelSize: parent.height/3
+                font.pixelSize: parent.height / 3
             }
             Text {
                 anchors.right: parent.right
 
                 text: artistNameT
                 color: "white"
-                font.pixelSize: parent.height/3
+                font.pixelSize: parent.height / 3
             }
         }
     }
@@ -371,9 +393,9 @@ Page {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        height: applicationWindow.height/2
+        height: applicationWindow.height / 2
 
-        Rectangle{
+        Rectangle {
             id: decke
             anchors.left: parent.left
             anchors.right: parent.right
@@ -382,11 +404,26 @@ Page {
 
             color: "#333333"
             gradient: Gradient {
-                GradientStop { position: 0.00; color: "transparent"}
-                GradientStop { position: 0.05; color: decke.color}
-                GradientStop { position: 0.50; color: Qt.lighter(decke.color, 2)}
-                GradientStop { position: 0.95; color: decke.color}
-                GradientStop { position: 1.00; color: "transparent"}
+                GradientStop {
+                    position: 0.00
+                    color: "transparent"
+                }
+                GradientStop {
+                    position: 0.05
+                    color: decke.color
+                }
+                GradientStop {
+                    position: 0.50
+                    color: Qt.lighter(decke.color, 2)
+                }
+                GradientStop {
+                    position: 0.95
+                    color: decke.color
+                }
+                GradientStop {
+                    position: 1.00
+                    color: "transparent"
+                }
             }
         }
 
@@ -394,86 +431,113 @@ Page {
             id: noteDelegate
             Item {
                 width: duration * pixelsPerSecond
-                height: applicationWindow.height/2
+                height: applicationWindow.height / 2
                 z: tablatureView.count - index
                 Column {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter: parent.left
 
-                    Rectangle{
+                    Rectangle {
                         id: chord
-                        height: parent.height/7
+                        height: parent.height / 7
                         width: height
-                        radius: width/5
+                        radius: width / 5
                         color: "lightgrey"
                         Text {
                             text: name
                             anchors.centerIn: parent
-                            font.pixelSize: parent.height/2
+                            font.pixelSize: parent.height / 2
                             color: "black"
                         }
                         opacity: name !== ""
 
                         gradient: Gradient {
-                            GradientStop { position: 0.0; color: chord.color }
-                            GradientStop { position: 0.5; color: Qt.lighter(chord.color, 1.9) }
-                            GradientStop { position: 1.0; color: chord.color }
+                            GradientStop {
+                                position: 0.0
+                                color: chord.color
+                            }
+                            GradientStop {
+                                position: 0.5
+                                color: Qt.lighter(chord.color, 1.9)
+                            }
+                            GradientStop {
+                                position: 1.0
+                                color: chord.color
+                            }
                         }
                     }
 
                     Repeater {
-                       model: 6
-                       delegate: Rectangle{
-                           id: fret
-                           height: parent.height/7
-                           width: height
-                           radius: width/5
-                           color: stringColors[index]
+                        model: 6
+                        delegate: Rectangle {
+                            id: fret
+                            height: parent.height / 7
+                            width: height
+                            radius: width / 5
+                            color: stringColors[index]
 
-                           gradient: Gradient {
-                               GradientStop { position: 0.0; color: fret.color }
-                               GradientStop { position: 0.5; color: Qt.lighter(fret.color, 1.9) }
-                               GradientStop { position: 1.0; color: fret.color }
-                           }
+                            gradient: Gradient {
+                                GradientStop {
+                                    position: 0.0
+                                    color: fret.color
+                                }
+                                GradientStop {
+                                    position: 0.5
+                                    color: Qt.lighter(fret.color, 1.9)
+                                }
+                                GradientStop {
+                                    position: 1.0
+                                    color: fret.color
+                                }
+                            }
 
-                           Rectangle{
-                               anchors.fill: parent
-                               anchors.margins: 2
-                               radius: width/5
-                               color: "black"
-                               opacity: 0.5
-                           }
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: 2
+                                radius: width / 5
+                                color: "black"
+                                opacity: 0.5
+                            }
 
-                           Text {
-                               text: frets[index]
-                               anchors.centerIn: parent
-                               font.pixelSize: parent.height
-                               color: "white"
+                            Text {
+                                text: frets[index]
+                                anchors.centerIn: parent
+                                font.pixelSize: parent.height
+                                color: "white"
                             }
                             opacity: frets[index] !== 0xFF ? 100 : 0
-                       }
+                        }
                     }
                 }
             }
         }
 
         Repeater {
-           model: 6
-           delegate: Rectangle {
-                   id: string
-                   anchors.right: parent.right
-                   anchors.left: parent.left
-                   anchors.top: parent.top
-                   anchors.topMargin: parent.height/7 * (1.5 + index)
-                   height: 5
-                   color: "grey"
+            model: 6
+            delegate: Rectangle {
+                id: string
+                anchors.right: parent.right
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.topMargin: parent.height / 7 * (1.5 + index)
+                height: 5
+                color: "grey"
 
-                   gradient: Gradient {
-                       GradientStop { position: 0.0; color: string.color }
-                       GradientStop { position: 0.5; color: Qt.lighter(string.color, 1.75) }
-                       GradientStop { position: 1.0; color: string.color }
-                   }
+                gradient: Gradient {
+                    GradientStop {
+                        position: 0.0
+                        color: string.color
+                    }
+                    GradientStop {
+                        position: 0.5
+                        color: Qt.lighter(string.color, 1.75)
+                    }
+                    GradientStop {
+                        position: 1.0
+                        color: string.color
+                    }
+                }
             }
         }
 
@@ -488,34 +552,32 @@ Page {
             cacheBuffer: 1000000
             clip: true
 
-            onMovementStarted:{
+            onMovementStarted: {
                 musicPlayed |= (playMusic.playbackState === Audio.PlayingState)
                 pausePlay()
             }
-            onFlickStarted:{
+            onFlickStarted: {
                 musicPlayed |= (playMusic.playbackState === Audio.PlayingState)
                 pausePlay()
             }
-            onMovementEnded:{
+            onMovementEnded: {
                 recalculateMusicPositionAfterMovement()
-                if(musicPlayed)
+                if (musicPlayed)
                     startPlay()
                 musicPlayed = false
             }
-            onFlickEnded:{
+            onFlickEnded: {
                 recalculateMusicPositionAfterMovement()
-                if(musicPlayed)
+                if (musicPlayed)
                     startPlay()
                 musicPlayed = false
             }
 
-            header:
-                Rectangle {
-                width: applicationWindow.width/4 + cursor.width
+            header: Rectangle {
+                width: applicationWindow.width / 4 + cursor.width
             }
-            footer:
-                Rectangle {
-                width: applicationWindow.width - applicationWindow.width/4
+            footer: Rectangle {
+                width: applicationWindow.width - applicationWindow.width / 4
             }
         }
 
@@ -524,17 +586,29 @@ Page {
             height: parent.height * 1.3
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: parent.width/4
+            anchors.leftMargin: parent.width / 4
             width: 5
 
             color: "green"
             opacity: 0.75
 
             gradient: Gradient {
-                GradientStop { position: 0.00; color: "transparent"}
-                GradientStop { position: 0.05; color: cursor.color }
-                GradientStop { position: 0.95; color: cursor.color }
-                GradientStop { position: 1.00; color: "transparent"}
+                GradientStop {
+                    position: 0.00
+                    color: "transparent"
+                }
+                GradientStop {
+                    position: 0.05
+                    color: cursor.color
+                }
+                GradientStop {
+                    position: 0.95
+                    color: cursor.color
+                }
+                GradientStop {
+                    position: 1.00
+                    color: "transparent"
+                }
             }
         }
     }

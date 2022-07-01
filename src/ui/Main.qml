@@ -11,23 +11,27 @@ ApplicationWindow {
     title: qsTr("Booktionary")
     id: applicationWindow
 
-    property int kLibraryPage         : 0
-    property int kSongPage            : 1
+    property int kLibraryPage: 0
+    property int kSongPage: 1
 
-    function secsToMinAndSecs(totalSeconds){
-        var date = new Date(1970,0,1);
-        date.setSeconds(totalSeconds);
-        return date.toTimeString().replace(/.*(\d{2}:\d{2}).*/, "$1");
+    function secsToMinAndSecs(totalSeconds) {
+        var date = new Date(1970, 0, 1)
+        date.setSeconds(totalSeconds)
+        return date.toTimeString().replace(/.*(\d{2}:\d{2}).*/, "$1")
     }
 
     Component.onCompleted: {
-        AppSettings.wWidth = Qt.binding(function() {return width})
-        AppSettings.wHeight = Qt.binding(function() {return height})
+        AppSettings.wWidth = Qt.binding(function () {
+            return width
+        })
+        AppSettings.wHeight = Qt.binding(function () {
+            return height
+        })
     }
 
     Audio {
-       id: playMusic
-       autoLoad: true
+        id: playMusic
+        autoLoad: true
     }
 
     property int songDurationT: 0
@@ -38,17 +42,17 @@ ApplicationWindow {
     property string albumImageT: ""
 
     SwipeView {
-          id: mainSwipeView
-          anchors.fill: parent
+        id: mainSwipeView
+        anchors.fill: parent
 
-          interactive: false
+        interactive: false
 
-          Library{
-              id: libraryPage
-          }
+        Library {
+            id: libraryPage
+        }
 
-          Song{
-              id: songPage
-          }
-      }
+        Song {
+            id: songPage
+        }
+    }
 }

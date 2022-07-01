@@ -4,12 +4,13 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtMultimedia 5.15
 import Qt.labs.folderlistmodel 1.0
+
 Page {
-    property var sngTypes: ["Bass", "Lead", "Rhythm", "Vocals", "Combo", "Showlights"];
+    property var sngTypes: ["Bass", "Lead", "Rhythm", "Vocals", "Combo", "Showlights"]
 
     Component.onCompleted: libraryView.currentIndex = -1
 
-    Rectangle{
+    Rectangle {
         anchors.fill: parent
         color: AppSettings.backgroundColor
 
@@ -25,7 +26,7 @@ Page {
 
         Component {
             id: songDelegate
-            Item{
+            Item {
                 width: libraryView.cellWidth
                 height: libraryView.cellHeight
 
@@ -42,25 +43,36 @@ Page {
 
                         Column {
                             anchors.fill: parent
-                            Repeater{
+                            Repeater {
                                 model: instruments
                                 delegate: Item {
-                                    height:parent.height / 3
-                                    width:parent.width
+                                    height: parent.height / 3
+                                    width: parent.width
                                     Rectangle {
                                         id: instrumentButton
                                         anchors.fill: parent
 
-                                        color:"#111111"
+                                        color: "#111111"
                                         opacity: 0.75
 
                                         border.color: "black"
                                         border.width: 1
 
                                         gradient: Gradient {
-                                            GradientStop { position: 0.0; color: instrumentButton.color }
-                                            GradientStop { position: 0.5; color: Qt.lighter(instrumentButton.color, 3) }
-                                            GradientStop { position: 1.0; color: instrumentButton.color }
+                                            GradientStop {
+                                                position: 0.0
+                                                color: instrumentButton.color
+                                            }
+                                            GradientStop {
+                                                position: 0.5
+                                                color: Qt.lighter(
+                                                           instrumentButton.color,
+                                                           3)
+                                            }
+                                            GradientStop {
+                                                position: 1.0
+                                                color: instrumentButton.color
+                                            }
                                         }
                                     }
                                     Text {
@@ -72,10 +84,13 @@ Page {
                                     MouseArea {
                                         anchors.fill: parent
                                         onClicked: {
-                                            songs.setTablature(libraryView.currentIndex, instruments[index]);
+                                            songs.setTablature(
+                                                        libraryView.currentIndex,
+                                                        instruments[index])
                                             playMusic.stop()
                                             playMusic.source = "file:" + track
-                                            mainSwipeView.setCurrentIndex(kSongPage)
+                                            mainSwipeView.setCurrentIndex(
+                                                        kSongPage)
                                         }
                                     }
                                 }
@@ -86,8 +101,8 @@ Page {
 
                     Rectangle {
                         id: songTitle
-                        width:128
-                        height:32
+                        width: 128
+                        height: 32
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: "#333333"
                         Column {
@@ -118,9 +133,18 @@ Page {
                         }
 
                         gradient: Gradient {
-                            GradientStop { position: 0.0; color: songTitle.color }
-                            GradientStop { position: 0.5; color: Qt.lighter(songTitle.color, 1.5) }
-                            GradientStop { position: 1.0; color: songTitle.color }
+                            GradientStop {
+                                position: 0.0
+                                color: songTitle.color
+                            }
+                            GradientStop {
+                                position: 0.5
+                                color: Qt.lighter(songTitle.color, 1.5)
+                            }
+                            GradientStop {
+                                position: 1.0
+                                color: songTitle.color
+                            }
                         }
                     }
                 }
@@ -129,17 +153,17 @@ Page {
                     color: "black"
                     anchors.fill: parent
                     border.width: 5
-                    opacity: if(libraryView.currentIndex == -1)
+                    opacity: if (libraryView.currentIndex == -1)
                                  0
                              else
-                                (index !== libraryView.currentIndex) * 0.5
+                                 (index !== libraryView.currentIndex) * 0.5
                 }
 
                 MouseArea {
                     anchors.fill: parent
-                    z:-1
+                    z: -1
                     onClicked: {
-                        if(libraryView.currentIndex !== index){
+                        if (libraryView.currentIndex !== index) {
                             libraryView.currentIndex = index
                             playMusic.source = "file:" + trackTeaser
                             playMusic.play()
