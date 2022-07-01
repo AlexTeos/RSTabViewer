@@ -40,7 +40,7 @@ private:
 
 enum SngType
 {
-    Bass,
+    Bass = 0,
     Lead,
     Rhythm,
     Vocals,
@@ -57,25 +57,32 @@ class PSARC
     Q_PROPERTY(int songYear READ songYear)
     Q_PROPERTY(QString songYear READ songYear)
     Q_PROPERTY(QString songYear READ songYear)
+    Q_PROPERTY(QString albumImage READ albumImage)
+    Q_PROPERTY(QVariantList instruments READ instruments)
 public:
     PSARC(const QString psarcDir);
-    QString songName() const;
-    QString artistName() const;
-    QString albumName() const;
-    int     duration() const;
-    int     songYear() const;
-    QString track() const;
-    QString trackTeaser() const;
+    QString      songName() const;
+    QString      artistName() const;
+    QString      albumName() const;
+    int          duration() const;
+    int          songYear() const;
+    QString      track() const;
+    QString      trackTeaser() const;
+    QString      albumImage() const;
+    QVariantList instruments() const;
 
+    // TODO: uncomment
     //private:
     bool initializeAtributes();
     bool initializeSngs();
     bool initializeTracks();
+    bool initializeImage();
 
     QJsonObject             m_songAtributes;
     QDir                    m_filesDir;
     QMap<SngType, RS::SNG>  m_sngs;
     QPair<QString, QString> m_tracks;
+    QString                 m_albumImagePath;
 };
 }
 

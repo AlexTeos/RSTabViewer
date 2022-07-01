@@ -16,8 +16,24 @@ Page {
         tablatureView.contentX = playMusic.position * pixelsPerSecond / 1000 + tablatureView.originX
     }
 
+    function startPlay(){
+        playMusic.play()
+        flickTimer.start()
+    }
+
+    function pausePlay(){
+        playMusic.pause()
+        flickTimer.stop()
+    }
+
     property int maxScale:      400
-    property int minScale:      100
+    property int minScale:      25
+    property var stringColors: ["red", "yellow", "blue", "orange", "green", "purple"];
+
+    Rectangle{
+        anchors.fill: parent
+        color: AppSettings.backgroundColor
+    }
 
     Timer {
         id: flickTimer
@@ -25,7 +41,10 @@ Page {
         running: false
         repeat: true
         onTriggered: {
-            tablatureView.contentX += pixelsPerSecond * interval / 1000
+            if(tablatureView.contentX - tablatureView.originX >= songDurationT * pixelsPerSecond)
+                stop()
+            else
+                tablatureView.contentX += pixelsPerSecond * interval / 1000
         }
     }
 
@@ -39,129 +58,400 @@ Page {
         }
     }
 
-    Button{
-        id:plusButton
-        anchors.right: minusButton.left
-        anchors.top: parent.top
-        width: 50
+    Item {
         height: 50
-        text: '+'
-        enabled: pixelsPerSecond < maxScale
-
-        onClicked: {
-            pixelsPerSecond *= 2
-            recalculateViewPositionAfterScaleTimer.start()
-        }
-    }
-
-    Button{
-        id:minusButton
-        anchors.right: parent.right
+        width: parent.width
         anchors.top: parent.top
-        width: 50
-        height: 50
-        text: '-'
-        enabled: pixelsPerSecond > minScale
-
-        onClicked: {
-            pixelsPerSecond /= 2
-            recalculateViewPositionAfterScaleTimer.start()
-        }
-    }
-
-    Button{
-        id:startButton
         anchors.left: parent.left
-        anchors.top: parent.top
-        width: 50
-        height: 50
-        text: 'start'
 
-        onClicked: {
-            playMusic.play()
-            flickTimer.start()
+        Rectangle{
+            id: songHeader
+            anchors.fill: parent
+            color: "grey"
+
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "transparent" }
+                GradientStop { position: 0.5; color: Qt.lighter(songHeader.color, 0.75) }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+        }
+
+        Rectangle {
+            id: plusButton
+            anchors.left: parent.left
+            anchors.top: parent.top
+            width: 50
+            height: parent.height
+
+            enabled: pixelsPerSecond < maxScale
+            color: "transparent"
+            border.width: 1
+            border.color: "black"
+
+            Image{
+                anchors.centerIn: parent
+                width: parent.width / 2
+                height: width
+                source: "qrc:/icons/plus.png"
+            }
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    pixelsPerSecond *= 2
+                    recalculateViewPositionAfterScaleTimer.start()
+                    parent.color = "black"
+                    parent.opacity = 0.5
+                    plusButtonTimer.start()
+                }
+            }
+
+            Timer {
+                id: plusButtonTimer
+                interval: 100
+                running: true
+                onTriggered: {
+                    parent.opacity = 1
+                }
+            }
+        }
+
+        Rectangle {
+            id: minusButton
+            anchors.left: plusButton.right
+            anchors.top: parent.top
+            width: 50
+            height: parent.height
+
+            enabled: pixelsPerSecond > minScale
+            color: "transparent"
+            border.width: 1
+            border.color: "black"
+
+            Image{
+                anchors.centerIn: parent
+                width: parent.width / 2
+                height: width
+
+                source: "qrc:/icons/minus.png"
+            }
+
+            MouseArea{
+                anchors.fill: parent
+
+                onClicked: {
+                    pixelsPerSecond /= 2
+                    recalculateViewPositionAfterScaleTimer.start()
+                    parent.color = "black"
+                    parent.opacity = 0.5
+                    minusButtonTimer.start()
+                }
+            }
+
+            Timer {
+                id: minusButtonTimer
+                interval: 100
+                running: true
+                onTriggered: {
+                    parent.opacity = 1
+                    parent.color = "transparent"
+                }
+            }
+        }
+
+        Rectangle {
+            id: stopButton
+            anchors.right: parent.right
+            anchors.top: parent.top
+            width: 50
+            height: parent.height
+
+            color: "transparent"
+            border.width: 1
+            border.color: "black"
+
+            Image{
+                anchors.centerIn: parent
+                width: parent.width / 2
+                height: width
+
+                source: "qrc:/icons/stop.png"
+            }
+
+            MouseArea{
+                anchors.fill: parent
+
+                onClicked: {
+                    tablatureView.contentX = -(applicationWindow.width/4 + cursor.width)
+                    mainSwipeView.setCurrentIndex(kLibraryPage)
+                    playMusic.stop()
+                    flickTimer.stop()
+                    parent.color = "black"
+                    parent.opacity = 0.5
+                    stopButtonTimer.start()
+                }
+            }
+
+            Timer {
+                id: stopButtonTimer
+                interval: 100
+                running: true
+                onTriggered: {
+                    parent.opacity = 1
+                    parent.color = "transparent"
+                }
+            }
+        }
+
+        Rectangle {
+            id: startButton
+            anchors.right: stopButton.left
+            anchors.top: parent.top
+            width: 50
+            height: parent.height
+
+            color: "transparent"
+            border.width: 1
+            border.color: "black"
+            visible: playMusic.playbackState !== Audio.PlayingState
+
+            Image{
+                anchors.centerIn: parent
+                width: parent.width / 2
+                height: width
+
+                source: "qrc:/icons/play.png"
+            }
+
+            MouseArea{
+                id: playButtonArea
+                anchors.fill: parent
+
+                onClicked: {
+                    startPlay()
+                    parent.color = "black"
+                    parent.opacity = 0.5
+                    playButtonTimer.start()
+                }
+            }
+
+            Timer {
+                id: playButtonTimer
+                interval: 100
+                running: true
+                onTriggered: {
+                    parent.opacity = 1
+                    parent.color = "transparent"
+                }
+            }
+        }
+
+        Rectangle {
+            id: pauseButton
+            anchors.right: stopButton.left
+            anchors.top: parent.top
+            width: 50
+            height: parent.height
+
+            color: "transparent"
+            border.width: 1
+            border.color: "black"
+            visible: playMusic.playbackState === Audio.PlayingState
+
+            Image{
+                anchors.centerIn: parent
+                width: parent.width / 2
+                height: width
+
+                source: "qrc:/icons/pause.png"
+            }
+
+            MouseArea{
+                id: pauseButtonArea
+                anchors.fill: parent
+
+                onClicked: {
+                    pausePlay()
+                    parent.color = "black"
+                    parent.opacity = 0.5
+                    pauseButtonTimer.start()
+                }
+            }
+
+            Timer {
+                id: pauseButtonTimer
+                interval: 100
+                running: true
+                onTriggered: {
+                    parent.opacity = 1
+                    parent.color = "transparent"
+                }
+            }
+        }
+
+        Text {
+            anchors.top: parent.top
+            anchors.centerIn: parent
+            text: secsToMinAndSecs((tablatureView.contentX - tablatureView.originX) / pixelsPerSecond) + "/" + secsToMinAndSecs(songDurationT)
+            color: "white"
+            font.pixelSize: parent.height / 1.5
         }
     }
 
-    Button{
-        id:pauseButton
-        anchors.left: startButton.right
-        anchors.top: parent.top
-        width: 50
+    Item {
         height: 50
-        text: 'pause'
+        width: parent.width
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
 
-        onClicked: {
-            playMusic.pause()
-            flickTimer.stop()
+        Rectangle{
+            id: songFooter
+            anchors.fill: parent
+            color: "grey"
+
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "transparent" }
+                GradientStop { position: 0.5; color: Qt.lighter(songHeader.color, 0.75) }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+        }
+
+        Image {
+            id: albumImageSongPage
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            height: parent.height
+            width: height
+
+            fillMode: Image.PreserveAspectFit
+            source: albumImageT
+        }
+        Column {
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: albumImageSongPage.right
+            height: parent.height
+            anchors.leftMargin: 5
+
+            Text {
+                text: albumNameT
+                color: "white"
+                font.pixelSize: parent.height/3
+            }
+            Text {
+                text: songYearT
+                color: "white"
+                font.pixelSize: parent.height/3
+            }
+        }
+
+        Column {
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            height: parent.height
+            anchors.rightMargin: 5
+
+            Text {
+                anchors.right: parent.right
+
+                text: songNameT
+                color: "white"
+                font.pixelSize: parent.height/3
+            }
+            Text {
+                anchors.right: parent.right
+
+                text: artistNameT
+                color: "white"
+                font.pixelSize: parent.height/3
+            }
         }
     }
 
-    Button{
-        id:stopButton
-        anchors.left: pauseButton.right
-        anchors.top: parent.top
-        width: 50
-        height: 50
-        text: 'stop'
-
-        onClicked: {
-            tablatureView.contentX = -(applicationWindow.width/4 + cursor.width)
-            mainSwipeView.setCurrentIndex(kLibraryPage)
-            playMusic.stop()
-            flickTimer.stop()
-        }
-    }
-
-    Rectangle{
+    Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         height: applicationWindow.height/2
-        color: "#f2d0ea"
+
+        Rectangle{
+            id: decke
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            height: parent.height * 1.1
+
+            color: "#333333"
+            gradient: Gradient {
+                GradientStop { position: 0.00; color: "transparent"}
+                GradientStop { position: 0.05; color: decke.color}
+                GradientStop { position: 0.50; color: Qt.lighter(decke.color, 2)}
+                GradientStop { position: 0.95; color: decke.color}
+                GradientStop { position: 1.00; color: "transparent"}
+            }
+        }
 
         Component {
             id: noteDelegate
-            Rectangle {
-                color: "#e594eb"
+            Item {
                 width: duration * pixelsPerSecond
                 height: applicationWindow.height/2
-                opacity: 0.75
-                radius: 20
+                z: tablatureView.count - index
                 Column {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter: parent.left
 
                     Rectangle{
+                        id: chord
                         height: parent.height/7
                         width: height
-                        radius: width/4
-                        color: "black"
+                        radius: width/5
+                        color: "lightgrey"
                         Text {
                             text: name
                             anchors.centerIn: parent
-                            font.pixelSize: parent.height
-                            font.bold: true
-                            color: "white"
-                            }
+                            font.pixelSize: parent.height/2
+                            color: "black"
+                        }
                         opacity: name !== ""
+
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: chord.color }
+                            GradientStop { position: 0.5; color: Qt.lighter(chord.color, 1.9) }
+                            GradientStop { position: 1.0; color: chord.color }
+                        }
                     }
 
                     Repeater {
                        model: 6
                        delegate: Rectangle{
+                           id: fret
                            height: parent.height/7
                            width: height
-                           radius: width/2
-                           color: "white"
+                           radius: width/5
+                           color: stringColors[index]
+
+                           gradient: Gradient {
+                               GradientStop { position: 0.0; color: fret.color }
+                               GradientStop { position: 0.5; color: Qt.lighter(fret.color, 1.9) }
+                               GradientStop { position: 1.0; color: fret.color }
+                           }
+
+                           Rectangle{
+                               anchors.fill: parent
+                               anchors.margins: 2
+                               radius: width/5
+                               color: "black"
+                               opacity: 0.5
+                           }
+
                            Text {
                                text: frets[index]
                                anchors.centerIn: parent
                                font.pixelSize: parent.height
-                               color: "black"
-                               }
-                           opacity: frets[index] !== 0xFF ? 100 : 0
+                               color: "white"
+                            }
+                            opacity: frets[index] !== 0xFF ? 100 : 0
                        }
                     }
                 }
@@ -171,13 +461,19 @@ Page {
         Repeater {
            model: 6
            delegate: Rectangle {
+                   id: string
                    anchors.right: parent.right
                    anchors.left: parent.left
                    anchors.top: parent.top
                    anchors.topMargin: parent.height/7 * (1.5 + index)
                    height: 5
-                   color: "black"
-                   opacity: 0.5
+                   color: "grey"
+
+                   gradient: Gradient {
+                       GradientStop { position: 0.0; color: string.color }
+                       GradientStop { position: 0.5; color: Qt.lighter(string.color, 1.75) }
+                       GradientStop { position: 1.0; color: string.color }
+                   }
             }
         }
 
@@ -187,53 +483,59 @@ Page {
             model: tablature
             delegate: noteDelegate
             orientation: ListView.Horizontal
+            // cacheBuffer must be more than song length in pixels (duration * pixelsPerSecond)
+            // otherwise scale buttons will be buggy
             cacheBuffer: 1000000
             clip: true
 
             onMovementStarted:{
                 musicPlayed |= (playMusic.playbackState === Audio.PlayingState)
-                pauseButton.clicked()
+                pausePlay()
             }
             onFlickStarted:{
                 musicPlayed |= (playMusic.playbackState === Audio.PlayingState)
-                pauseButton.clicked()
+                pausePlay()
             }
             onMovementEnded:{
                 recalculateMusicPositionAfterMovement()
                 if(musicPlayed)
-                    startButton.clicked()
+                    startPlay()
                 musicPlayed = false
             }
             onFlickEnded:{
                 recalculateMusicPositionAfterMovement()
                 if(musicPlayed)
-                    startButton.clicked()
+                    startPlay()
                 musicPlayed = false
             }
 
             header:
-                Rectangle{
-                //color: "green"
-                //height: parent.height
+                Rectangle {
                 width: applicationWindow.width/4 + cursor.width
             }
             footer:
-                Rectangle{
-                //color: "green"
-                //height: parent.height
+                Rectangle {
                 width: applicationWindow.width - applicationWindow.width/4
             }
         }
 
         Rectangle {
             id: cursor
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
+            height: parent.height * 1.3
+            anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: parent.width/4
             width: 5
+
             color: "green"
-            opacity: 0.5
+            opacity: 0.75
+
+            gradient: Gradient {
+                GradientStop { position: 0.00; color: "transparent"}
+                GradientStop { position: 0.05; color: cursor.color }
+                GradientStop { position: 0.95; color: cursor.color }
+                GradientStop { position: 1.00; color: "transparent"}
+            }
         }
     }
 }

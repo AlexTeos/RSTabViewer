@@ -20,7 +20,8 @@ SOURCES += \
         musiclibrary.cpp \
         tablature.cpp
 
-RESOURCES += ui/qml.qrc
+RESOURCES += ui/qml.qrc \
+    ui/resources.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -28,13 +28,16 @@ public:
         SongYearRole,
         TablatureRole,
         TrackRole,
-        TrackTeaserRole
+        TrackTeaserRole,
+        AlbumImageRole,
+        InstrumentsRole
     };
 
     Tablature* tablature();
 public slots:
     void setTablature(int index, int type);
 
+    // TODO: uncomment
 public: //private:
     void collectArchives(const QDir& dir);
 

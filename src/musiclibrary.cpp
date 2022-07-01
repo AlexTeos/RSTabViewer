@@ -32,6 +32,10 @@ QVariant MusicLibrary::data(const QModelIndex& index, int role) const
             return m_psarcs[index.row()].track();
         case TrackTeaserRole:
             return m_psarcs[index.row()].trackTeaser();
+        case AlbumImageRole:
+            return m_psarcs[index.row()].albumImage();
+        case InstrumentsRole:
+            return m_psarcs[index.row()].instruments();
     }
 
     return QVariant();
@@ -54,6 +58,8 @@ QHash<int, QByteArray> MusicLibrary::roleNames() const
     names[TablatureRole]   = "tablature";
     names[TrackRole]       = "track";
     names[TrackTeaserRole] = "trackTeaser";
+    names[AlbumImageRole]  = "albumImage";
+    names[InstrumentsRole] = "instruments";
 
     return names;
 }
@@ -76,5 +82,5 @@ Tablature* MusicLibrary::tablature()
 
 void MusicLibrary::setTablature(int index, int type)
 {
-    m_tablature.setSNG(m_psarcs[index].m_sngs[RS::SngType::Lead]);
+    m_tablature.setSNG(m_psarcs[index].m_sngs[(RS::SngType)type]);
 }

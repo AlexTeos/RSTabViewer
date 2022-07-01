@@ -14,6 +14,12 @@ ApplicationWindow {
     property int kLibraryPage         : 0
     property int kSongPage            : 1
 
+    function secsToMinAndSecs(totalSeconds){
+        var date = new Date(1970,0,1);
+        date.setSeconds(totalSeconds);
+        return date.toTimeString().replace(/.*(\d{2}:\d{2}).*/, "$1");
+    }
+
     Component.onCompleted: {
         AppSettings.wWidth = Qt.binding(function() {return width})
         AppSettings.wHeight = Qt.binding(function() {return height})
@@ -23,6 +29,13 @@ ApplicationWindow {
        id: playMusic
        autoLoad: true
     }
+
+    property int songDurationT: 0
+    property string songNameT: ""
+    property string artistNameT: ""
+    property string albumNameT: ""
+    property string songYearT: ""
+    property string albumImageT: ""
 
     SwipeView {
           id: mainSwipeView

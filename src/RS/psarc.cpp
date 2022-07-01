@@ -191,6 +191,7 @@ RS::PSARC::PSARC(const QString psarcDir) : m_filesDir(psarcDir)
     initializeAtributes();
     initializeSngs();
     initializeTracks();
+    initializeImage();
 }
 
 QString RS::PSARC::songName() const
@@ -241,6 +242,31 @@ QString RS::PSARC::track() const
 QString RS::PSARC::trackTeaser() const
 {
     return m_tracks.first;
+}
+
+QString RS::PSARC::albumImage() const
+{
+    return m_albumImagePath;
+}
+
+QVariantList RS::PSARC::instruments() const
+{
+    QVariantList instruments;
+    for (auto sngType : m_sngs.keys())
+        switch (sngType)
+        {
+            case Bass:
+            case Lead:
+            case Rhythm:
+                instruments.append(sngType);
+            case Vocals:
+            case Combo:
+            case Showlights:
+            default:
+                break;
+        }
+
+    return instruments;
 }
 
 bool RS::PSARC::initializeAtributes()
@@ -346,6 +372,18 @@ bool RS::PSARC::initializeTracks()
         m_tracks.first  = tracks[0].filePath();
         m_tracks.second = tracks[0].filePath();
     }
+
+    return true;
+}
+
+bool RS::PSARC::initializeImage()
+{
+    QDir        imagesDir(m_filesDir.path() + "\\gfxassets\\album_art");
+    QStringList imageNames = imagesDir.entryList(QStringList() << "*_256.dds", QDir::Files);
+
+    if (not imageNames.size()) return false;
+
+    m_albumImagePath = imagesDir.path() + "/" + imageNames[0];
 
     return true;
 }
