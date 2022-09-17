@@ -1,5 +1,4 @@
 TEMPLATE = lib
-CONFIG += staticlib
 
 CONFIG += c++11
 

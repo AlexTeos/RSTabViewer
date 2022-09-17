@@ -19,8 +19,9 @@
 
 #include "revorb.h"
 
+#include <stdio.h>
+
 #include <fcntl.h>
-#include <io.h>
 #include <ogg/include/ogg/ogg.h>
 
 #include "vorbis/include/vorbis/codec.h"
@@ -151,9 +152,7 @@ bool CopyHeaders(FILE*             fi,
 bool revorb(const string& filename)
 {
     bool  Failed = false;
-    FILE* fi;
-
-    fopen_s(&fi, filename.c_str(), "rb");
+    FILE* fi     = fopen(filename.c_str(), "rb");
 
     if (!fi)
     {
@@ -162,9 +161,7 @@ bool revorb(const string& filename)
     }
 
     string tmpName = filename + ".tmp";
-    FILE*  fo;
-
-    fopen_s(&fo, tmpName.c_str(), "wb");
+    FILE*  fo      = fopen(tmpName.c_str(), "wb");
 
     if (!fo)
     {
@@ -319,12 +316,12 @@ bool revorb(const string& filename)
 
     if (Failed)
     {
-        _unlink(tmpName.c_str());
+        remove(tmpName.c_str());
         return false;
     }
     else
     {
-        if (_unlink(filename.c_str()) || rename(tmpName.c_str(), filename.c_str()))
+        if (remove(filename.c_str()) || rename(tmpName.c_str(), filename.c_str()))
         {
             fprintf(stderr, "%S: Could not put the output file back in place.\n", tmpName.c_str());
             return false;

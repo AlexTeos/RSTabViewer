@@ -60,9 +60,10 @@ QHash<int, QByteArray> Tablature::roleNames() const
 bool Tablature::setSNG(const RS::SNG& sng)
 {
     beginResetModel();
-    m_sng = sng;
-    collectAllNotes();
+    m_sng    = sng;
+    bool res = collectAllNotes();
     endResetModel();
+    return res;
 }
 
 bool Tablature::collectAllNotes()

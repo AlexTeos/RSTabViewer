@@ -1,7 +1,6 @@
 CONFIG -= qt
 
 TEMPLATE = lib
-CONFIG += staticlib
 
 CONFIG += c++11
 
@@ -10,7 +9,6 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    vorbis/lib/analysis.c \
     vorbis/lib/analysis.c \
     vorbis/lib/bitrate.c \
     vorbis/lib/block.c \
@@ -91,14 +89,12 @@ unix {
 !isEmpty(target.path): INSTALLS += target
 
 # OGG
+unix:!macx: DEFINES += "__SYMBIAN32__" # crutch for android compability
+
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../oggQt/release/ -loggQt
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../oggQt/debug/ -loggQt
+else:unix:!macx: LIBS += -L$$OUT_PWD/../oggQt/ -loggQt_armeabi-v7a
 
 INCLUDEPATH += $$PWD/../oggQt \
     $$PWD/../oggQt/ogg/include
 DEPENDPATH += $$PWD/../oggQt
-
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../oggQt/release/liboggQt.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../oggQt/debug/liboggQt.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../oggQt/release/oggQt.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../oggQt/debug/oggQt.lib

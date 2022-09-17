@@ -29,9 +29,8 @@ ApplicationWindow {
         })
     }
 
-    Audio {
+    MediaPlayer {
         id: playMusic
-        autoLoad: true
     }
 
     property int songDurationT: 0
@@ -46,7 +45,6 @@ ApplicationWindow {
         anchors.fill: parent
 
         interactive: false
-
         Library {
             id: libraryPage
         }
