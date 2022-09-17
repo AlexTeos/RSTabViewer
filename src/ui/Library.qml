@@ -18,10 +18,17 @@ Page {
             id: libraryView
             anchors.fill: parent
 
-            cellWidth: parent.width / Math.trunc(parent.width / 128)
-            cellHeight: cellWidth + 32
+            cellWidth: parent.width / 6
+            cellHeight: cellWidth + cellWidth / 4
             model: songs
             delegate: songDelegate
+
+            onMovementStarted: {
+                playMusic.pause()
+            }
+            onFlickStarted: {
+                playMusic.pause()
+            }
         }
 
         Component {
@@ -35,8 +42,8 @@ Page {
 
                     Image {
                         anchors.horizontalCenter: parent.horizontalCenter
-                        height: 128
-                        width: 128
+                        height: parent.width
+                        width: height
 
                         fillMode: Image.PreserveAspectFit
                         source: "file:" + albumImage
@@ -56,7 +63,7 @@ Page {
                                         opacity: 0.75
 
                                         border.color: "black"
-                                        border.width: 1
+                                        border.width: parent.width / 128
 
                                         gradient: Gradient {
                                             GradientStop {
@@ -79,6 +86,7 @@ Page {
                                         anchors.centerIn: parent
 
                                         text: sngTypes[instruments[index]]
+                                        font.pixelSize: parent.width / 8
                                         color: "white"
                                     }
                                     MouseArea {
@@ -101,8 +109,8 @@ Page {
 
                     Rectangle {
                         id: songTitle
-                        width: 128
-                        height: 32
+                        width: parent.width
+                        height: parent.width / 4
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: "#333333"
                         Column {
@@ -116,7 +124,7 @@ Page {
                                 maximumLineCount: 1
                                 wrapMode: Text.WrapAnywhere
                                 text: artistName
-                                font.pixelSize: 10
+                                font.pixelSize: parent.width / 12
                                 color: AppSettings.textColor
                             }
                             Text {
@@ -127,7 +135,7 @@ Page {
                                 maximumLineCount: 1
                                 wrapMode: Text.WrapAnywhere
                                 text: songName
-                                font.pixelSize: 10
+                                font.pixelSize: parent.width / 12
                                 color: AppSettings.textColor
                             }
                         }
@@ -147,16 +155,6 @@ Page {
                             }
                         }
                     }
-                }
-
-                Rectangle {
-                    color: "black"
-                    anchors.fill: parent
-                    border.width: 5
-                    opacity: if (libraryView.currentIndex == -1)
-                                 0
-                             else
-                                 (index !== libraryView.currentIndex) * 0.5
                 }
 
                 MouseArea {

@@ -27,8 +27,8 @@ Page {
         flickTimer.stop()
     }
 
-    property int maxScale: 400
-    property int minScale: 25
+    property int maxScale: parent.width / 2
+    property int minScale: parent.width / 32
     property var stringColors: ["red", "yellow", "blue", "orange", "green", "purple"]
 
     Rectangle {
@@ -60,7 +60,7 @@ Page {
     }
 
     Item {
-        height: 50
+        height: parent.height / 8
         width: parent.width
         anchors.top: parent.top
         anchors.left: parent.left
@@ -90,12 +90,12 @@ Page {
             id: plusButton
             anchors.left: parent.left
             anchors.top: parent.top
-            width: 50
             height: parent.height
+            width: height
 
             enabled: pixelsPerSecond < maxScale
             color: "transparent"
-            border.width: 1
+            border.width: width / 50
             border.color: "black"
 
             Image {
@@ -131,12 +131,12 @@ Page {
             id: minusButton
             anchors.left: plusButton.right
             anchors.top: parent.top
-            width: 50
             height: parent.height
+            width: height
 
             enabled: pixelsPerSecond > minScale
             color: "transparent"
-            border.width: 1
+            border.width: width / 50
             border.color: "black"
 
             Image {
@@ -174,11 +174,11 @@ Page {
             id: stopButton
             anchors.right: parent.right
             anchors.top: parent.top
-            width: 50
             height: parent.height
+            width: height
 
             color: "transparent"
-            border.width: 1
+            border.width: width / 50
             border.color: "black"
 
             Image {
@@ -193,7 +193,7 @@ Page {
                 anchors.fill: parent
 
                 onClicked: {
-                    tablatureView.contentX = -(applicationWindow.width / 4 + cursor.width)
+                    tablatureView.contentX = -(parent.width / 4 + cursor.width)
                     mainSwipeView.setCurrentIndex(kLibraryPage)
                     playMusic.stop()
                     flickTimer.stop()
@@ -218,11 +218,11 @@ Page {
             id: startButton
             anchors.right: stopButton.left
             anchors.top: parent.top
-            width: 50
             height: parent.height
+            width: height
 
             color: "transparent"
-            border.width: 1
+            border.width: width / 50
             border.color: "black"
             visible: playMusic.playbackState !== Audio.PlayingState
 
@@ -261,11 +261,11 @@ Page {
             id: pauseButton
             anchors.right: stopButton.left
             anchors.top: parent.top
-            width: 50
             height: parent.height
+            width: height
 
             color: "transparent"
-            border.width: 1
+            border.width: width / 50
             border.color: "black"
             visible: playMusic.playbackState === Audio.PlayingState
 
@@ -312,7 +312,7 @@ Page {
     }
 
     Item {
-        height: 50
+        height: parent.height / 8
         width: parent.width
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -351,25 +351,23 @@ Page {
         Column {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: albumImageSongPage.right
-            height: parent.height
             anchors.leftMargin: 5
 
             Text {
                 text: albumNameT
                 color: "white"
-                font.pixelSize: parent.height / 3
+                font.pixelSize: songFooter.height / 3
             }
             Text {
                 text: songYearT
                 color: "white"
-                font.pixelSize: parent.height / 3
+                font.pixelSize: songFooter.height / 3
             }
         }
 
         Column {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
-            height: parent.height
             anchors.rightMargin: 5
 
             Text {
@@ -377,14 +375,14 @@ Page {
 
                 text: songNameT
                 color: "white"
-                font.pixelSize: parent.height / 3
+                font.pixelSize: songFooter.height / 3
             }
             Text {
                 anchors.right: parent.right
 
                 text: artistNameT
                 color: "white"
-                font.pixelSize: parent.height / 3
+                font.pixelSize: songFooter.height / 3
             }
         }
     }
@@ -393,7 +391,7 @@ Page {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        height: applicationWindow.height / 2
+        height: parent.height / 2
 
         Rectangle {
             id: decke
@@ -431,7 +429,7 @@ Page {
             id: noteDelegate
             Item {
                 width: duration * pixelsPerSecond
-                height: applicationWindow.height / 2
+                height: tablatureView.height
                 z: tablatureView.count - index
                 Column {
                     anchors.top: parent.top
@@ -521,7 +519,7 @@ Page {
                 anchors.left: parent.left
                 anchors.top: parent.top
                 anchors.topMargin: parent.height / 7 * (1.5 + index)
-                height: 5
+                height: parent.height / 72
                 color: "grey"
 
                 gradient: Gradient {
@@ -574,10 +572,10 @@ Page {
             }
 
             header: Rectangle {
-                width: applicationWindow.width / 4 + cursor.width
+                width: tablatureView.width / 4 + cursor.width
             }
             footer: Rectangle {
-                width: applicationWindow.width - applicationWindow.width / 4
+                width: tablatureView.width - tablatureView.width / 4
             }
         }
 
@@ -587,7 +585,7 @@ Page {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: parent.width / 4
-            width: 5
+            width: parent.width / 160
 
             color: "green"
             opacity: 0.75
