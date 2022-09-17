@@ -21,73 +21,71 @@ bool RS::PSARCArchive::inflateEntry(uint32_t&            entry,
                                     QFile&               file,
                                     QVector<PSARCEntry>& entries)
 {
-    if (entry == 0) fileName = "psarc.temp";
-
-    QDir().mkpath(QFileInfo(fileName).path());
-
-    QFile stream(fileName);
-    if (stream.open(QIODevice::WriteOnly))
+    if (QDir().mkpath(QFileInfo(fileName).path()))
     {
-        if (entries[entry].m_length != 0)
+        QFile stream(fileName);
+        if (stream.open(QIODevice::WriteOnly))
         {
-            file.seek(entries[entry].m_zOffset);
-            uint32_t zIndex = entries[entry].m_zIndex;
-            do
+            if (entries[entry].m_length != 0)
             {
-                if (zBlocks[zIndex] == 0)
+                file.seek(entries[entry].m_zOffset);
+                uint32_t zIndex = entries[entry].m_zIndex;
+                do
                 {
-                    stream.write(file.read(cBlockSize), cBlockSize);
-                }
-                else
-                {
-                    uint16_t   isGzipped      = READ_BE_UINT16((uint8_t*)file.peek(2).constData());
-                    QByteArray compressedData = file.read(zBlocks[zIndex]);
-                    if (isGzipped == 0x78da)
+                    if (zBlocks[zIndex] == 0)
                     {
-                        QByteArray uncompressedData;
-                        uncompress(uncompressedData,
-                                   qMin(entries[entry].m_length - (zIndex - entries[entry].m_zIndex) * cBlockSize,
-                                        (uint64_t)cBlockSize),
-                                   compressedData);
-                        stream.write(uncompressedData);
+                        stream.write(file.read(cBlockSize), cBlockSize);
                     }
                     else
-                        stream.write(compressedData, zBlocks[zIndex]);
-                }
-                zIndex++;
-                if (zIndex >= zBlocks.size())
-                {
-                    // TODO: handle somehow
-                    qWarning() << "Error during uncompression [" << fileName << "]";
-                    break;
-                }
-            } while (stream.pos() < entries[entry].m_length);
-        }
-
-        if (entry == 0)
-        {
-            stream.close();
-
-            QFile reader(fileName);
-            reader.open(QIODevice::ReadOnly);
-
-            entries[0].m_name = (char*)"NamesBlock.bin";
-            for (uint32_t i = 1; i < entries.size(); i++)
-            {
-                entries[i].m_name = reader.readLine();
-                entries[i].m_name.remove(entries[i].m_name.length() - 1, 1);
-                entries[i].m_name.replace("/", "\\");
+                    {
+                        uint16_t   isGzipped      = READ_BE_UINT16((uint8_t*)file.peek(2).constData());
+                        QByteArray compressedData = file.read(zBlocks[zIndex]);
+                        if (isGzipped == 0x78da)
+                        {
+                            QByteArray uncompressedData;
+                            uncompress(uncompressedData,
+                                       qMin(entries[entry].m_length - (zIndex - entries[entry].m_zIndex) * cBlockSize,
+                                            (uint64_t)cBlockSize),
+                                       compressedData);
+                            stream.write(uncompressedData);
+                        }
+                        else
+                            stream.write(compressedData, zBlocks[zIndex]);
+                    }
+                    zIndex++;
+                    if (zIndex >= zBlocks.size())
+                    {
+                        // TODO: handle somehow
+                        qWarning() << "Error during uncompression [" << fileName << "]";
+                        break;
+                    }
+                } while (stream.pos() < entries[entry].m_length);
             }
 
-            reader.close();
-            stream.remove();
+            if (entry == 0)
+            {
+                stream.close();
+
+                QFile reader(fileName);
+                reader.open(QIODevice::ReadOnly);
+
+                entries[0].m_name = (char*)"NamesBlock.bin";
+                for (uint32_t i = 1; i < entries.size(); i++)
+                {
+                    entries[i].m_name = reader.readLine();
+                    entries[i].m_name.remove(entries[i].m_name.length() - 1, 1);
+                    //entries[i].m_name.replace("/", "\\");
+                }
+
+                reader.close();
+                stream.remove();
+            }
+            else
+            {
+                stream.close();
+            }
+            return true;
         }
-        else
-        {
-            stream.close();
-            return false;
-        }
-        return true;
     }
     return false;
 }
@@ -174,7 +172,13 @@ bool RS::PSARCArchive::unarchive(const QString& archiveName, const QString& unpa
 
                 for (uint32_t i = 0; i < entries.size(); i++)
                 {
-                    inflateEntry(i, zBlocks, cBlockSize, unpackDir + "\\" + entries[i].m_name, psarcFile, entries);
+                    if (not inflateEntry(i,
+                                         zBlocks,
+                                         cBlockSize,
+                                         unpackDir + "/" + (i == 0 ? "psarc.temp" : entries[i].m_name),
+                                         psarcFile,
+                                         entries))
+                        return false;
                 }
 
                 return true;
@@ -271,10 +275,10 @@ QVariantList RS::PSARC::instruments() const
 
 bool RS::PSARC::initializeAtributes()
 {
-    QDir manifestDir(m_filesDir.path() + "\\manifests");
-    manifestDir.setPath(manifestDir.path() + "\\" + manifestDir.entryList(QStringList() << "songs_*", QDir::Dirs)[0]);
+    QDir manifestDir(m_filesDir.path() + "/manifests");
+    manifestDir.setPath(manifestDir.path() + "/" + manifestDir.entryList(QStringList() << "songs_*", QDir::Dirs)[0]);
     QStringList manifestsFileNames = manifestDir.entryList(QStringList() << "*.json", QDir::Files);
-    QFile       manifest(manifestDir.path() + "\\" + manifestsFileNames[0]);
+    QFile       manifest(manifestDir.path() + "/" + manifestsFileNames[0]);
     if (manifest.open(QIODevice::ReadOnly))
     {
         QByteArray arr = manifest.readAll();
@@ -305,7 +309,7 @@ bool RS::PSARC::initializeAtributes()
 
 bool RS::PSARC::initializeSngs()
 {
-    QDir        sngsDir(m_filesDir.path() + "\\songs\\bin\\generic");
+    QDir        sngsDir(m_filesDir.path() + "/songs/bin/generic");
     QStringList sngNames = sngsDir.entryList(QStringList() << "*.sng", QDir::Files);
     for (QString sngName : sngNames)
     {
@@ -313,7 +317,7 @@ bool RS::PSARC::initializeSngs()
         if (not sngsDir.exists(sngName + "uc"))
         {
             // TODO: do only on demand
-            if (not sng.decrypt(sngsDir.path() + "\\" + sngName)) continue;
+            if (not sng.decrypt(sngsDir.path() + "/" + sngName)) continue;
         }
 
         SngType sngType;
@@ -326,7 +330,7 @@ bool RS::PSARC::initializeSngs()
         else
             continue;
 
-        if (sng.parse(sngsDir.path() + "\\" + sngName + "uc"))
+        if (sng.parse(sngsDir.path() + "/" + sngName + "uc"))
         {
             m_sngs.insert(sngType, sng);
         }
@@ -338,13 +342,13 @@ bool RS::PSARC::initializeSngs()
 bool RS::PSARC::initializeTracks()
 {
     QVector<QFileInfo> tracks;
-    QDir               tracksDir(m_filesDir.path() + "\\audio\\windows");
+    QDir               tracksDir(m_filesDir.path() + "/audio/windows");
     QStringList        trackNames = tracksDir.entryList(QStringList() << "*.wem", QDir::Files);
     for (QString trackName : trackNames)
     {
-        QString filePath = tracksDir.path() + "\\" + trackName;
+        QString filePath = tracksDir.path() + "/" + trackName;
         trackName.replace(QStringLiteral(".wem"), QStringLiteral(".ogg"), Qt::CaseInsensitive);
-        QString outFilePath = tracksDir.path() + "\\" + trackName;
+        QString outFilePath = tracksDir.path() + "/" + trackName;
 
         if (not tracksDir.exists(trackName))
         {
@@ -378,7 +382,7 @@ bool RS::PSARC::initializeTracks()
 
 bool RS::PSARC::initializeImage()
 {
-    QDir        imagesDir(m_filesDir.path() + "\\gfxassets\\album_art");
+    QDir        imagesDir(m_filesDir.path() + "/gfxassets/album_art");
     QStringList imageNames = imagesDir.entryList(QStringList() << "*_256.dds", QDir::Files);
 
     if (not imageNames.size()) return false;

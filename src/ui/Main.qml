@@ -29,7 +29,7 @@ ApplicationWindow {
         })
     }
 
-    MediaPlayer {
+    Audio {
         id: playMusic
     }
 

@@ -69,9 +69,11 @@ void MusicLibrary::collectArchives(const QDir& dir)
     QStringList archiveNames = dir.entryList(QStringList() << "*.psarc", QDir::Files);
     for (const auto& archiveName : archiveNames)
     {
-        if (not QDir(QFileInfo(archiveName).completeBaseName()).exists())
-            RS::PSARCArchive::unarchive(archiveName, QFileInfo(archiveName).completeBaseName());
-        m_psarcs.append(QFileInfo(archiveName).completeBaseName());
+        QString archiveFullName = dir.path() + "/" + archiveName;
+        QString unpackPath      = dir.path() + "/" + QFileInfo(archiveFullName).baseName();
+        if (not QDir(QFileInfo(archiveFullName).completeBaseName()).exists())
+            RS::PSARCArchive::unarchive(archiveFullName, unpackPath);
+        m_psarcs.append(unpackPath);
     }
 }
 

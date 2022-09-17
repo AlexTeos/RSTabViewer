@@ -12,7 +12,13 @@ int main(int argc, char* argv[])
 
     QQmlApplicationEngine engine;
 
-    MusicLibrary library(QDir(""));
+#ifdef Q_OS_ANDROID
+    QDir workDirectory("/sdcard/songs/");
+#else
+    QDir workDirectory("./songs");
+#endif
+
+    MusicLibrary library(workDirectory);
     engine.rootContext()->setContextProperty("songs", &library);
     engine.rootContext()->setContextProperty("tablature", library.tablature());
 

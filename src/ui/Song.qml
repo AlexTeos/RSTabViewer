@@ -9,8 +9,8 @@ Page {
     property real pixelsPerSecond: 100
 
     function recalculateMusicPositionAfterMovement() {
-        playMusic.position = (tablatureView.contentX - tablatureView.originX)
-                * 1000 / pixelsPerSecond
+        playMusic.seek(
+                    (tablatureView.contentX - tablatureView.originX) * 1000 / pixelsPerSecond)
     }
 
     function recalculateViewPositionAfterScale() {
@@ -224,7 +224,7 @@ Page {
             color: "transparent"
             border.width: 1
             border.color: "black"
-            visible: playMusic.playbackState !== MediaPlayer.PlayingState
+            visible: playMusic.playbackState !== Audio.PlayingState
 
             Image {
                 anchors.centerIn: parent
@@ -267,7 +267,7 @@ Page {
             color: "transparent"
             border.width: 1
             border.color: "black"
-            visible: playMusic.playbackState === MediaPlayer.PlayingState
+            visible: playMusic.playbackState === Audio.PlayingState
 
             Image {
                 anchors.centerIn: parent
@@ -553,11 +553,11 @@ Page {
             clip: true
 
             onMovementStarted: {
-                musicPlayed |= (playMusic.playbackState === MediaPlayer.PlayingState)
+                musicPlayed |= (playMusic.playbackState === Audio.PlayingState)
                 pausePlay()
             }
             onFlickStarted: {
-                musicPlayed |= (playMusic.playbackState === MediaPlayer.PlayingState)
+                musicPlayed |= (playMusic.playbackState === Audio.PlayingState)
                 pausePlay()
             }
             onMovementEnded: {

@@ -81,8 +81,9 @@ bool Tablature::collectAllNotes()
     {
         for (const auto& note : (*it).m_notes)
         {
-            RS::Note tmp = note;
-            if (not notes.contains(note.m_time)) notes.insert(tmp.m_time, tmp);
+            RS::Note tmp  = note;
+            float    time = note.m_time;
+            if (not notes.contains(time)) notes.insert(time, tmp);
         }
     }
 
