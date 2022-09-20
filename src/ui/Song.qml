@@ -7,14 +7,16 @@ import QtMultimedia 5.15
 Page {
     property bool musicPlayed: false
     property real pixelsPerSecond: 100
+    property real tickPeriod: 20
+    property real shiftPerTick: pixelsPerSecond * tickPeriod / 1000
 
-    function recalculateMusicPositionAfterMovement() {
-        playMusic.seek(
-                    (tablatureView.contentX - tablatureView.originX) * 1000 / pixelsPerSecond)
+    function recalculateViewPosition() {
+        tablatureView.contentX = playMusic.position * pixelsPerSecond / 1000 + tablatureView.originX
     }
 
-    function recalculateViewPositionAfterScale() {
-        tablatureView.contentX = playMusic.position * pixelsPerSecond / 1000 + tablatureView.originX
+    function recalculateMusicPosition() {
+        playMusic.seek(
+                    (tablatureView.contentX - tablatureView.originX) * 1000 / pixelsPerSecond)
     }
 
     function startPlay() {
@@ -38,14 +40,15 @@ Page {
 
     Timer {
         id: flickTimer
-        interval: 25
+        interval: tickPeriod
         running: false
         repeat: true
         onTriggered: {
-            if (tablatureView.contentX - tablatureView.originX >= songDurationT * pixelsPerSecond)
-                stop()
-            else
-                tablatureView.contentX += pixelsPerSecond * interval / 1000
+            recalculateViewPosition()
+            //if (tablatureView.contentX - tablatureView.originX >= songDurationT * pixelsPerSecond)
+            //    stop()
+            //else
+            //    tablatureView.contentX += shiftPerTick
         }
     }
 
@@ -55,7 +58,7 @@ Page {
         running: false
         repeat: false
         onTriggered: {
-            recalculateViewPositionAfterScale()
+            recalculateViewPosition()
         }
     }
 
@@ -559,13 +562,13 @@ Page {
                 pausePlay()
             }
             onMovementEnded: {
-                recalculateMusicPositionAfterMovement()
+                recalculateMusicPosition()
                 if (musicPlayed)
                     startPlay()
                 musicPlayed = false
             }
             onFlickEnded: {
-                recalculateMusicPositionAfterMovement()
+                recalculateMusicPosition()
                 if (musicPlayed)
                     startPlay()
                 musicPlayed = false
