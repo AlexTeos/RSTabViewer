@@ -21,6 +21,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
+        mainSwipeView.forceActiveFocus()
         AppSettings.wWidth = Qt.binding(function () {
             return width
         })
@@ -45,12 +46,27 @@ ApplicationWindow {
         anchors.fill: parent
 
         interactive: false
+
         Library {
             id: libraryPage
+
+            Keys.onReleased: {
+                if (event.key === Qt.Key_Back) {
+                    applicationWindow.close()
+                    event.accepted = true
+                }
+            }
         }
 
         Song {
             id: songPage
+
+            Keys.onReleased: {
+                if (event.key === Qt.Key_Back) {
+                    mainSwipeView.setCurrentIndex(kLibraryPage)
+                    event.accepted = true
+                }
+            }
         }
     }
 }
