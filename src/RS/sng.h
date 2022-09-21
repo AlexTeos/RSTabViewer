@@ -10,15 +10,25 @@
 
 namespace RS
 {
-struct SNG
+class SNG
 {
+public:
     bool decrypt(const QString& sngFileName);
-    bool parse(const QString& decryptedSngFileName);
-    bool dummyRead(QIODevice& input, const qint64& structureSize, const qint64& additionalSize, uint32_t& count);
 
-    Metadata             m_metadata;
-    QVector<Chord>       m_chords;
-    QVector<Arrangement> m_arrangements;
+    void                        setDecryptedFile(const QString& newDecryptedFile);
+    const QVector<Arrangement>& arrangements() const;
+    const QVector<Chord>&       chords() const;
+    const Metadata&             metadata() const;
+
+private:
+    bool parse(const QString& decryptedSngFileName) const;
+    bool dummyRead(QIODevice& input, const qint64& structureSize, const qint64& additionalSize, uint32_t& count) const;
+
+    mutable QVector<Arrangement> m_arrangements;
+    mutable Metadata             m_metadata;
+    mutable QVector<Chord>       m_chords;
+    mutable bool                 m_parsed = false;
+    QString                      decryptedFile;
 };
 }
 

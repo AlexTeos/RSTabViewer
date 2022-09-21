@@ -4,11 +4,13 @@
 
 #include "3rdparty/Rijndael/Rijndael.h"
 
+namespace RS
+{
 static const unsigned char SngKeyPC[32] = {0xCB, 0x64, 0x8D, 0xF3, 0xD1, 0x2A, 0x16, 0xBF, 0x71, 0x70, 0x14,
                                            0x14, 0xE6, 0x96, 0x19, 0xEC, 0x17, 0x1C, 0xCA, 0x5D, 0x2A, 0x14,
                                            0x2E, 0x3E, 0x59, 0xDE, 0x7A, 0xDD, 0xA1, 0x8A, 0x3A, 0x30};
 
-bool RS::SNG::decrypt(const QString& sngFileName)
+bool SNG::decrypt(const QString& sngFileName)
 {
     // TODO: Add filter for file types
     QFile sngFile(sngFileName);
@@ -67,7 +69,7 @@ bool RS::SNG::decrypt(const QString& sngFileName)
     return false;
 }
 
-bool RS::SNG::dummyRead(QIODevice& input, const qint64& structureSize, const qint64& additionalSize, uint32_t& count)
+bool SNG::dummyRead(QIODevice& input, const qint64& structureSize, const qint64& additionalSize, uint32_t& count) const
 {
     qint64 fileSize = input.size();
     count           = *((uint32_t*)input.read(4).constData());
@@ -75,7 +77,12 @@ bool RS::SNG::dummyRead(QIODevice& input, const qint64& structureSize, const qin
     return input.pos() <= fileSize;
 }
 
-bool RS::SNG::parse(const QString& decryptedSngFileName)
+void SNG::setDecryptedFile(const QString& newDecryptedFile)
+{
+    decryptedFile = newDecryptedFile;
+}
+
+bool SNG::parse(const QString& decryptedSngFileName) const
 {
     QFile sngDecryptedFile(decryptedSngFileName);
     if (sngDecryptedFile.open(QIODevice::ReadOnly))
@@ -115,4 +122,35 @@ bool RS::SNG::parse(const QString& decryptedSngFileName)
     }
 
     return false;
+}
+
+const QVector<Arrangement>& SNG::arrangements() const
+{
+    if (not m_parsed)
+    {
+        m_parsed = parse(decryptedFile);
+    }
+
+    return m_arrangements;
+}
+
+const Metadata& SNG::metadata() const
+{
+    if (not m_parsed)
+    {
+        m_parsed = parse(decryptedFile);
+    }
+
+    return m_metadata;
+}
+
+const QVector<Chord>& SNG::chords() const
+{
+    if (not m_parsed)
+    {
+        m_parsed = parse(decryptedFile);
+    }
+
+    return m_chords;
+}
 }

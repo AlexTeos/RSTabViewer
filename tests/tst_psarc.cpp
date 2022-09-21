@@ -58,7 +58,8 @@ void TestPSARC::testParse()
         for (const auto& sngName : sngNames)
         {
             RS::SNG sng;
-            QVERIFY2(sng.parse(archiveName + "\\songs\\bin\\generic\\" + sngName), archiveName.toLatin1());
+            sng.setDecryptedFile(archiveName + "\\songs\\bin\\generic\\" + sngName);
+            QVERIFY2(sng.arrangements().size() > 0, archiveName.toLatin1());
         }
     }
 }

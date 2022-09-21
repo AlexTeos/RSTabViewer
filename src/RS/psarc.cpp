@@ -330,10 +330,8 @@ bool RS::PSARC::initializeSngs()
         else
             continue;
 
-        if (sng.parse(sngsDir.path() + "/" + sngName + "uc"))
-        {
-            m_sngs.insert(sngType, sng);
-        }
+        sng.setDecryptedFile(sngsDir.path() + "/" + sngName + "uc");
+        m_sngs.insert(sngType, sng);
     }
 
     return m_sngs.size();

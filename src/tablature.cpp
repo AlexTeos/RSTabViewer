@@ -20,16 +20,16 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
         case StartTimeRole:
             return m_notes[index.row()].m_time;
         case NameRole:
-            return isChord ? QVariant(m_sng.m_chords[m_notes[index.row()].m_chord].m_name) : "";
+            return isChord ? QVariant(m_sng.chords()[m_notes[index.row()].m_chord].m_name) : "";
         case DurationRole:
             return index.row() == m_notes.size() - 1
-                       ? QVariant(m_sng.m_metadata.m_songLength - m_notes[index.row()].m_time)
+                       ? QVariant(m_sng.metadata().m_songLength - m_notes[index.row()].m_time)
                        : QVariant(m_notes[index.row() + 1].m_time - m_notes[index.row()].m_time);
         case FretsRole:
             QList<QVariant> frets;
             if (isChord)
                 for (int i = 0; i < 6; ++i)
-                    frets.append(m_sng.m_chords[m_notes[index.row()].m_chord].m_frets[i]);
+                    frets.append(m_sng.chords()[m_notes[index.row()].m_chord].m_frets[i]);
             else
                 for (int i = 0; i < 6; ++i)
                     frets.append(i == m_notes[index.row()].m_string ? m_notes[index.row()].m_fret[0] : 0xFF);
@@ -77,7 +77,7 @@ bool Tablature::collectAllNotes()
     firstNote.m_string = 0xFF;
     notes.insert(0, firstNote);
 
-    for (auto it = m_sng.m_arrangements.crbegin(); it != m_sng.m_arrangements.crend(); ++it)
+    for (auto it = m_sng.arrangements().crbegin(); it != m_sng.arrangements().crend(); ++it)
     {
         for (const auto& note : (*it).m_notes)
         {
