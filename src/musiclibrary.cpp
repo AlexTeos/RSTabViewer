@@ -66,6 +66,12 @@ QHash<int, QByteArray> MusicLibrary::roleNames() const
 
 void MusicLibrary::collectArchives(const QDir& dir)
 {
+    if (not dir.exists())
+    {
+        QDir().mkdir(dir.path());
+        return;
+    }
+
     QStringList archiveNames = dir.entryList(QStringList() << "*.psarc", QDir::Files);
     // TODO: must be multithreaded
     for (const auto& archiveName : archiveNames)

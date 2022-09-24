@@ -8,11 +8,23 @@ import Qt.labs.folderlistmodel 1.0
 Page {
     property var sngTypes: ["Bass", "Lead", "Rhythm", "Vocals", "Combo", "Showlights"]
 
-    Component.onCompleted: libraryView.currentIndex = -1
+    Component.onCompleted: {
+        libraryView.currentIndex = -1
+    }
 
     Rectangle {
         anchors.fill: parent
         color: AppSettings.backgroundColor
+
+        Text {
+            anchors.centerIn: parent
+
+            horizontalAlignment: Text.AlignHCenter
+            text: "Your library is empty\nPlease place .psarc files to songs folder"
+            font.pixelSize: parent.width / 30
+            color: "white"
+            visible: songs.rowCount() === 0
+        }
 
         GridView {
             id: libraryView
