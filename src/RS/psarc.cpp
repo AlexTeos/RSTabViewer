@@ -172,13 +172,15 @@ bool RS::PSARCArchive::unarchive(const QString& archiveName, const QString& unpa
 
                 for (uint32_t i = 0; i < entries.size(); i++)
                 {
-                    if (not inflateEntry(i,
-                                         zBlocks,
-                                         cBlockSize,
-                                         unpackDir + "/" + (i == 0 ? "psarc.temp" : entries[i].m_name),
-                                         psarcFile,
-                                         entries))
-                        return false;
+                    if (i == 0 or entries[i].m_name.contains(QRegExp("\\.json|\\.dds|\\.sng|\\.wem")))
+
+                        if (not inflateEntry(i,
+                                             zBlocks,
+                                             cBlockSize,
+                                             unpackDir + "/" + (i == 0 ? "psarc.temp" : entries[i].m_name),
+                                             psarcFile,
+                                             entries))
+                            return false;
                 }
 
                 return true;
