@@ -1,9 +1,6 @@
 #include "musiclibrary.h"
 
-MusicLibrary::MusicLibrary(const QDir& libDir, QObject* parent) : QAbstractListModel(parent)
-{
-    collectArchives(libDir);
-}
+MusicLibrary::MusicLibrary(const QDir& libDir, QObject* parent) : QAbstractListModel(parent), m_libraryDir(libDir) {}
 
 int MusicLibrary::rowCount(const QModelIndex& parent) const
 {
@@ -64,24 +61,57 @@ QHash<int, QByteArray> MusicLibrary::roleNames() const
     return names;
 }
 
-void MusicLibrary::collectArchives(const QDir& dir)
+#include <QElapsedTimer>
+#include <future>
+#include <thread>
+
+void MusicLibrary::loadNArchives(QVector<RS::PSARC>::Iterator psarcIter,
+                                 QStringList::ConstIterator   nameIter,
+                                 int                          count) const
 {
-    if (not dir.exists())
+    for (int i = 0; i < count; ++i, ++psarcIter, ++nameIter)
     {
-        QDir().mkdir(dir.path());
+        QString archiveFullName = m_libraryDir.path() + "/" + *nameIter;
+        QString unpackPath      = m_libraryDir.path() + "/" + QFileInfo(archiveFullName).baseName();
+        if (not QDir(QFileInfo(archiveFullName).completeBaseName()).exists())
+            RS::PSARCArchive::unarchive(archiveFullName, unpackPath);
+        // TODO: is it a best way?
+        RS::PSARC psarc(unpackPath);
+        *psarcIter = std::move(psarc);
+    }
+}
+
+void MusicLibrary::load()
+{
+    if (not m_libraryDir.exists())
+    {
+        QDir().mkdir(m_libraryDir.path());
         return;
     }
 
-    QStringList archiveNames = dir.entryList(QStringList() << "*.psarc", QDir::Files);
-    // TODO: must be multithreaded
-    for (const auto& archiveName : archiveNames)
+    beginResetModel();
+    QStringList archiveNames = m_libraryDir.entryList(QStringList() << "*.psarc", QDir::Files);
+    m_psarcs.resize(archiveNames.length());
+
+    // TODO: use QFuture
+    qint16    threadCount = std::thread::hardware_concurrency();
+    qsizetype archivesPerThread =
+        archiveNames.size() >= threadCount ? archiveNames.size() / threadCount : archiveNames.size();
+    std::vector<std::future<void>> results;
+
+    QVector<RS::PSARC>::Iterator psarcIter = m_psarcs.begin();
+    QStringList::ConstIterator   nameIter  = archiveNames.cbegin();
+    for (qsizetype i = 0; i < archiveNames.size();
+         psarcIter += archivesPerThread, nameIter += archivesPerThread, i += archivesPerThread)
     {
-        QString archiveFullName = dir.path() + "/" + archiveName;
-        QString unpackPath      = dir.path() + "/" + QFileInfo(archiveFullName).baseName();
-        if (not QDir(QFileInfo(archiveFullName).completeBaseName()).exists())
-            RS::PSARCArchive::unarchive(archiveFullName, unpackPath);
-        m_psarcs.append(unpackPath);
+        archivesPerThread = qMin(archiveNames.length() - i, archivesPerThread);
+        results.push_back(std::async(&MusicLibrary::loadNArchives, this, psarcIter, nameIter, archivesPerThread));
     }
+    for (auto& result : results)
+    {
+        result.get();
+    }
+    endResetModel();
 }
 
 Tablature* MusicLibrary::tablature()
@@ -91,5 +121,5 @@ Tablature* MusicLibrary::tablature()
 
 void MusicLibrary::setTablature(int index, int type)
 {
-    m_tablature.setSNG(m_psarcs[index].m_sngs[(RS::SngType)type]);
+    m_tablature.setSNG(m_psarcs[index].sng((RS::SngType)type));
 }

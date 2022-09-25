@@ -27,8 +27,7 @@ public:
 
     bool setSNG(const RS::SNG& sng);
 
-    // TODO: uncomment
-    //private:
+private:
     bool collectAllNotes();
 
     RS::SNG           m_sng;

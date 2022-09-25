@@ -34,15 +34,17 @@ public:
     };
 
     Tablature* tablature();
+
 public slots:
     void setTablature(int index, int type);
+    void load();
 
-    // TODO: uncomment
-public: //private:
-    void collectArchives(const QDir& dir);
+private:
+    void loadNArchives(QVector<RS::PSARC>::Iterator psarcIter, QStringList::ConstIterator nameIter, int count) const;
 
     QVector<RS::PSARC> m_psarcs;
     Tablature          m_tablature;
+    QDir               m_libraryDir;
 };
 
 #endif // MUSICLIBRARYMODEL_H

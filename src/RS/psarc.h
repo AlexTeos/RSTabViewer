@@ -61,6 +61,7 @@ class PSARC
     Q_PROPERTY(QVariantList instruments READ instruments)
 public:
     PSARC(const QString psarcDir);
+    PSARC(){};
     QString      songName() const;
     QString      artistName() const;
     QString      albumName() const;
@@ -70,9 +71,9 @@ public:
     QString      trackTeaser() const;
     QString      albumImage() const;
     QVariantList instruments() const;
+    RS::SNG&     sng(SngType type);
 
-    // TODO: uncomment
-    //private:
+private:
     bool initializeAtributes();
     bool initializeSngs();
     bool initializeTracks();

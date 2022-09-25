@@ -273,6 +273,11 @@ QVariantList RS::PSARC::instruments() const
     return instruments;
 }
 
+RS::SNG& RS::PSARC::sng(SngType type)
+{
+    return m_sngs[type];
+}
+
 bool RS::PSARC::initializeAtributes()
 {
     QDir manifestDir(m_filesDir.path() + "/manifests");

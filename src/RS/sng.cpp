@@ -79,7 +79,7 @@ bool SNG::dummyRead(QIODevice& input, const qint64& structureSize, const qint64&
 
 void SNG::setDecryptedFile(const QString& newDecryptedFile)
 {
-    decryptedFile = newDecryptedFile;
+    m_decryptedFile = newDecryptedFile;
 }
 
 bool SNG::parse(const QString& decryptedSngFileName) const
@@ -128,7 +128,7 @@ const QVector<Arrangement>& SNG::arrangements() const
 {
     if (not m_parsed)
     {
-        m_parsed = parse(decryptedFile);
+        m_parsed = parse(m_decryptedFile);
     }
 
     return m_arrangements;
@@ -138,7 +138,7 @@ const Metadata& SNG::metadata() const
 {
     if (not m_parsed)
     {
-        m_parsed = parse(decryptedFile);
+        m_parsed = parse(m_decryptedFile);
     }
 
     return m_metadata;
@@ -148,7 +148,7 @@ const QVector<Chord>& SNG::chords() const
 {
     if (not m_parsed)
     {
-        m_parsed = parse(decryptedFile);
+        m_parsed = parse(m_decryptedFile);
     }
 
     return m_chords;

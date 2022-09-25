@@ -59,7 +59,8 @@ void TestPSARC::testParse()
         {
             RS::SNG sng;
             sng.setDecryptedFile(archiveName + "\\songs\\bin\\generic\\" + sngName);
-            QVERIFY2(sng.arrangements().size() > 0, archiveName.toLatin1());
+            if (sngName.contains("vocals")) continue;
+            QVERIFY2(sng.arrangements().size(), archiveName.toLatin1());
         }
     }
 }

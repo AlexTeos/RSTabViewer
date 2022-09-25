@@ -7,23 +7,36 @@ import Qt.labs.folderlistmodel 1.0
 
 Page {
     property var sngTypes: ["Bass", "Lead", "Rhythm", "Vocals", "Combo", "Showlights"]
+    property bool completed: false
 
     Component.onCompleted: {
         libraryView.currentIndex = -1
+        songs.load()
+        completed = true
     }
 
     Rectangle {
         anchors.fill: parent
         color: AppSettings.backgroundColor
 
+        Image {
+            height: parent.height / 2
+            anchors.centerIn: parent
+
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/images/background.png"
+            visible: !completed
+        }
+
         Text {
+            id: hint
             anchors.centerIn: parent
 
             horizontalAlignment: Text.AlignHCenter
             text: "Your library is empty\nPlease place .psarc files to songs folder"
             font.pixelSize: parent.width / 30
             color: "white"
-            visible: songs.rowCount() === 0
+            visible: completed && libraryView.contentHeight === 0
         }
 
         GridView {
@@ -34,6 +47,7 @@ Page {
             cellHeight: cellWidth + cellWidth / 4
             model: songs
             delegate: songDelegate
+            boundsBehavior: Flickable.StopAtBounds
 
             onMovementStarted: {
                 playMusic.pause()

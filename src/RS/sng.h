@@ -28,7 +28,7 @@ private:
     mutable Metadata             m_metadata;
     mutable QVector<Chord>       m_chords;
     mutable bool                 m_parsed = false;
-    QString                      decryptedFile;
+    QString                      m_decryptedFile;
 };
 }
 
