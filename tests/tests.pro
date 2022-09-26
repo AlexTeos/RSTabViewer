@@ -14,8 +14,9 @@ SOURCES += \
     ../src/RS/chord.cpp \
     ../src/RS/common.cpp \
     ../src/RS/metadata.cpp \
-    ../src/RS/psarc.cpp \
+    ../src/RS/psarcarchive.cpp \
     ../src/RS/sng.cpp \
+    ../src/RS/soundbank.cpp \
     main.cpp \
     tst_psarc.cpp
 
@@ -27,8 +28,9 @@ HEADERS += \
     ../src/RS/chord.h \
     ../src/RS/common.h \
     ../src/RS/metadata.h \
-    ../src/RS/psarc.h \
+    ../src/RS/psarcarchive.h \
     ../src/RS/sng.h \
+    ../src/RS/soundbank.h \
     tst_psarc.h
 
 # Vorbis

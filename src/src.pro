@@ -14,6 +14,8 @@ SOURCES += \
         RS/chord.cpp \
         RS/common.cpp \
         RS/metadata.cpp \
+        RS/psarcarchive.cpp \
+        RS/soundbank.cpp \
         main.cpp \
         RS/psarc.cpp \
         RS/sng.cpp \
@@ -38,7 +40,9 @@ HEADERS += \
     RS/common.h \
     RS/metadata.h \
     RS/psarc.h \
+    RS/psarcarchive.h \
     RS/sng.h \
+    RS/soundbank.h \
     musiclibrary.h \
     tablature.h
 

@@ -79,6 +79,9 @@ private:
     bool initializeTracks();
     bool initializeImage();
 
+    QString songBank() const;
+    QString previewBankPath() const;
+
     QJsonObject             m_songAtributes;
     QDir                    m_filesDir;
     QMap<SngType, RS::SNG>  m_sngs;

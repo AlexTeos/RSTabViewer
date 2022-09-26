@@ -3,6 +3,7 @@
 #include <ww2ogg.h>
 
 #include "../src/RS/3rdparty/revorb/revorb.h"
+#include "../src/RS/soundbank.h"
 
 void TestPSARC::initTestCase()
 {
@@ -61,6 +62,22 @@ void TestPSARC::testParse()
             sng.setDecryptedFile(archiveName + "\\songs\\bin\\generic\\" + sngName);
             if (sngName.contains("vocals")) continue;
             QVERIFY2(sng.arrangements().size(), archiveName.toLatin1());
+        }
+    }
+}
+
+void TestPSARC::testSoundBank()
+{
+    foreach(QString archiveName, m_archiveNames)
+    {
+        archiveName.truncate(archiveName.size() - 6);
+        QStringList bnkNames = QDir(archiveName + "\\audio\\windows").entryList(QStringList() << "*.bnk", QDir::Files);
+        QVERIFY2(bnkNames.size(), archiveName.toLatin1());
+
+        for (const QString& bnk : bnkNames)
+        {
+            QString filePath = archiveName + "\\audio\\windows\\" + bnk;
+            QVERIFY2(SoundBank::getWemId(filePath) != 0, archiveName.toLatin1());
         }
     }
 }
