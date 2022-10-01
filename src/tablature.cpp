@@ -26,6 +26,7 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
                        ? QVariant(m_sng.metadata().m_songLength - m_notes[index.row()].m_time)
                        : QVariant(m_notes[index.row() + 1].m_time - m_notes[index.row()].m_time);
         case FretsRole:
+        {
             QList<QVariant> frets;
             if (isChord)
                 for (int i = 0; i < 6; ++i)
@@ -33,8 +34,10 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             else
                 for (int i = 0; i < 6; ++i)
                     frets.append(i == m_notes[index.row()].m_string ? m_notes[index.row()].m_fret[0] : 0xFF);
-
             return QVariant(frets);
+        }
+        case SustainRole:
+            return QVariant(m_notes[index.row()].m_sustain);
     }
 
     return QVariant();
@@ -53,6 +56,7 @@ QHash<int, QByteArray> Tablature::roleNames() const
     names[DurationRole]  = "duration";
     names[FretsRole]     = "frets";
     names[StartTimeRole] = "startTime";
+    names[SustainRole]   = "sustain";
 
     return names;
 }

@@ -22,7 +22,8 @@ public:
         NameRole = Qt::UserRole + 1,
         DurationRole,
         FretsRole,
-        StartTimeRole
+        StartTimeRole,
+        SustainRole
     };
 
     bool setSNG(const RS::SNG& sng);

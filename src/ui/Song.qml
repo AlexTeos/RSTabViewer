@@ -434,10 +434,11 @@ Page {
                 width: duration * pixelsPerSecond
                 height: tablatureView.height
                 z: tablatureView.count - index
+
                 Column {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    anchors.horizontalCenter: parent.left
+                    anchors.left: parent.left
 
                     Rectangle {
                         id: chord
@@ -474,8 +475,10 @@ Page {
                         delegate: Rectangle {
                             id: fret
                             height: parent.height / 7
-                            width: height
-                            radius: width / 5
+                            width: Math.max(height / 1.4,
+                                            pixelsPerSecond * sustain)
+
+                            radius: height / 5
                             color: stringColors[index]
 
                             gradient: Gradient {
@@ -495,16 +498,24 @@ Page {
 
                             Rectangle {
                                 anchors.fill: parent
-                                anchors.margins: 2
-                                radius: width / 5
+                                anchors.margins: parent.height / 25
+                                radius: height / 5
                                 color: "black"
                                 opacity: 0.5
                             }
 
                             Text {
+                                id: fretText
                                 text: frets[index]
-                                anchors.centerIn: parent
-                                font.pixelSize: parent.height
+                                anchors.left: parent.left
+                                anchors.top: parent.top
+                                height: parent.height
+                                width: parent.width
+                                horizontalAlignment: Text.AlignHCenter
+                                anchors.leftMargin: -parent.height * 0.05
+
+                                font.letterSpacing: -parent.height * 0.1
+                                font.pixelSize: parent.height * 0.75
                                 color: "white"
                             }
                             opacity: frets[index] !== 0xFF ? 100 : 0
