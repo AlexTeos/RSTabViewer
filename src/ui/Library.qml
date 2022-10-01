@@ -51,9 +51,11 @@ Page {
 
             onMovementStarted: {
                 playMusic.pause()
+                libraryView.currentIndex = -1
             }
             onFlickStarted: {
                 playMusic.pause()
+                libraryView.currentIndex = -1
             }
         }
 

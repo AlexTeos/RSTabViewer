@@ -133,10 +133,10 @@ int PSARC::arrangementType() const
     return 0;
 }
 
-bool PSARC::initializeAtributes(const QString& filter)
+bool PSARC::initializeAtributes(const QStringList& filters)
 {
     QDirIterator it(
-        m_filesDir.path() + "/manifests", QStringList() << ("*" + filter), QDir::Files, QDirIterator::Subdirectories);
+        m_filesDir.path() + "/manifests", QStringList() << filters, QDir::Files, QDirIterator::Subdirectories);
 
     if (it.hasNext())
     {
@@ -209,7 +209,7 @@ bool PSARC::initializeSngs()
             jsonFile.chop(3);
             jsonFile += ("json");
 
-            initializeAtributes(jsonFile);
+            initializeAtributes({"*" + jsonFile});
             sngType = clarifyTypeInManifest();
         }
         else

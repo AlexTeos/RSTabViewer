@@ -63,6 +63,7 @@ ApplicationWindow {
 
             Keys.onReleased: {
                 if (event.key === Qt.Key_Back) {
+                    playMusic.stop()
                     mainSwipeView.setCurrentIndex(kLibraryPage)
                     event.accepted = true
                 }

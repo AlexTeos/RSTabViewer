@@ -45,10 +45,10 @@ public:
     State        state() const;
 
 private:
-    bool      initializeAtributes(const QString& filter = ".json");
-    bool      initializeSngs();
-    bool      initializeTracks();
-    bool      initializeImage();
+    bool initializeAtributes(const QStringList& filters = {"*bass.json", "*lead.json", "*rythm.json", "*combo.json"});
+    bool initializeSngs();
+    bool initializeTracks();
+    bool initializeImage();
     SNG::Type clarifyTypeInManifest() const;
 
     QString songBank() const;

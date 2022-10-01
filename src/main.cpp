@@ -13,9 +13,9 @@ int main(int argc, char* argv[])
     QQmlApplicationEngine engine;
 
 #ifdef Q_OS_ANDROID
-    QDir workDirectory("/sdcard/songs/");
+    QDir workDirectory("/sdcard/RSTabsData/");
 #else
-    QDir workDirectory("./songs");
+    QDir workDirectory("./RSTabsData");
 #endif
 
     MusicLibrary library(workDirectory);
