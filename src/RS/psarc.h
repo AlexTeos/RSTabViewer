@@ -11,43 +11,6 @@
 
 namespace RS
 {
-class PSARCArchive
-{
-public:
-    PSARCArchive() = delete;
-    static bool unarchive(const QString& psarcFileName, const QString& unpackDir);
-
-private:
-    struct PSARCEntry
-    {
-        int32_t  m_id;
-        uint64_t m_length;
-        QString  m_name;
-        uint32_t m_zIndex;
-        uint64_t m_zOffset;
-    };
-
-    static const uint32_t headerSize        = 20;
-    static const uint32_t kPSARCMagicNumber = 0x50534152;
-
-    static bool inflateEntry(uint32_t&            entry,
-                             QVector<uint32_t>&   zBlocks,
-                             uint32_t&            cBlockSize,
-                             QString              fileName,
-                             QFile&               file,
-                             QVector<PSARCEntry>& entries);
-};
-
-enum SngType
-{
-    Bass = 0,
-    Lead,
-    Rhythm,
-    Vocals,
-    Combo,
-    Showlights
-};
-
 class PSARC
 {
     Q_PROPERTY(QString songName READ songName)
@@ -60,8 +23,15 @@ class PSARC
     Q_PROPERTY(QString albumImage READ albumImage)
     Q_PROPERTY(QVariantList instruments READ instruments)
 public:
+    enum State
+    {
+        Uninitialized = 0,
+        Initialized,
+        Error
+    };
+
     PSARC(const QString psarcDir);
-    PSARC(){};
+    PSARC() : m_state(State::Uninitialized){};
     QString      songName() const;
     QString      artistName() const;
     QString      albumName() const;
@@ -70,23 +40,28 @@ public:
     QString      track() const;
     QString      trackTeaser() const;
     QString      albumImage() const;
-    QVariantList instruments() const;
-    RS::SNG&     sng(SngType type);
+    QVariantList arrangements() const;
+    SNG&         sng(int index);
+    State        state() const;
 
 private:
-    bool initializeAtributes();
-    bool initializeSngs();
-    bool initializeTracks();
-    bool initializeImage();
+    bool      initializeAtributes(const QString& filter = ".json");
+    bool      initializeSngs();
+    bool      initializeTracks();
+    bool      initializeImage();
+    SNG::Type clarifyTypeInManifest() const;
 
     QString songBank() const;
     QString previewBankPath() const;
+    QString dlcKey() const;
+    int     arrangementType() const;
 
     QJsonObject             m_songAtributes;
     QDir                    m_filesDir;
-    QMap<SngType, RS::SNG>  m_sngs;
+    QVector<SNG>            m_sngs;
     QPair<QString, QString> m_tracks;
     QString                 m_albumImagePath;
+    State                   m_state;
 };
 }
 

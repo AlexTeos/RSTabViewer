@@ -1,5 +1,7 @@
 #include "tst_psarc.h"
 
+#include <QDirIterator>
+
 #include <ww2ogg.h>
 
 #include "../src/RS/3rdparty/revorb/revorb.h"
@@ -30,38 +32,18 @@ void TestPSARC::testUnarchive()
     }
 }
 
-void TestPSARC::testDecrypt()
+void TestPSARC::testSng()
 {
     foreach(QString archiveName, m_archiveNames)
     {
         archiveName.truncate(archiveName.size() - 6);
-        QStringList sngNames =
-            QDir(archiveName + "\\songs\\bin\\generic").entryList(QStringList() << "*.sng", QDir::Files);
-        QVERIFY2(sngNames.size(), archiveName.toLatin1());
-
-        for (const auto& sngName : sngNames)
+        QDirIterator it(archiveName, QStringList() << "*.sng", QDir::Files, QDirIterator::Subdirectories);
+        QVERIFY(it.hasNext());
+        while (it.hasNext())
         {
-            RS::SNG sng;
-            QVERIFY2(sng.decrypt(archiveName + "\\songs\\bin\\generic\\" + sngName), archiveName.toLatin1());
-        }
-    }
-}
-
-void TestPSARC::testParse()
-{
-    foreach(QString archiveName, m_archiveNames)
-    {
-        archiveName.truncate(archiveName.size() - 6);
-        QStringList sngNames =
-            QDir(archiveName + "\\songs\\bin\\generic").entryList(QStringList() << "*.snguc", QDir::Files);
-        QVERIFY2(sngNames.size(), archiveName.toLatin1());
-
-        for (const auto& sngName : sngNames)
-        {
-            RS::SNG sng;
-            sng.setDecryptedFile(archiveName + "\\songs\\bin\\generic\\" + sngName);
-            if (sngName.contains("vocals")) continue;
-            QVERIFY2(sng.arrangements().size(), archiveName.toLatin1());
+            RS::SNG sng(RS::SNG::Type::Bass, it.next());
+            if (it.filePath().contains("vocals")) continue;
+            QVERIFY(sng.arrangements().size());
         }
     }
 }
@@ -71,12 +53,11 @@ void TestPSARC::testSoundBank()
     foreach(QString archiveName, m_archiveNames)
     {
         archiveName.truncate(archiveName.size() - 6);
-        QStringList bnkNames = QDir(archiveName + "\\audio\\windows").entryList(QStringList() << "*.bnk", QDir::Files);
-        QVERIFY2(bnkNames.size(), archiveName.toLatin1());
-
-        for (const QString& bnk : bnkNames)
+        QDirIterator it(archiveName, QStringList() << "*.bnk", QDir::Files, QDirIterator::Subdirectories);
+        QVERIFY(it.hasNext());
+        while (it.hasNext())
         {
-            QString filePath = archiveName + "\\audio\\windows\\" + bnk;
+            QString filePath = it.next();
             QVERIFY2(SoundBank::getWemId(filePath) != 0, archiveName.toLatin1());
         }
     }
@@ -87,16 +68,14 @@ void TestPSARC::testWW2OGG()
     foreach(QString archiveName, m_archiveNames)
     {
         archiveName.truncate(archiveName.size() - 6);
-        QStringList audioNames =
-            QDir(archiveName + "\\audio\\windows").entryList(QStringList() << "*.wem", QDir::Files);
-        QVERIFY2(audioNames.size(), archiveName.toLatin1());
-
-        for (const QString& audio : audioNames)
+        QDirIterator it(archiveName, QStringList() << "*.wem", QDir::Files, QDirIterator::Subdirectories);
+        QVERIFY(it.hasNext());
+        while (it.hasNext())
         {
-            QString filePath    = archiveName + "\\audio\\windows\\" + audio;
+            QString filePath    = it.next();
             QString outFilePath = filePath;
             outFilePath.replace(QStringLiteral(".wem"), QStringLiteral(".ogg"), Qt::CaseInsensitive);
-            QVERIFY2(ww2ogg(filePath.toStdString(), outFilePath.toStdString()), archiveName.toLatin1());
+            QVERIFY(ww2ogg(filePath.toStdString(), outFilePath.toStdString()));
         }
     }
 }
@@ -106,13 +85,11 @@ void TestPSARC::testRevorb()
     foreach(QString archiveName, m_archiveNames)
     {
         archiveName.truncate(archiveName.size() - 6);
-        QStringList audioNames =
-            QDir(archiveName + "\\audio\\windows").entryList(QStringList() << "*.ogg", QDir::Files);
-        QVERIFY2(audioNames.size(), archiveName.toLatin1());
-
-        for (const QString& audio : audioNames)
+        QDirIterator it(archiveName, QStringList() << "*.ogg", QDir::Files, QDirIterator::Subdirectories);
+        QVERIFY(it.hasNext());
+        while (it.hasNext())
         {
-            QVERIFY2(revorb((archiveName + "\\audio\\windows\\" + audio).toStdString()), archiveName.toLatin1());
+            QVERIFY(revorb(it.next().toStdString()));
         }
     }
 }

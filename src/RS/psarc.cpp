@@ -1,6 +1,6 @@
 #include "psarc.h"
 
-#include <QDir>
+#include <QDirIterator>
 #include <QJsonDocument>
 #include <QJsonObject>
 
@@ -9,15 +9,23 @@
 #include "../src/RS/3rdparty/revorb/revorb.h"
 #include "soundbank.h"
 
-RS::PSARC::PSARC(const QString psarcDir) : m_filesDir(psarcDir)
+namespace RS
 {
-    initializeAtributes();
-    initializeSngs();
-    initializeTracks();
-    initializeImage();
+PSARC::PSARC(const QString psarcDir) : m_filesDir(psarcDir), m_state(State::Uninitialized)
+{
+    if (initializeAtributes())
+        if (initializeSngs())
+            if (initializeTracks())
+                if (initializeImage())
+                {
+                    m_state = State::Initialized;
+                    return;
+                }
+
+    m_state = State::Uninitialized;
 }
 
-QString RS::PSARC::songName() const
+QString PSARC::songName() const
 {
     if (m_songAtributes.contains("SongName") && m_songAtributes["SongName"].isString())
         return m_songAtributes["SongName"].toString();
@@ -25,7 +33,7 @@ QString RS::PSARC::songName() const
     return "";
 }
 
-QString RS::PSARC::artistName() const
+QString PSARC::artistName() const
 {
     if (m_songAtributes.contains("ArtistName") && m_songAtributes["ArtistName"].isString())
         return m_songAtributes["ArtistName"].toString();
@@ -33,7 +41,7 @@ QString RS::PSARC::artistName() const
     return "";
 }
 
-QString RS::PSARC::albumName() const
+QString PSARC::albumName() const
 {
     if (m_songAtributes.contains("AlbumName") && m_songAtributes["AlbumName"].isString())
         return m_songAtributes["AlbumName"].toString();
@@ -41,7 +49,7 @@ QString RS::PSARC::albumName() const
     return "";
 }
 
-int RS::PSARC::duration() const
+int PSARC::duration() const
 {
     if (m_songAtributes.contains("SongLength") && m_songAtributes["SongLength"].isDouble())
         return m_songAtributes["SongLength"].toDouble();
@@ -49,7 +57,7 @@ int RS::PSARC::duration() const
     return 0;
 }
 
-int RS::PSARC::songYear() const
+int PSARC::songYear() const
 {
     if (m_songAtributes.contains("SongYear") && m_songAtributes["SongYear"].isDouble())
         return m_songAtributes["SongYear"].toInt();
@@ -57,7 +65,7 @@ int RS::PSARC::songYear() const
     return 0;
 }
 
-QString RS::PSARC::songBank() const
+QString PSARC::songBank() const
 {
     if (m_songAtributes.contains("SongBank") && m_songAtributes["SongBank"].isString())
         return m_songAtributes["SongBank"].toString();
@@ -65,7 +73,7 @@ QString RS::PSARC::songBank() const
     return "";
 }
 
-QString RS::PSARC::previewBankPath() const
+QString PSARC::previewBankPath() const
 {
     if (m_songAtributes.contains("PreviewBankPath") && m_songAtributes["PreviewBankPath"].isString())
         return m_songAtributes["PreviewBankPath"].toString();
@@ -73,71 +81,87 @@ QString RS::PSARC::previewBankPath() const
     return "";
 }
 
-QString RS::PSARC::track() const
+QString PSARC::track() const
 {
     return m_tracks.second;
 }
 
-QString RS::PSARC::trackTeaser() const
+QString PSARC::trackTeaser() const
 {
     return m_tracks.first;
 }
 
-QString RS::PSARC::albumImage() const
+QString PSARC::albumImage() const
 {
     return m_albumImagePath;
 }
 
-QVariantList RS::PSARC::instruments() const
+QVariantList PSARC::arrangements() const
 {
-    QVariantList instruments;
-    for (auto sngType : m_sngs.keys())
-        switch (sngType)
-        {
-            case Bass:
-            case Lead:
-            case Rhythm:
-                instruments.append(sngType);
-            case Vocals:
-            case Combo:
-            case Showlights:
-            default:
-                break;
-        }
+    QVariantList arrangements;
+    for (const auto& sng : m_sngs)
+        arrangements.append(sng.type());
 
-    return instruments;
+    return arrangements;
 }
 
-RS::SNG& RS::PSARC::sng(SngType type)
+SNG& PSARC::sng(int index)
 {
-    return m_sngs[type];
+    //TODO: FIX
+    m_sngs[index].metadata();
+    return m_sngs[index];
 }
 
-bool RS::PSARC::initializeAtributes()
+PSARC::State PSARC::state() const
 {
-    QDir manifestDir(m_filesDir.path() + "/manifests");
-    manifestDir.setPath(manifestDir.path() + "/" + manifestDir.entryList(QStringList() << "songs_*", QDir::Dirs)[0]);
-    QStringList manifestsFileNames = manifestDir.entryList(QStringList() << "*.json", QDir::Files);
-    QFile       manifest(manifestDir.path() + "/" + manifestsFileNames[0]);
-    if (manifest.open(QIODevice::ReadOnly))
+    return m_state;
+}
+
+QString PSARC::dlcKey() const
+{
+    if (m_songAtributes.contains("AlbumArt") && m_songAtributes["AlbumArt"].isString())
+        return m_songAtributes["AlbumArt"].toString().remove((QRegExp(".*_")));
+
+    return "";
+}
+
+int PSARC::arrangementType() const
+{
+    if (m_songAtributes.contains("ArrangementType") && m_songAtributes["ArrangementType"].isDouble())
+        return m_songAtributes["ArrangementType"].toInt();
+
+    return 0;
+}
+
+bool PSARC::initializeAtributes(const QString& filter)
+{
+    QDirIterator it(
+        m_filesDir.path() + "/manifests", QStringList() << ("*" + filter), QDir::Files, QDirIterator::Subdirectories);
+
+    if (it.hasNext())
     {
-        QByteArray arr = manifest.readAll();
+        QFile manifest(it.next());
 
-        QJsonDocument replyJsonDocument(QJsonDocument::fromJson(arr));
-
-        if (replyJsonDocument.isObject())
+        if (manifest.open(QIODevice::ReadOnly))
         {
-            QJsonObject replyJsonObject = replyJsonDocument.object();
-            if (replyJsonObject.contains("Entries") && replyJsonObject["Entries"].isObject())
+            QByteArray arr = manifest.readAll();
+
+            QJsonDocument replyJsonDocument(QJsonDocument::fromJson(arr));
+
+            if (replyJsonDocument.isObject())
             {
-                QJsonObject entryObject = replyJsonObject["Entries"].toObject();
-                if (entryObject.keys().size() > 0)
+                QJsonObject replyJsonObject = replyJsonDocument.object();
+                if (replyJsonObject.contains("Entries") && replyJsonObject["Entries"].isObject())
                 {
-                    entryObject = entryObject[entryObject.keys()[0]].toObject();
-                    if (entryObject.contains("Attributes") && entryObject["Attributes"].isObject())
+                    QJsonObject entryObject = replyJsonObject["Entries"].toObject();
+                    if (entryObject.keys().size() > 0)
                     {
-                        m_songAtributes = entryObject["Attributes"].toObject();
-                        return true;
+                        entryObject = entryObject[entryObject.keys()[0]].toObject();
+                        if (entryObject.contains("Attributes") && entryObject["Attributes"].isObject())
+                        {
+                            m_songAtributes = entryObject["Attributes"].toObject();
+                            return true;
+                        }
                     }
                 }
             }
@@ -147,91 +171,125 @@ bool RS::PSARC::initializeAtributes()
     return false;
 }
 
-bool RS::PSARC::initializeSngs()
+SNG::Type PSARC::clarifyTypeInManifest() const
+{
+    switch (arrangementType())
+    {
+        case 0:
+            return SNG::Type::Lead;
+            break;
+        case 1:
+            return SNG::Type::Rhythm;
+            break;
+        case 2:
+            return SNG::Type::Combo;
+            break;
+        case 3:
+        default:
+            return SNG::Type::Bass;
+    }
+}
+
+bool PSARC::initializeSngs()
 {
     QDir        sngsDir(m_filesDir.path() + "/songs/bin/generic");
     QStringList sngNames = sngsDir.entryList(QStringList() << "*.sng", QDir::Files);
     for (QString sngName : sngNames)
     {
-        RS::SNG sng;
-        if (not sngsDir.exists(sngName + "uc"))
-        {
-            // TODO: do only on demand
-            if (not sng.decrypt(sngsDir.path() + "/" + sngName)) continue;
-        }
-
-        SngType sngType;
+        SNG::Type sngType;
         if (sngName.contains("lead", Qt::CaseInsensitive))
-            sngType = SngType::Lead;
+            sngType = SNG::Type::Lead;
         else if (sngName.contains("bass", Qt::CaseInsensitive))
-            sngType = SngType::Bass;
+            sngType = SNG::Type::Bass;
         else if (sngName.contains("rhythm", Qt::CaseInsensitive))
-            sngType = SngType::Rhythm;
+            sngType = SNG::Type::Rhythm;
+        else if (sngName.contains("combo", Qt::CaseInsensitive))
+        {
+            QString jsonFile = sngName;
+            jsonFile.chop(3);
+            jsonFile += ("json");
+
+            initializeAtributes(jsonFile);
+            sngType = clarifyTypeInManifest();
+        }
         else
             continue;
 
-        sng.setDecryptedFile(sngsDir.path() + "/" + sngName + "uc");
-        m_sngs.insert(sngType, sng);
+        m_sngs.push_back(SNG(sngType, sngsDir.path() + "/" + sngName));
     }
 
     return m_sngs.size();
 }
 
-bool RS::PSARC::initializeTracks()
+bool PSARC::initializeTracks()
 {
     // Main
     QFileInfo soundBankFile(m_filesDir.path() + "/audio/windows/" + songBank());
     if (not soundBankFile.exists()) return false;
 
-    QString   wemId = SoundBank::getWemId(soundBankFile.filePath());
-    QFileInfo wemFile(m_filesDir.path() + "/audio/windows/" + QString(wemId) + ".wem");
-    if (not wemFile.exists()) return false;
+    QString wemId = SoundBank::getWemId(soundBankFile.filePath());
 
     QString outFilePath = m_filesDir.path() + "/audio/windows/" + QString(wemId) + ".ogg";
-    if (ww2ogg(wemFile.filePath().toStdString(), outFilePath.toStdString()))
+    if (QDir().exists(outFilePath))
     {
-        if (revorb(outFilePath.toStdString()))
+        m_tracks.second = outFilePath;
+    }
+    else
+    {
+        QFileInfo wemFile(m_filesDir.path() + "/../audio/windows/" + QString(wemId) + ".wem");
+        if (not wemFile.exists()) return false;
+
+        if (ww2ogg(wemFile.filePath().toStdString(), outFilePath.toStdString()))
         {
-            m_tracks.second = outFilePath;
+            if (revorb(outFilePath.toStdString()))
+                m_tracks.second = outFilePath;
+            else
+                return false;
         }
         else
             return false;
     }
-    else
-        return false;
 
     // Preview
     QFileInfo previewSoundBankFile(m_filesDir.path() + "/audio/windows/" + previewBankPath());
     if (not previewSoundBankFile.exists()) return false;
 
-    QString   previewWmId = SoundBank::getWemId(previewSoundBankFile.filePath());
-    QFileInfo previewWemFile(m_filesDir.path() + "/audio/windows/" + previewWmId + ".wem");
-    if (not previewWemFile.exists()) return false;
+    QString previewWmId = SoundBank::getWemId(previewSoundBankFile.filePath());
 
     QString previewOutFilePath = m_filesDir.path() + "/audio/windows/" + previewWmId + ".ogg";
-    if (ww2ogg(previewWemFile.filePath().toStdString(), previewOutFilePath.toStdString()))
+    if (QDir().exists(previewOutFilePath))
     {
-        if (revorb(previewOutFilePath.toStdString()))
+        m_tracks.first = previewOutFilePath;
+    }
+    else
+    {
+        QFileInfo previewWemFile(m_filesDir.path() + "/../audio/windows/" + previewWmId + ".wem");
+        if (not previewWemFile.exists()) return false;
+
+        if (ww2ogg(previewWemFile.filePath().toStdString(), previewOutFilePath.toStdString()))
         {
-            m_tracks.first = previewOutFilePath;
+            if (revorb(previewOutFilePath.toStdString()))
+            {
+                m_tracks.first = previewOutFilePath;
+            }
+            else
+                return false;
         }
         else
             return false;
     }
-    else
-        return false;
 
     return true;
 }
 
-bool RS::PSARC::initializeImage()
+bool PSARC::initializeImage()
 {
-    QDir        imagesDir(m_filesDir.path() + "/gfxassets/album_art");
-    QStringList imageNames = imagesDir.entryList(QStringList() << "*_256.dds", QDir::Files);
+    QFileInfo albumImageFile(m_filesDir.path() + "/gfxassets/album_art/album_" + dlcKey() + "_256.dds");
 
-    if (not imageNames.size()) return false;
+    if (not albumImageFile.exists()) return false;
 
-    m_albumImagePath = imagesDir.path() + "/" + imageNames[0];
+    m_albumImagePath = albumImageFile.filePath();
 
     return true;
+}
 }

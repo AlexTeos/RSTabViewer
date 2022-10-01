@@ -1,7 +1,7 @@
 #include <QtAlgorithms>
 #include <QtTest>
 
-#include "../src/RS/psarc.h"
+#include "../src/RS/psarcarchive.h"
 #include "../src/RS/sng.h"
 
 class TestPSARC : public QObject
@@ -12,8 +12,7 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
     void testUnarchive();
-    void testDecrypt();
-    void testParse();
+    void testSng();
     void testSoundBank();
     void testWW2OGG();
     void testRevorb();

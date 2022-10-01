@@ -1,6 +1,6 @@
 #include "tablature.h"
 
-Tablature::Tablature(QObject* parent) : QAbstractListModel(parent) {}
+Tablature::Tablature(QObject* parent) : QAbstractListModel(parent), m_sng(RS::SNG::Type::Bass, "") {}
 
 int Tablature::rowCount(const QModelIndex& parent) const
 {

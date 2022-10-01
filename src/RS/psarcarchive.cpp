@@ -21,40 +21,37 @@ bool RS::PSARCArchive::inflateEntry(uint32_t&            entry,
         QFile stream(fileName);
         if (stream.open(QIODevice::WriteOnly))
         {
-            if (entries[entry].m_length != 0)
+            file.seek(entries[entry].m_zOffset);
+            uint32_t zIndex = entries[entry].m_zIndex;
+            do
             {
-                file.seek(entries[entry].m_zOffset);
-                uint32_t zIndex = entries[entry].m_zIndex;
-                do
+                if (zBlocks[zIndex] == 0)
                 {
-                    if (zBlocks[zIndex] == 0)
+                    stream.write(file.read(cBlockSize), cBlockSize);
+                }
+                else
+                {
+                    uint16_t   isGzipped      = READ_BE_UINT16((uint8_t*)file.peek(2).constData());
+                    QByteArray compressedData = file.read(zBlocks[zIndex]);
+                    if (isGzipped == 0x78da)
                     {
-                        stream.write(file.read(cBlockSize), cBlockSize);
+                        QByteArray uncompressedData;
+                        uncompress(uncompressedData,
+                                   qMin(entries[entry].m_length - (zIndex - entries[entry].m_zIndex) * cBlockSize,
+                                        (uint64_t)cBlockSize),
+                                   compressedData);
+                        stream.write(uncompressedData);
                     }
                     else
-                    {
-                        uint16_t   isGzipped      = READ_BE_UINT16((uint8_t*)file.peek(2).constData());
-                        QByteArray compressedData = file.read(zBlocks[zIndex]);
-                        if (isGzipped == 0x78da)
-                        {
-                            QByteArray uncompressedData;
-                            uncompress(uncompressedData,
-                                       qMin(entries[entry].m_length - (zIndex - entries[entry].m_zIndex) * cBlockSize,
-                                            (uint64_t)cBlockSize),
-                                       compressedData);
-                            stream.write(uncompressedData);
-                        }
-                        else
-                            stream.write(compressedData, zBlocks[zIndex]);
-                    }
-                    zIndex++;
-                    if (zIndex >= zBlocks.size())
-                    {
-                        // TODO: handle somehow
-                        break;
-                    }
-                } while (stream.pos() < entries[entry].m_length);
-            }
+                        stream.write(compressedData, zBlocks[zIndex]);
+                }
+                zIndex++;
+                if (zIndex >= zBlocks.size())
+                {
+                    // TODO: handle somehow
+                    break;
+                }
+            } while (stream.pos() < entries[entry].m_length);
 
             if (entry == 0)
             {
@@ -164,17 +161,38 @@ bool RS::PSARCArchive::unarchive(const QString& archiveName, const QString& unpa
                     }
                 }
 
+                QString songName = "";
                 for (uint32_t i = 0; i < entries.size(); i++)
                 {
-                    if (i == 0 or entries[i].m_name.contains(QRegExp("\\.json|\\.dds|\\.sng|\\.wem|\\.bnk")))
-
-                        if (not inflateEntry(i,
-                                             zBlocks,
-                                             cBlockSize,
-                                             unpackDir + "/" + (i == 0 ? "psarc.temp" : entries[i].m_name),
-                                             psarcFile,
-                                             entries))
-                            return false;
+                    if (entries[i].m_length != 0)
+                    {
+                        if (i == 0 or entries[i].m_name.contains(QRegExp("\\.json|\\_256.dds|\\.sng|\\.wem|\\.bnk")))
+                        {
+                            songName = "";
+                            if (i != 0 and not entries[i].m_name.contains(".wem"))
+                            {
+                                songName = entries[i].m_name;
+                                songName.remove(0, songName.lastIndexOf("/") + 1);
+                                if (entries[i].m_name.contains(".dds"))
+                                    songName.remove(songName.indexOf("album_"), 6);
+                                else if (entries[i].m_name.contains(".bnk"))
+                                {
+                                    songName.remove(songName.indexOf("song_"), 5);
+                                    songName.chop(4);
+                                }
+                                songName.remove(QRegExp("_.*"));
+                                songName += "/";
+                            }
+                            if (not inflateEntry(i,
+                                                 zBlocks,
+                                                 cBlockSize,
+                                                 unpackDir + "/" + songName +
+                                                     (i == 0 ? "psarc.temp" : entries[i].m_name),
+                                                 psarcFile,
+                                                 entries))
+                                return false;
+                        }
+                    }
                 }
 
                 return true;

@@ -77,9 +77,10 @@ Page {
                         Column {
                             anchors.fill: parent
                             Repeater {
-                                model: instruments
+                                id: arrangementRepeater
+                                model: arrangements
                                 delegate: Item {
-                                    height: parent.height / 3
+                                    height: parent.height / arrangementRepeater.count
                                     width: parent.width
                                     Rectangle {
                                         id: instrumentButton
@@ -111,7 +112,7 @@ Page {
                                     Text {
                                         anchors.centerIn: parent
 
-                                        text: sngTypes[instruments[index]]
+                                        text: sngTypes[arrangements[index]]
                                         font.pixelSize: parent.width / 8
                                         color: "white"
                                     }
@@ -120,7 +121,7 @@ Page {
                                         onClicked: {
                                             songs.setTablature(
                                                         libraryView.currentIndex,
-                                                        instruments[index])
+                                                        index)
                                             playMusic.stop()
                                             playMusic.source = "file:" + track
                                             mainSwipeView.setCurrentIndex(

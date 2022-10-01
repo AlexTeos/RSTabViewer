@@ -3,6 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QDir>
+#include <QMutex>
 
 #include "RS/psarc.h"
 #include "tablature.h"
@@ -30,7 +31,7 @@ public:
         TrackRole,
         TrackTeaserRole,
         AlbumImageRole,
-        InstrumentsRole
+        ArrangementsRole
     };
 
     Tablature* tablature();
@@ -41,10 +42,12 @@ public slots:
 
 private:
     void loadNArchives(QVector<RS::PSARC>::Iterator psarcIter, QStringList::ConstIterator nameIter, int count) const;
+    void unarchiveNArchives(QStringList::ConstIterator nameIter, int count) const;
 
     QVector<RS::PSARC> m_psarcs;
     Tablature          m_tablature;
     QDir               m_libraryDir;
+    mutable QMutex     m_songDlc;
 };
 
 #endif // MUSICLIBRARYMODEL_H
