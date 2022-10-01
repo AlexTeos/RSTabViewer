@@ -440,42 +440,12 @@ Page {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
 
-                    Rectangle {
-                        id: chord
-                        height: parent.height / 7
-                        width: height
-                        radius: width / 5
-                        color: "lightgrey"
-                        Text {
-                            text: name
-                            anchors.centerIn: parent
-                            font.pixelSize: parent.height / 2
-                            color: "black"
-                        }
-                        opacity: name !== ""
-
-                        gradient: Gradient {
-                            GradientStop {
-                                position: 0.0
-                                color: chord.color
-                            }
-                            GradientStop {
-                                position: 0.5
-                                color: Qt.lighter(chord.color, 1.9)
-                            }
-                            GradientStop {
-                                position: 1.0
-                                color: chord.color
-                            }
-                        }
-                    }
-
                     Repeater {
                         model: 6
                         delegate: Rectangle {
                             id: fret
-                            height: parent.height / 7
-                            width: Math.max(height / 1.4,
+                            height: parent.height / 6
+                            width: Math.max(height / 1.3,
                                             pixelsPerSecond * sustain)
 
                             radius: height / 5
@@ -532,7 +502,7 @@ Page {
                 anchors.right: parent.right
                 anchors.left: parent.left
                 anchors.top: parent.top
-                anchors.topMargin: parent.height / 7 * (1.5 + index)
+                anchors.topMargin: parent.height / 6 * (0.5 + index)
                 height: parent.height / 72
                 color: "grey"
 
