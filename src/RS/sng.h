@@ -23,6 +23,12 @@ public:
         Showlights
     };
 
+    enum MaskFlags
+    {
+        PalmMute = 0x40,
+        Sustain  = 0x2000
+    };
+
     SNG(Type type, const QString& file);
 
     const QVector<Arrangement>& arrangements() const;

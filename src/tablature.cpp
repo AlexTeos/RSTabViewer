@@ -37,7 +37,9 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             return QVariant(frets);
         }
         case SustainRole:
-            return QVariant(m_notes[index.row()].m_sustain);
+            return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Sustain) ? m_notes[index.row()].m_sustain : 0;
+        case PalmMuteRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PalmMute;
     }
 
     return QVariant();
@@ -57,6 +59,7 @@ QHash<int, QByteArray> Tablature::roleNames() const
     names[FretsRole]     = "frets";
     names[StartTimeRole] = "startTime";
     names[SustainRole]   = "sustain";
+    names[PalmMuteRole]  = "palmMute";
 
     return names;
 }

@@ -23,7 +23,8 @@ public:
         DurationRole,
         FretsRole,
         StartTimeRole,
-        SustainRole
+        SustainRole,
+        PalmMuteRole
     };
 
     bool setSNG(const RS::SNG& sng);

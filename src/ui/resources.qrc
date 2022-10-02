@@ -6,5 +6,6 @@
         <file>icons/plus.png</file>
         <file>icons/stop.png</file>
         <file>images/background.png</file>
+        <file>effects/palmmute.png</file>
     </qresource>
 </RCC>

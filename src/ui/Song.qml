@@ -471,7 +471,19 @@ Page {
                                 anchors.margins: parent.height / 25
                                 radius: height / 5
                                 color: "black"
-                                opacity: 0.5
+                                opacity: palmMute ? 0.25 : 0.5
+                            }
+
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: parent.height / 25
+                                Image {
+                                    anchors.fill: parent
+                                    source: "qrc:/effects/palmmute.png"
+                                    opacity: 0.7
+                                }
+                                color: "transparent"
+                                visible: palmMute
                             }
 
                             Text {
@@ -488,6 +500,7 @@ Page {
                                 font.pixelSize: parent.height * 0.75
                                 color: "white"
                             }
+
                             opacity: frets[index] !== 0xFF ? 100 : 0
                         }
                     }
