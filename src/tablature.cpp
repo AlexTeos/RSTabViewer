@@ -37,9 +37,37 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             return QVariant(frets);
         }
         case SustainRole:
-            return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Sustain) ? m_notes[index.row()].m_sustain : 0;
-        case PalmMuteRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PalmMute;
+            if (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Slide)
+            {
+                if (index.row() == m_notes.size() - 1) return m_notes[index.row()].m_sustain;
+                return m_notes[index.row()].m_sustain + m_notes[index.row() + 1].m_sustain;
+            }
+            else
+            {
+                return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Sustain) ? m_notes[index.row()].m_sustain
+                                                                                      : 0;
+            }
+        case MuteRole:
+            return m_notes[index.row()].m_mask[0] & (RS::SNG::MaskFlags::PalmMute | RS::SNG::MaskFlags::Mute);
+        case SlideRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Slide;
+        case ParentRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Parent;
+        case ChildRole:
+            // TODO: check (see Reptilia)
+            if (index.row() != 0 and m_notes[index.row() - 1].m_mask[0] & RS::SNG::MaskFlags::Slide) return true;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Child;
+        case NextFretsRole:
+            // TODO: return only 1 value
+            if (index.row() == m_notes.size() - 1) return QList<QVariant>();
+            QList<QVariant> frets;
+            if (isChord)
+                for (int i = 0; i < 6; ++i)
+                    frets.append(m_sng.chords()[m_notes[index.row() + 1].m_chord].m_frets[i]);
+            else
+                for (int i = 0; i < 6; ++i)
+                    frets.append(i == m_notes[index.row() + 1].m_string ? m_notes[index.row() + 1].m_fret[0] : 0xFF);
+            return QVariant(frets);
     }
 
     return QVariant();
@@ -59,7 +87,11 @@ QHash<int, QByteArray> Tablature::roleNames() const
     names[FretsRole]     = "frets";
     names[StartTimeRole] = "startTime";
     names[SustainRole]   = "sustain";
-    names[PalmMuteRole]  = "palmMute";
+    names[MuteRole]      = "mute";
+    names[ParentRole]    = "parentNote";
+    names[SlideRole]     = "slide";
+    names[NextFretsRole] = "nextFrets";
+    names[ChildRole]     = "childNote";
 
     return names;
 }

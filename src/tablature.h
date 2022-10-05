@@ -24,7 +24,11 @@ public:
         FretsRole,
         StartTimeRole,
         SustainRole,
-        PalmMuteRole
+        MuteRole,
+        ParentRole,
+        SlideRole,
+        NextFretsRole,
+        ChildRole
     };
 
     bool setSNG(const RS::SNG& sng);

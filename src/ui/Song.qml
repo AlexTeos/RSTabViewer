@@ -471,7 +471,7 @@ Page {
                                 anchors.margins: parent.height / 25
                                 radius: height / 5
                                 color: "black"
-                                opacity: palmMute ? 0.25 : 0.5
+                                opacity: mute ? 0.25 : 0.5
                             }
 
                             Rectangle {
@@ -479,16 +479,16 @@ Page {
                                 anchors.margins: parent.height / 25
                                 Image {
                                     anchors.fill: parent
-                                    source: "qrc:/effects/palmmute.png"
+                                    source: "qrc:/effects/mute.png"
                                     opacity: 0.7
                                 }
                                 color: "transparent"
-                                visible: palmMute
+                                visible: mute
                             }
 
                             Text {
                                 id: fretText
-                                text: frets[index]
+                                text: frets[index] + (slide ? (frets[index] > nextFrets[index] ? " ↘ " : " ↗ ") + (nextFrets[index] == 255 ? "" : nextFrets[index] == 255) : "")
                                 anchors.left: parent.left
                                 anchors.top: parent.top
                                 height: parent.height
@@ -501,7 +501,9 @@ Page {
                                 color: "white"
                             }
 
-                            opacity: frets[index] !== 0xFF ? 100 : 0
+                            // TODO: rewrite with visible
+                            opacity: (frets[index] !== 0xFF
+                                      && !childNote) ? 100 : 0
                         }
                     }
                 }
