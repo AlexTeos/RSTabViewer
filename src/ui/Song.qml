@@ -471,7 +471,7 @@ Page {
                                 anchors.margins: parent.height / 25
                                 radius: height / 5
                                 color: "black"
-                                opacity: mute ? 0.25 : 0.5
+                                opacity: (mute || harmonic) ? 0.25 : 0.5
                             }
 
                             Rectangle {
@@ -479,11 +479,14 @@ Page {
                                 anchors.margins: parent.height / 25
                                 Image {
                                     anchors.fill: parent
-                                    source: "qrc:/effects/mute.png"
+                                    source: if (mute)
+                                                "qrc:/effects/mute.png"
+                                            else
+                                                "qrc:/effects/harmonic.png"
                                     opacity: 0.7
                                 }
                                 color: "transparent"
-                                visible: mute
+                                visible: (mute || harmonic)
                             }
 
                             Text {

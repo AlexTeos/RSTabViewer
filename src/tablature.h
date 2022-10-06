@@ -28,7 +28,8 @@ public:
         ParentRole,
         SlideRole,
         NextFretsRole,
-        ChildRole
+        ChildRole,
+        HarmonicRole
     };
 
     bool setSNG(const RS::SNG& sng);

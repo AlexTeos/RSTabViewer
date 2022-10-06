@@ -57,6 +57,8 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             // TODO: check (see Reptilia)
             if (index.row() != 0 and m_notes[index.row() - 1].m_mask[0] & RS::SNG::MaskFlags::Slide) return true;
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Child;
+        case HarmonicRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Harmonic;
         case NextFretsRole:
             // TODO: return only 1 value
             if (index.row() == m_notes.size() - 1) return QList<QVariant>();
@@ -92,6 +94,7 @@ QHash<int, QByteArray> Tablature::roleNames() const
     names[SlideRole]     = "slide";
     names[NextFretsRole] = "nextFrets";
     names[ChildRole]     = "childNote";
+    names[HarmonicRole] = "harmonic";
 
     return names;
 }
@@ -111,9 +114,10 @@ bool Tablature::collectAllNotes()
     QMap<float, RS::Note> notes;
 
     RS::Note firstNote;
-    firstNote.m_time   = 0;
-    firstNote.m_chord  = 0xFFFFFFFF;
-    firstNote.m_string = 0xFF;
+    firstNote.m_time    = 0;
+    firstNote.m_chord   = 0xFFFFFFFF;
+    firstNote.m_string  = 0xFF;
+    firstNote.m_mask[0] = 0;
     notes.insert(0, firstNote);
 
     for (auto it = m_sng.arrangements().crbegin(); it != m_sng.arrangements().crend(); ++it)

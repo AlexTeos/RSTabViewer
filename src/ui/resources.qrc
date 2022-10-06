@@ -7,5 +7,6 @@
         <file>icons/stop.png</file>
         <file>images/background.png</file>
         <file>effects/mute.png</file>
+        <file>effects/harmonic.png</file>
     </qresource>
 </RCC>

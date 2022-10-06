@@ -25,12 +25,13 @@ public:
 
     enum MaskFlags
     {
-        PalmMute = 0x00000040,
-        Slide    = 0x00000800,
-        Sustain  = 0x00002000,
-        Mute     = 0x00020000,
-        Parent   = 0x08000000,
-        Child    = 0x10000000
+        Harmonic = 0x00000020,
+        PalmMute  = 0x00000040,
+        Slide     = 0x00000800,
+        Sustain   = 0x00002000,
+        Mute      = 0x00020000,
+        Parent    = 0x08000000,
+        Child     = 0x10000000
     };
 
     SNG(Type type, const QString& file);
