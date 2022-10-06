@@ -471,7 +471,8 @@ Page {
                                 anchors.margins: parent.height / 25
                                 radius: height / 5
                                 color: "black"
-                                opacity: (mute || harmonic) ? 0.25 : 0.5
+                                opacity: (mute || harmonic || hammerOn
+                                          || pullOff) ? 0.25 : 0.5
                             }
 
                             Rectangle {
@@ -481,12 +482,18 @@ Page {
                                     anchors.fill: parent
                                     source: if (mute)
                                                 "qrc:/effects/mute.png"
-                                            else
+                                            else if (harmonic)
                                                 "qrc:/effects/harmonic.png"
+                                            else if (hammerOn)
+                                                "qrc:/effects/hammeron.png"
+                                            else
+                                                //if (pullOff)
+                                                "qrc:/effects/pulloff.png"
                                     opacity: 0.7
                                 }
                                 color: "transparent"
-                                visible: (mute || harmonic)
+                                visible: (mute || harmonic || hammerOn
+                                          || pullOff)
                             }
 
                             function calcTextForNote() {
@@ -501,7 +508,7 @@ Page {
                                         noteText += nextFrets[index]
                                 }
 
-                                if (slideUnpithcedTo)
+                                if (unpitchedSlide)
                                     noteText += " ↘ "
 
                                 return noteText

@@ -8,5 +8,7 @@
         <file>images/background.png</file>
         <file>effects/mute.png</file>
         <file>effects/harmonic.png</file>
+        <file>effects/hammeron.png</file>
+        <file>effects/pulloff.png</file>
     </qresource>
 </RCC>

@@ -51,6 +51,10 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             return m_notes[index.row()].m_mask[0] & (RS::SNG::MaskFlags::PalmMute | RS::SNG::MaskFlags::Mute);
         case SlideRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Slide;
+        case HammerOnRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::HammerOn;
+        case PullOffRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PullOff;
         case ParentRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Parent;
         case ChildRole:
@@ -59,8 +63,8 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Child;
         case HarmonicRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Harmonic;
-        case SlideUnpithcedToRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::SlideUnpithcedTo;
+        case UnpitchedSlideRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::UnpitchedSlide;
         case NextFretsRole:
             // TODO: return only 1 value
             if (index.row() == m_notes.size() - 1) return QList<QVariant>();
@@ -86,18 +90,20 @@ Qt::ItemFlags Tablature::flags(const QModelIndex& index) const
 QHash<int, QByteArray> Tablature::roleNames() const
 {
     QHash<int, QByteArray> names;
-    names[NameRole]             = "name";
-    names[DurationRole]         = "duration";
-    names[FretsRole]            = "frets";
-    names[StartTimeRole]        = "startTime";
-    names[SustainRole]          = "sustain";
-    names[MuteRole]             = "mute";
-    names[ParentRole]           = "parentNote";
-    names[SlideRole]            = "slide";
-    names[NextFretsRole]        = "nextFrets";
-    names[ChildRole]            = "childNote";
-    names[HarmonicRole]         = "harmonic";
-    names[SlideUnpithcedToRole] = "slideUnpithcedTo";
+    names[NameRole]           = "name";
+    names[DurationRole]       = "duration";
+    names[FretsRole]          = "frets";
+    names[StartTimeRole]      = "startTime";
+    names[SustainRole]        = "sustain";
+    names[MuteRole]           = "mute";
+    names[ParentRole]         = "parentNote";
+    names[SlideRole]          = "slide";
+    names[NextFretsRole]      = "nextFrets";
+    names[ChildRole]          = "childNote";
+    names[UnpitchedSlideRole] = "unpitchedSlide";
+    names[HarmonicRole]       = "harmonic";
+    names[HammerOnRole]       = "hammerOn";
+    names[PullOffRole]        = "pullOff";
 
     return names;
 }
