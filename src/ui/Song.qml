@@ -489,9 +489,27 @@ Page {
                                 visible: (mute || harmonic)
                             }
 
+                            function calcTextForNote() {
+                                var noteText = frets[index]
+                                if (slide) {
+                                    if (frets[index] > nextFrets[index])
+                                        noteText += " ↘ "
+                                    else
+                                        noteText += " ↗ "
+
+                                    if (nextFrets[index] !== 255)
+                                        noteText += nextFrets[index]
+                                }
+
+                                if (slideUnpithcedTo)
+                                    noteText += " ↘ "
+
+                                return noteText
+                            }
+
                             Text {
                                 id: fretText
-                                text: frets[index] + (slide ? (frets[index] > nextFrets[index] ? " ↘ " : " ↗ ") + (nextFrets[index] == 255 ? "" : nextFrets[index] == 255) : "")
+                                text: calcTextForNote()
                                 anchors.left: parent.left
                                 anchors.top: parent.top
                                 height: parent.height

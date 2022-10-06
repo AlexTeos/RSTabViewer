@@ -59,6 +59,8 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Child;
         case HarmonicRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Harmonic;
+        case SlideUnpithcedToRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::SlideUnpithcedTo;
         case NextFretsRole:
             // TODO: return only 1 value
             if (index.row() == m_notes.size() - 1) return QList<QVariant>();
@@ -84,17 +86,18 @@ Qt::ItemFlags Tablature::flags(const QModelIndex& index) const
 QHash<int, QByteArray> Tablature::roleNames() const
 {
     QHash<int, QByteArray> names;
-    names[NameRole]      = "name";
-    names[DurationRole]  = "duration";
-    names[FretsRole]     = "frets";
-    names[StartTimeRole] = "startTime";
-    names[SustainRole]   = "sustain";
-    names[MuteRole]      = "mute";
-    names[ParentRole]    = "parentNote";
-    names[SlideRole]     = "slide";
-    names[NextFretsRole] = "nextFrets";
-    names[ChildRole]     = "childNote";
-    names[HarmonicRole] = "harmonic";
+    names[NameRole]             = "name";
+    names[DurationRole]         = "duration";
+    names[FretsRole]            = "frets";
+    names[StartTimeRole]        = "startTime";
+    names[SustainRole]          = "sustain";
+    names[MuteRole]             = "mute";
+    names[ParentRole]           = "parentNote";
+    names[SlideRole]            = "slide";
+    names[NextFretsRole]        = "nextFrets";
+    names[ChildRole]            = "childNote";
+    names[HarmonicRole]         = "harmonic";
+    names[SlideUnpithcedToRole] = "slideUnpithcedTo";
 
     return names;
 }

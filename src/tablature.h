@@ -29,7 +29,8 @@ public:
         SlideRole,
         NextFretsRole,
         ChildRole,
-        HarmonicRole
+        HarmonicRole,
+        SlideUnpithcedToRole
     };
 
     bool setSNG(const RS::SNG& sng);
