@@ -33,6 +33,7 @@ public:
         Sustain        = 0x00002000,
         Mute           = 0x00020000,
         UnpitchedSlide = 0x00400000,
+        Single         = 0x00800000,
         Parent         = 0x08000000,
         Child          = 0x10000000
     };

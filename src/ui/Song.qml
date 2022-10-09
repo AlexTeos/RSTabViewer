@@ -3,6 +3,7 @@ import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtMultimedia 5.15
+import "MyControls"
 
 Page {
     property bool musicPlayed: false
@@ -31,7 +32,7 @@ Page {
 
     property int maxScale: parent.width / 2
     property int minScale: parent.width / 32
-    property var stringColors: ["red", "yellow", "blue", "orange", "green", "purple"]
+    property var stringColors: ["crimson", "gold", "blue", "orange", "green", "purple"]
 
     Rectangle {
         anchors.fill: parent
@@ -394,7 +395,7 @@ Page {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        height: parent.height / 2
+        height: parent.height / 1.7
 
         Rectangle {
             id: decke
@@ -435,103 +436,22 @@ Page {
                 height: tablatureView.height
                 z: tablatureView.count - index
 
-                Column {
+                Item {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
 
                     Repeater {
                         model: 6
-                        delegate: Rectangle {
-                            id: fret
-                            height: parent.height / 6
+                        delegate: Note {
+                            height: parent.height / 6 - parent.height / 90
                             width: Math.max(height / 1.3,
                                             pixelsPerSecond * sustain)
+                            y: parent.y + parent.height / 6 * index + parent.height / 180
 
                             radius: height / 5
                             color: stringColors[index]
-
-                            gradient: Gradient {
-                                GradientStop {
-                                    position: 0.0
-                                    color: fret.color
-                                }
-                                GradientStop {
-                                    position: 0.5
-                                    color: Qt.lighter(fret.color, 1.9)
-                                }
-                                GradientStop {
-                                    position: 1.0
-                                    color: fret.color
-                                }
-                            }
-
-                            Rectangle {
-                                anchors.fill: parent
-                                anchors.margins: parent.height / 25
-                                radius: height / 5
-                                color: "black"
-                                opacity: (mute || harmonic || hammerOn
-                                          || pullOff) ? 0.25 : 0.5
-                            }
-
-                            Rectangle {
-                                anchors.fill: parent
-                                anchors.margins: parent.height / 25
-                                Image {
-                                    anchors.fill: parent
-                                    source: if (mute)
-                                                "qrc:/effects/mute.png"
-                                            else if (harmonic)
-                                                "qrc:/effects/harmonic.png"
-                                            else if (hammerOn)
-                                                "qrc:/effects/hammeron.png"
-                                            else
-                                                //if (pullOff)
-                                                "qrc:/effects/pulloff.png"
-                                    opacity: 0.7
-                                }
-                                color: "transparent"
-                                visible: (mute || harmonic || hammerOn
-                                          || pullOff)
-                            }
-
-                            function calcTextForNote() {
-                                var noteText = frets[index]
-                                if (slide) {
-                                    if (frets[index] > nextFrets[index])
-                                        noteText += " ↘ "
-                                    else
-                                        noteText += " ↗ "
-
-                                    if (nextFrets[index] !== 255)
-                                        noteText += nextFrets[index]
-                                }
-
-                                if (unpitchedSlide)
-                                    noteText += " ↘ "
-
-                                return noteText
-                            }
-
-                            Text {
-                                id: fretText
-                                text: calcTextForNote()
-                                anchors.left: parent.left
-                                anchors.top: parent.top
-                                height: parent.height
-                                width: parent.width
-                                horizontalAlignment: Text.AlignHCenter
-                                anchors.leftMargin: -parent.height * 0.05
-
-                                font.letterSpacing: -parent.height * 0.1
-                                font.pixelSize: parent.height * 0.75
-                                color: "white"
-                            }
-
-                            // TODO: rewrite with visible
-                            opacity: (frets[index] !== 0xFF
-                                      && !childNote) ? 100 : 0
+                            visible: frets[index] !== 0xFF
                         }
                     }
                 }

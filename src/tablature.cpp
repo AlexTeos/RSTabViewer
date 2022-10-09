@@ -37,16 +37,7 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             return QVariant(frets);
         }
         case SustainRole:
-            if (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Slide)
-            {
-                if (index.row() == m_notes.size() - 1) return m_notes[index.row()].m_sustain;
-                return m_notes[index.row()].m_sustain + m_notes[index.row() + 1].m_sustain;
-            }
-            else
-            {
-                return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Sustain) ? m_notes[index.row()].m_sustain
-                                                                                      : 0;
-            }
+            return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Sustain) ? m_notes[index.row()].m_sustain : 0;
         case MuteRole:
             return m_notes[index.row()].m_mask[0] & (RS::SNG::MaskFlags::PalmMute | RS::SNG::MaskFlags::Mute);
         case SlideRole:
@@ -58,13 +49,13 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
         case ParentRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Parent;
         case ChildRole:
-            // TODO: check (see Reptilia)
-            if (index.row() != 0 and m_notes[index.row() - 1].m_mask[0] & RS::SNG::MaskFlags::Slide) return true;
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Child;
         case HarmonicRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Harmonic;
         case UnpitchedSlideRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::UnpitchedSlide;
+        case SingleRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Single;
         case NextFretsRole:
             // TODO: return only 1 value
             if (index.row() == m_notes.size() - 1) return QList<QVariant>();
@@ -104,6 +95,7 @@ QHash<int, QByteArray> Tablature::roleNames() const
     names[HarmonicRole]       = "harmonic";
     names[HammerOnRole]       = "hammerOn";
     names[PullOffRole]        = "pullOff";
+    names[SingleRole]         = "single";
 
     return names;
 }

@@ -32,7 +32,8 @@ public:
         HarmonicRole,
         UnpitchedSlideRole,
         HammerOnRole,
-        PullOffRole
+        PullOffRole,
+        SingleRole
     };
 
     bool setSNG(const RS::SNG& sng);

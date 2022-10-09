@@ -5,5 +5,6 @@
         <file>Main.qml</file>
         <file>Library.qml</file>
         <file>Song.qml</file>
+        <file>MyControls/Note.qml</file>
     </qresource>
 </RCC>
