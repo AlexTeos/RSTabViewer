@@ -15,39 +15,44 @@ Rectangle {
     }
 
     Rectangle {
-        anchors.fill: parent
-        anchors.margins: parent.height / 25
+        height: parent.height
+        width: Math.min(parent.width, height)
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: (slide
+                                   || unpitchedSlide) ? undefined : parent.horizontalCenter
+        anchors.right: (slide || unpitchedSlide) ? parent.right : undefined
+
         Image {
             anchors.fill: parent
+
             source: if (mute)
                         "qrc:/effects/mute.png"
                     else if (harmonic)
                         "qrc:/effects/harmonic.png"
                     else if (hammerOn)
                         "qrc:/effects/hammeron.png"
-                    else
-                        //if (pullOff)
+                    else if (pullOff)
                         "qrc:/effects/pulloff.png"
+                    else if (unpitchedSlide)
+                        "qrc:/effects/slideup.png"
+                    else if (slide) {
+                        if (frets[index] > nextFrets[index])
+                            "qrc:/effects/slidedown.png"
+                        else
+                            "qrc:/effects/slideup.png"
+                    } else
+                        "qrc:/effects/empty.png"
             opacity: 0.7
         }
         color: "transparent"
-        visible: (mute || harmonic || hammerOn || pullOff)
+        visible: (mute || harmonic || hammerOn || pullOff || slide
+                  || unpitchedSlide)
     }
 
     function calcTextForNote() {
         var noteText = frets[index].toString()
         if (noteText.length !== 1)
             noteText = noteText.substring(0, 1) + " " + noteText.substr(1, 2)
-
-        if (slide) {
-            if (frets[index] > nextFrets[index])
-                noteText += " ↘ "
-            else
-                noteText += " ↗ "
-        }
-
-        if (unpitchedSlide)
-            noteText += " ↘ "
 
         return noteText
     }

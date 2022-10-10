@@ -10,5 +10,8 @@
         <file>effects/harmonic.png</file>
         <file>effects/hammeron.png</file>
         <file>effects/pulloff.png</file>
+        <file>effects/slidedown.png</file>
+        <file>effects/slideup.png</file>
+        <file>effects/empty.png</file>
     </qresource>
 </RCC>
