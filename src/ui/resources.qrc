@@ -13,5 +13,7 @@
         <file>effects/slidedown.png</file>
         <file>effects/slideup.png</file>
         <file>effects/empty.png</file>
+        <file>effects/tremolo.png</file>
+        <file>effects/vibrato.png</file>
     </qresource>
 </RCC>

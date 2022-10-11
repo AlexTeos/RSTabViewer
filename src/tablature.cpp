@@ -56,6 +56,10 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::UnpitchedSlide;
         case SingleRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Single;
+        case TremoloRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Tremolo;
+        case VibratoRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Vibrato;
         case NextFretsRole:
             // TODO: return only 1 value
             if (index.row() == m_notes.size() - 1) return QList<QVariant>();
@@ -96,6 +100,8 @@ QHash<int, QByteArray> Tablature::roleNames() const
     names[HammerOnRole]       = "hammerOn";
     names[PullOffRole]        = "pullOff";
     names[SingleRole]         = "single";
+    names[TremoloRole]        = "tremolo";
+    names[VibratoRole]        = "vibrato";
 
     return names;
 }

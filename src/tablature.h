@@ -33,7 +33,9 @@ public:
         UnpitchedSlideRole,
         HammerOnRole,
         PullOffRole,
-        SingleRole
+        SingleRole,
+        TremoloRole,
+        VibratoRole
     };
 
     bool setSNG(const RS::SNG& sng);

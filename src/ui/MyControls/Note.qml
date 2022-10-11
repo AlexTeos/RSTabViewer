@@ -16,15 +16,18 @@ Rectangle {
 
     Rectangle {
         height: parent.height
-        width: Math.min(parent.width, height)
+        width: (tremolo || vibrato) ? parent.width : Math.min(parent.width,
+                                                              height)
         anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: (slide
-                                   || unpitchedSlide) ? undefined : parent.horizontalCenter
+        anchors.left: (slide || unpitchedSlide) ? undefined : parent.left
         anchors.right: (slide || unpitchedSlide) ? parent.right : undefined
 
         Image {
             anchors.fill: parent
 
+            sourceSize.width: parent.height
+            fillMode: (tremolo
+                       || vibrato) ? Image.TileHorizontally : Image.Stretch
             source: if (mute)
                         "qrc:/effects/mute.png"
                     else if (harmonic)
@@ -35,6 +38,10 @@ Rectangle {
                         "qrc:/effects/pulloff.png"
                     else if (unpitchedSlide)
                         "qrc:/effects/slideup.png"
+                    else if (tremolo)
+                        "qrc:/effects/tremolo.png"
+                    else if (vibrato)
+                        "qrc:/effects/vibrato.png"
                     else if (slide) {
                         if (frets[index] > nextFrets[index])
                             "qrc:/effects/slidedown.png"
@@ -46,7 +53,7 @@ Rectangle {
         }
         color: "transparent"
         visible: (mute || harmonic || hammerOn || pullOff || slide
-                  || unpitchedSlide)
+                  || unpitchedSlide || tremolo || vibrato)
     }
 
     function calcTextForNote() {
