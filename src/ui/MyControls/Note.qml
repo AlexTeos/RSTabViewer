@@ -16,11 +16,10 @@ Rectangle {
 
     Rectangle {
         height: parent.height
-        width: (tremolo || vibrato) ? parent.width : Math.min(parent.width,
+        width: (tremolo || vibrato) ? parent.width : Math.min(fretText.width,
                                                               height)
         anchors.verticalCenter: parent.verticalCenter
-        anchors.left: (slide || unpitchedSlide) ? undefined : parent.left
-        anchors.right: (slide || unpitchedSlide) ? parent.right : undefined
+        anchors.left: parent.left
 
         Image {
             anchors.fill: parent
@@ -36,12 +35,30 @@ Rectangle {
                         "qrc:/effects/hammeron.png"
                     else if (pullOff)
                         "qrc:/effects/pulloff.png"
-                    else if (unpitchedSlide)
-                        "qrc:/effects/slideup.png"
                     else if (tremolo)
                         "qrc:/effects/tremolo.png"
                     else if (vibrato)
                         "qrc:/effects/vibrato.png"
+                    else
+                        "qrc:/effects/empty.png"
+            opacity: 0.7
+        }
+        color: "transparent"
+        visible: (mute || harmonic || hammerOn || pullOff || tremolo || vibrato)
+    }
+
+    Rectangle {
+        height: parent.height
+        width: Math.min(fretText.width, height)
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+
+        Image {
+            anchors.fill: parent
+
+            sourceSize.width: parent.height
+            source: if (unpitchedSlide)
+                        "qrc:/effects/slideup.png"
                     else if (slide) {
                         if (frets[index] > nextFrets[index])
                             "qrc:/effects/slidedown.png"
@@ -52,8 +69,7 @@ Rectangle {
             opacity: 0.7
         }
         color: "transparent"
-        visible: (mute || harmonic || hammerOn || pullOff || slide
-                  || unpitchedSlide || tremolo || vibrato)
+        visible: (slide || unpitchedSlide)
     }
 
     function calcTextForNote() {
@@ -70,8 +86,9 @@ Rectangle {
         height: parent.height
         anchors.horizontalCenter: sustain ? undefined : parent.horizontalCenter
         anchors.left: sustain ? parent.left : undefined
-        anchors.leftMargin: text.length == 1 ? height / 15 : 0
+        width: height / 1.3
 
+        horizontalAlignment: Text.AlignHCenter
         text: calcTextForNote()
         font.wordSpacing: -parent.height * 0.3
         font.pixelSize: parent.height * 0.75
