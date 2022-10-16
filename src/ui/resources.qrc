@@ -15,5 +15,7 @@
         <file>effects/empty.png</file>
         <file>effects/tremolo.png</file>
         <file>effects/vibrato.png</file>
+        <file>effects/accent.png</file>
+        <file>effects/palmmute.png</file>
     </qresource>
 </RCC>

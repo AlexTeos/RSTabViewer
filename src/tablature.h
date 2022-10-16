@@ -35,7 +35,10 @@ public:
         PullOffRole,
         SingleRole,
         TremoloRole,
-        VibratoRole
+        VibratoRole,
+        AccentRole,
+        PinchHarmonicRole,
+        PalmMuteRole
     };
 
     bool setSNG(const RS::SNG& sng);

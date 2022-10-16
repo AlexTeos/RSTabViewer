@@ -32,10 +32,12 @@ public:
         PullOff        = 0x00000400,
         Slide          = 0x00000800,
         Sustain        = 0x00002000,
+        PinchHarmonic  = 0x00008000,
         Vibrato        = 0x00010000,
         Mute           = 0x00020000,
         UnpitchedSlide = 0x00400000,
         Single         = 0x00800000,
+        Accent         = 0x04000000,
         Parent         = 0x08000000,
         Child          = 0x10000000
     };

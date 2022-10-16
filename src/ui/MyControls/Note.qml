@@ -39,12 +39,19 @@ Rectangle {
                         "qrc:/effects/tremolo.png"
                     else if (vibrato)
                         "qrc:/effects/vibrato.png"
+                    else if (accent)
+                        "qrc:/effects/accent.png"
+                    else if (pinchHarmonic)
+                        "qrc:/effects/pinchharmonic.png"
+                    else if (palmMute)
+                        "qrc:/effects/palmmute.png"
                     else
                         "qrc:/effects/empty.png"
             opacity: 0.7
         }
         color: "transparent"
-        visible: (mute || harmonic || hammerOn || pullOff || tremolo || vibrato)
+        visible: (mute || harmonic || hammerOn || pullOff || tremolo || vibrato
+                  || accent || pinchHarmonic || palmMute)
     }
 
     Rectangle {
@@ -95,5 +102,6 @@ Rectangle {
         color: "white"
         style: Text.Outline
         styleColor: Qt.darker(parent.color, 1.5)
+        visible: frets[index]
     }
 }

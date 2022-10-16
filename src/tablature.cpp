@@ -39,7 +39,7 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
         case SustainRole:
             return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Sustain) ? m_notes[index.row()].m_sustain : 0;
         case MuteRole:
-            return m_notes[index.row()].m_mask[0] & (RS::SNG::MaskFlags::PalmMute | RS::SNG::MaskFlags::Mute);
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Mute;
         case SlideRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Slide;
         case HammerOnRole:
@@ -60,6 +60,12 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Tremolo;
         case VibratoRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Vibrato;
+        case AccentRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Accent;
+        case PinchHarmonicRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PinchHarmonic;
+        case PalmMuteRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PalmMute;
         case NextFretsRole:
             // TODO: return only 1 value
             if (index.row() == m_notes.size() - 1) return QList<QVariant>();
@@ -102,6 +108,9 @@ QHash<int, QByteArray> Tablature::roleNames() const
     names[SingleRole]         = "single";
     names[TremoloRole]        = "tremolo";
     names[VibratoRole]        = "vibrato";
+    names[AccentRole]         = "accent";
+    names[PinchHarmonicRole]  = "pinchHarmonic";
+    names[PalmMuteRole]       = "palmMute";
 
     return names;
 }
