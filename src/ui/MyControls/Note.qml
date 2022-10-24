@@ -2,6 +2,7 @@ import QtQuick 2.11
 import QtQuick.Controls 2.2
 
 Rectangle {
+    id: note
     border.width: height / 50
     border.color: Qt.darker(color, 1.5)
 
@@ -85,6 +86,48 @@ Rectangle {
             noteText = noteText.substring(0, 1) + " " + noteText.substr(1, 2)
 
         return noteText
+    }
+
+    Row {
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        height: parent.height / 2
+        width: parent.width
+        anchors.leftMargin: bendStarts[0] * pixelsPerSecond
+        visible: bend
+        opacity: 0.8
+        Repeater {
+            model: bendSteps.length
+            delegate: Item {
+                height: parent.height
+                width: (index == bendSteps.length
+                        - 1) ? parent.width - bendStarts[index]
+                               * pixelsPerSecond : (bendStarts[index + 1]
+                                                    - bendStarts[index]) * pixelsPerSecond
+                Rectangle {
+                    anchors.top: parent.top
+                    height: parent.height / 4
+                    width: parent.width
+
+                    color: "white"
+                    visible: bendSteps[index] !== 0
+                }
+                Image {
+                    anchors.bottom: parent.bottom
+                    height: parent.height * 0.75
+
+                    fillMode: Image.PreserveAspectFit
+                    source: if (bendSteps[index] === 1)
+                                "qrc:/effects/bend_1.png"
+                            else if (bendSteps[index] === 2)
+                                "qrc:/effects/bend_2.png"
+                            else if (bendSteps[index] === 3)
+                                "qrc:/effects/bend_3.png"
+                            else
+                                "qrc:/effects/empty.png"
+                }
+            }
+        }
     }
 
     Text {

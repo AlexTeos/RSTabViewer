@@ -17,5 +17,9 @@
         <file>effects/vibrato.png</file>
         <file>effects/accent.png</file>
         <file>effects/palmmute.png</file>
+        <file>effects/pinchharmonic.png</file>
+        <file>effects/bend_1.png</file>
+        <file>effects/bend_2.png</file>
+        <file>effects/bend_3.png</file>
     </qresource>
 </RCC>

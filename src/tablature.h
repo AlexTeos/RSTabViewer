@@ -24,6 +24,8 @@ public:
         FretsRole,
         StartTimeRole,
         SustainRole,
+        BendStepsRole,
+        BendStartsRole,
         MuteRole,
         ParentRole,
         SlideRole,
@@ -38,7 +40,8 @@ public:
         VibratoRole,
         AccentRole,
         PinchHarmonicRole,
-        PalmMuteRole
+        PalmMuteRole,
+        BendRole
     };
 
     bool setSNG(const RS::SNG& sng);

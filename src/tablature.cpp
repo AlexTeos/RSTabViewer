@@ -13,14 +13,15 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
 {
     if (!index.isValid()) return QVariant();
 
-    bool isChord = m_notes[index.row()].m_chord != 0xFFFFFFFF;
-
+    QList<QVariant> returnList;
     switch (role)
     {
         case StartTimeRole:
             return m_notes[index.row()].m_time;
         case NameRole:
-            return isChord ? QVariant(m_sng.chords()[m_notes[index.row()].m_chord].m_name) : "";
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::ChordNote
+                       ? QVariant(m_sng.chords()[m_notes[index.row()].m_chord].m_name)
+                       : "";
         case DurationRole:
             return index.row() == m_notes.size() - 1
                        ? QVariant(m_sng.metadata().m_songLength - m_notes[index.row()].m_time)
@@ -28,7 +29,7 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
         case FretsRole:
         {
             QList<QVariant> frets;
-            if (isChord)
+            if (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::ChordNote)
                 for (int i = 0; i < 6; ++i)
                     frets.append(m_sng.chords()[m_notes[index.row()].m_chord].m_frets[i]);
             else
@@ -38,8 +39,21 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
         }
         case SustainRole:
             return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Sustain) ? m_notes[index.row()].m_sustain : 0;
+        case BendStepsRole:
+            if (not(m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Bend)) return QList<QVariant>();
+            returnList.reserve(m_notes[index.row()].m_bends.size());
+            for (int i = 0; i < m_notes[index.row()].m_bends.size(); ++i)
+                returnList.push_back(m_notes[index.row()].m_bends[i].m_step);
+            return returnList;
+        case BendStartsRole:
+            if (not(m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Bend)) return QList<QVariant>();
+            returnList.reserve(m_notes[index.row()].m_bends.size());
+            for (int i = 0; i < m_notes[index.row()].m_bends.size(); ++i)
+                returnList.push_back(m_notes[index.row()].m_bends[i].m_time - m_notes[index.row()].m_time);
+            return returnList;
         case MuteRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Mute;
+            return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Mute) ||
+                   (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::FretHandMute);
         case SlideRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Slide;
         case HammerOnRole:
@@ -66,11 +80,13 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PinchHarmonic;
         case PalmMuteRole:
             return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PalmMute;
+        case BendRole:
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Bend;
         case NextFretsRole:
             // TODO: return only 1 value
             if (index.row() == m_notes.size() - 1) return QList<QVariant>();
             QList<QVariant> frets;
-            if (isChord)
+            if (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::ChordNote)
                 for (int i = 0; i < 6; ++i)
                     frets.append(m_sng.chords()[m_notes[index.row() + 1].m_chord].m_frets[i]);
             else
@@ -96,6 +112,8 @@ QHash<int, QByteArray> Tablature::roleNames() const
     names[FretsRole]          = "frets";
     names[StartTimeRole]      = "startTime";
     names[SustainRole]        = "sustain";
+    names[BendStepsRole]      = "bendSteps";
+    names[BendStartsRole]     = "bendStarts";
     names[MuteRole]           = "mute";
     names[ParentRole]         = "parentNote";
     names[SlideRole]          = "slide";
@@ -111,6 +129,7 @@ QHash<int, QByteArray> Tablature::roleNames() const
     names[AccentRole]         = "accent";
     names[PinchHarmonicRole]  = "pinchHarmonic";
     names[PalmMuteRole]       = "palmMute";
+    names[BendRole]           = "bend";
 
     return names;
 }

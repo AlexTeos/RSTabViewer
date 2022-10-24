@@ -25,12 +25,15 @@ public:
 
     enum MaskFlags
     {
+        ChordNote      = 0x00000002,
+        FretHandMute   = 0x00000008,
         Tremolo        = 0x00000010,
         Harmonic       = 0x00000020,
         PalmMute       = 0x00000040,
         HammerOn       = 0x00000200,
         PullOff        = 0x00000400,
         Slide          = 0x00000800,
+        Bend           = 0x00001000,
         Sustain        = 0x00002000,
         PinchHarmonic  = 0x00008000,
         Vibrato        = 0x00010000,
