@@ -19,7 +19,7 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
         case StartTimeRole:
             return m_notes[index.row()].m_time;
         case NameRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::ChordNote
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::ChordFlag
                        ? QVariant(m_sng.chords()[m_notes[index.row()].m_chord].m_name)
                        : "";
         case DurationRole:
@@ -29,7 +29,7 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
         case FretsRole:
         {
             QList<QVariant> frets;
-            if (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::ChordNote)
+            if (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::ChordFlag)
                 for (int i = 0; i < 6; ++i)
                     frets.append(m_sng.chords()[m_notes[index.row()].m_chord].m_frets[i]);
             else
@@ -38,55 +38,56 @@ QVariant Tablature::data(const QModelIndex& index, int role) const
             return QVariant(frets);
         }
         case SustainRole:
-            return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Sustain) ? m_notes[index.row()].m_sustain : 0;
+            return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::SustainFlag) ? m_notes[index.row()].m_sustain
+                                                                                      : 0;
         case BendStepsRole:
-            if (not(m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Bend)) return QList<QVariant>();
+            if (not(m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::BendFlag)) return QList<QVariant>();
             returnList.reserve(m_notes[index.row()].m_bends.size());
             for (int i = 0; i < m_notes[index.row()].m_bends.size(); ++i)
                 returnList.push_back(m_notes[index.row()].m_bends[i].m_step);
             return returnList;
         case BendStartsRole:
-            if (not(m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Bend)) return QList<QVariant>();
+            if (not(m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::BendFlag)) return QList<QVariant>();
             returnList.reserve(m_notes[index.row()].m_bends.size());
             for (int i = 0; i < m_notes[index.row()].m_bends.size(); ++i)
                 returnList.push_back(m_notes[index.row()].m_bends[i].m_time - m_notes[index.row()].m_time);
             return returnList;
         case MuteRole:
-            return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Mute) ||
-                   (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::FretHandMute);
+            return (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::MuteFlag) ||
+                   (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::FretHandMuteFlag);
         case SlideRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Slide;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::SlideFlag;
         case HammerOnRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::HammerOn;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::HammerOnFlag;
         case PullOffRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PullOff;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PullOffFlag;
         case ParentRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Parent;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::ParentFlag;
         case ChildRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Child;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::ChildFlag;
         case HarmonicRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Harmonic;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::HarmonicFlag;
         case UnpitchedSlideRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::UnpitchedSlide;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::UnpitchedSlideFlag;
         case SingleRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Single;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::SingleFlag;
         case TremoloRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Tremolo;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::TremoloFlag;
         case VibratoRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Vibrato;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::VibratoFlag;
         case AccentRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Accent;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::AccentFlag;
         case PinchHarmonicRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PinchHarmonic;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PinchHarmonicFlag;
         case PalmMuteRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PalmMute;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::PalmMuteFlag;
         case BendRole:
-            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::Bend;
+            return m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::BendFlag;
         case NextFretsRole:
             // TODO: return only 1 value
             if (index.row() == m_notes.size() - 1) return QList<QVariant>();
             QList<QVariant> frets;
-            if (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::ChordNote)
+            if (m_notes[index.row()].m_mask[0] & RS::SNG::MaskFlags::ChordFlag)
                 for (int i = 0; i < 6; ++i)
                     frets.append(m_sng.chords()[m_notes[index.row() + 1].m_chord].m_frets[i]);
             else

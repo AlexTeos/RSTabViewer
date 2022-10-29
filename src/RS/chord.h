@@ -4,12 +4,9 @@
 #include <QIODevice>
 #include <QVector>
 
-#include "common.h"
-
-#pragma pack(push, 1)
-
 namespace RS
 {
+#pragma pack(push, 1)
 struct Chord
 {
     uint32_t m_mask;
@@ -18,7 +15,6 @@ struct Chord
     uint32_t m_notes[6];
     char     m_name[32];
 };
-
 #pragma pack(pop)
 
 bool parseChords(QIODevice& input, QVector<Chord>& chords);

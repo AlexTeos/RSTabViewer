@@ -85,11 +85,11 @@ bool SNG::parse(const QString& decryptedSngFileName) const
     {
         uint32_t count;
 
-        if (not dummyRead(sngDecryptedFile, 16, 0, count)) return false;   // Beat
-        if (not dummyRead(sngDecryptedFile, 44, 0, count)) return false;   // Phrase
-        if (not parseChords(sngDecryptedFile, m_chords)) return false;     // Chord
-        if (not dummyRead(sngDecryptedFile, 2376, 0, count)) return false; // ChordsNote
-        if (not dummyRead(sngDecryptedFile, 60, 0, count)) return false;   // Vocals
+        if (not dummyRead(sngDecryptedFile, 16, 0, count)) return false;       // Beat
+        if (not dummyRead(sngDecryptedFile, 44, 0, count)) return false;       // Phrase
+        if (not parseChords(sngDecryptedFile, m_chords)) return false;         // Chord
+        if (not parseChordNotes(sngDecryptedFile, m_chordNotes)) return false; // ChordsNote
+        if (not dummyRead(sngDecryptedFile, 60, 0, count)) return false;       // Vocals
         if (count > 0)
         {
             uint32_t localCount;

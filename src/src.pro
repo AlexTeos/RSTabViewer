@@ -12,6 +12,7 @@ SOURCES += \
         RS/3rdparty/ww2oggQt/ww2ogg.cpp \
         RS/arrangement.cpp \
         RS/chord.cpp \
+        RS/chordnote.cpp \
         RS/common.cpp \
         RS/metadata.cpp \
         RS/psarcarchive.cpp \
@@ -36,7 +37,9 @@ HEADERS += \
     # TODO: fix it
     RS/3rdparty/ww2oggQt/ww2ogg.h \
     RS/arrangement.h \
+    RS/benddata.h \
     RS/chord.h \
+    RS/chordnote.h \
     RS/common.h \
     RS/metadata.h \
     RS/psarc.h \

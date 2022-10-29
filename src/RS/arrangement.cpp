@@ -44,8 +44,8 @@ bool RS::parseArrangements(QIODevice& input, QVector<Arrangement>& arrangements)
             uint32_t bendsCount = *((uint32_t*)input.read(4).constData());
             arrangements[i].m_notes[k].m_bends.resize(bendsCount);
             memcpy(arrangements[i].m_notes[k].m_bends.data(),
-                   input.read(sizeof(BendData) * bendsCount).constData(),
-                   sizeof(BendData) * bendsCount);
+                   input.read(sizeof(Bend) * bendsCount).constData(),
+                   sizeof(Bend) * bendsCount);
         }
 
         // AverageNotePerIters

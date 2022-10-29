@@ -12,6 +12,7 @@ SOURCES += \
     ../src/RS/3rdparty/ww2oggQt/ww2ogg.cpp \
     ../src/RS/arrangement.cpp \
     ../src/RS/chord.cpp \
+    ../src/RS/chordnote.cpp \
     ../src/RS/common.cpp \
     ../src/RS/metadata.cpp \
     ../src/RS/psarcarchive.cpp \
@@ -25,7 +26,9 @@ HEADERS += \
     ../src/RS/3rdparty/revorb/revorb.h \
     ../src/RS/3rdparty/ww2oggQt/ww2ogg.h \
     ../src/RS/arrangement.h \
+    ../src/RS/benddata.h \
     ../src/RS/chord.h \
+    ../src/RS/chordnote.h \
     ../src/RS/common.h \
     ../src/RS/metadata.h \
     ../src/RS/psarcarchive.h \
