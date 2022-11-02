@@ -15,6 +15,7 @@ SOURCES += \
     ../src/RS/chordnote.cpp \
     ../src/RS/common.cpp \
     ../src/RS/metadata.cpp \
+    ../src/RS/noteeffects.cpp \
     ../src/RS/psarcarchive.cpp \
     ../src/RS/sng.cpp \
     ../src/RS/soundbank.cpp \
@@ -31,6 +32,8 @@ HEADERS += \
     ../src/RS/chordnote.h \
     ../src/RS/common.h \
     ../src/RS/metadata.h \
+    ../src/RS/note.h \
+    ../src/RS/noteeffects.h \
     ../src/RS/psarcarchive.h \
     ../src/RS/sng.h \
     ../src/RS/soundbank.h \

@@ -4,7 +4,7 @@
 #include <QIODevice>
 #include <QVector>
 
-#include "benddata.h"
+#include "note.h"
 
 namespace RS
 {
@@ -32,30 +32,6 @@ struct FingerPrint
     float    m_start;
     float    m_end;
     uint8_t  m_unknown[8];
-};
-
-struct Note
-{
-    uint32_t      m_mask[2];
-    uint8_t       m_u0[4];
-    float         m_time;
-    uint8_t       m_string;
-    uint8_t       m_fret[2];
-    uint8_t       m_u1;
-    uint32_t      m_chord;
-    uint32_t      m_chordNotes;
-    uint32_t      m_phrase;
-    uint32_t      m_phraseIter;
-    uint16_t      m_fingerprints[2];
-    uint16_t      m_u2[3];
-    uint8_t       m_fingers[4];
-    uint8_t       m_pickDir;
-    uint8_t       m_slap;
-    uint8_t       m_pluck;
-    uint16_t      m_vibrato;
-    float         m_sustain;
-    float         m_maxbend;
-    QVector<Bend> m_bends;
 };
 
 struct Arrangement

@@ -140,6 +140,13 @@ const QVector<Chord>& SNG::chords() const
     return m_chords;
 }
 
+const QVector<ChordNote>& SNG::chordNotes() const
+{
+    initialize();
+
+    return m_chordNotes;
+}
+
 bool SNG::initialize() const
 {
     if (not m_initialized)

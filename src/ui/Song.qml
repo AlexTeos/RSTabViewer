@@ -449,6 +449,7 @@ Page {
                                             pixelsPerSecond * sustain)
                             y: parent.y + parent.height / 6 * index + parent.height / 180
 
+                            effects: chordNote ? mask[index] : mask
                             radius: height / 5
                             color: stringColors[index]
                             visible: frets[index] !== 0xFF

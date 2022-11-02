@@ -24,32 +24,11 @@ public:
         Showlights
     };
 
-    enum MaskFlags
-    {
-        ChordFlag          = 0x00000002,
-        FretHandMuteFlag   = 0x00000008,
-        TremoloFlag        = 0x00000010,
-        HarmonicFlag       = 0x00000020,
-        PalmMuteFlag       = 0x00000040,
-        HammerOnFlag       = 0x00000200,
-        PullOffFlag        = 0x00000400,
-        SlideFlag          = 0x00000800,
-        BendFlag           = 0x00001000,
-        SustainFlag        = 0x00002000,
-        PinchHarmonicFlag  = 0x00008000,
-        VibratoFlag        = 0x00010000,
-        MuteFlag           = 0x00020000,
-        UnpitchedSlideFlag = 0x00400000,
-        SingleFlag         = 0x00800000,
-        AccentFlag         = 0x04000000,
-        ParentFlag         = 0x08000000,
-        ChildFlag          = 0x10000000
-    };
-
     SNG(Type type, const QString& file);
 
     const QVector<Arrangement>& arrangements() const;
     const QVector<Chord>&       chords() const;
+    const QVector<ChordNote>&   chordNotes() const;
     const Metadata&             metadata() const;
     bool                        initialize() const;
 

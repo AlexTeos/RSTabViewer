@@ -11,7 +11,6 @@ class Tablature : public QAbstractListModel
 public:
     explicit Tablature(QObject* parent = nullptr);
 
-    // Basic functionality:
     int                            rowCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant                       data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     Qt::ItemFlags                  flags(const QModelIndex& index) const override;
@@ -26,22 +25,9 @@ public:
         SustainRole,
         BendStepsRole,
         BendStartsRole,
-        MuteRole,
-        ParentRole,
-        SlideRole,
         NextFretsRole,
-        ChildRole,
-        HarmonicRole,
-        UnpitchedSlideRole,
-        HammerOnRole,
-        PullOffRole,
-        SingleRole,
-        TremoloRole,
-        VibratoRole,
-        AccentRole,
-        PinchHarmonicRole,
-        PalmMuteRole,
-        BendRole
+        ChordNoteRole,
+        MaskRole
     };
 
     bool setSNG(const RS::SNG& sng);
