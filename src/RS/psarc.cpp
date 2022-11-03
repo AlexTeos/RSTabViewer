@@ -108,6 +108,7 @@ QVariantList PSARC::arrangements() const
 SNG& PSARC::sng(int index)
 {
     //TODO: FIX
+    //TODO: check index
     m_sngs[index].metadata();
     return m_sngs[index];
 }
@@ -165,8 +166,13 @@ bool PSARC::initializeAtributes(const QStringList& filters)
                     }
                 }
             }
+            qCritical() << "Can't parse manifests file " << manifest.fileName();
         }
+        else
+            qCritical() << "Can't open manifests file " << manifest.fileName();
     }
+    else
+        qCritical() << "Can't find manifests file in " << m_filesDir.path() + "/manifests";
 
     return false;
 }
@@ -225,7 +231,11 @@ bool PSARC::initializeTracks()
 {
     // Main
     QFileInfo soundBankFile(m_filesDir.path() + "/audio/windows/" + songBank());
-    if (not soundBankFile.exists()) return false;
+    if (not soundBankFile.exists())
+    {
+        qCritical() << "Can't find soundBank file " << soundBankFile.filePath();
+        return false;
+    }
 
     QString wemId = SoundBank::getWemId(soundBankFile.filePath());
 
@@ -237,22 +247,36 @@ bool PSARC::initializeTracks()
     else
     {
         QFileInfo wemFile(m_filesDir.path() + "/../audio/windows/" + QString(wemId) + ".wem");
-        if (not wemFile.exists()) return false;
+        if (not wemFile.exists())
+        {
+            qCritical() << "Can't find wem file " << wemFile.filePath();
+            return false;
+        }
 
         if (ww2ogg(wemFile.filePath().toStdString(), outFilePath.toStdString()))
         {
             if (revorb(outFilePath.toStdString()))
                 m_tracks.second = outFilePath;
             else
+            {
+                qCritical() << "Can't apply revorb to ogg file " << outFilePath;
                 return false;
+            }
         }
         else
+        {
+            qCritical() << "Can't apply ww2ogg to wem file " << wemFile.filePath();
             return false;
+        }
     }
 
     // Preview
     QFileInfo previewSoundBankFile(m_filesDir.path() + "/audio/windows/" + previewBankPath());
-    if (not previewSoundBankFile.exists()) return false;
+    if (not previewSoundBankFile.exists())
+    {
+        qWarning() << "Can't find soundBank file " << soundBankFile.fileName();
+        return false;
+    }
 
     QString previewWmId = SoundBank::getWemId(previewSoundBankFile.filePath());
 
@@ -264,7 +288,11 @@ bool PSARC::initializeTracks()
     else
     {
         QFileInfo previewWemFile(m_filesDir.path() + "/../audio/windows/" + previewWmId + ".wem");
-        if (not previewWemFile.exists()) return false;
+        if (not previewWemFile.exists())
+        {
+            qCritical() << "Can't find wem file " << previewWemFile.filePath();
+            return false;
+        }
 
         if (ww2ogg(previewWemFile.filePath().toStdString(), previewOutFilePath.toStdString()))
         {
@@ -273,10 +301,16 @@ bool PSARC::initializeTracks()
                 m_tracks.first = previewOutFilePath;
             }
             else
+            {
+                qCritical() << "Can't apply revorb to ogg file " << previewOutFilePath;
                 return false;
+            }
         }
         else
+        {
+            qCritical() << "Can't apply ww2ogg to wem file " << previewWemFile.filePath();
             return false;
+        }
     }
 
     return true;
@@ -286,7 +320,11 @@ bool PSARC::initializeImage()
 {
     QFileInfo albumImageFile(m_filesDir.path() + "/gfxassets/album_art/album_" + dlcKey() + "_256.dds");
 
-    if (not albumImageFile.exists()) return false;
+    if (not albumImageFile.exists())
+    {
+        qWarning() << "Can't find albumm image file " << albumImageFile.filePath();
+        return false;
+    }
 
     m_albumImagePath = albumImageFile.filePath();
 

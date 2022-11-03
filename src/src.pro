@@ -18,6 +18,7 @@ SOURCES += \
         RS/noteeffects.cpp \
         RS/psarcarchive.cpp \
         RS/soundbank.cpp \
+        logger.cpp \
         main.cpp \
         RS/psarc.cpp \
         RS/sng.cpp \
@@ -49,6 +50,7 @@ HEADERS += \
     RS/psarcarchive.h \
     RS/sng.h \
     RS/soundbank.h \
+    logger.h \
     musiclibrary.h \
     tablature.h
 

@@ -1,5 +1,6 @@
 #include "sng.h"
 
+#include <QDebug>>
 #include <QFileInfo>
 
 #include "3rdparty/Rijndael/Rijndael.h"
@@ -67,6 +68,8 @@ bool SNG::decrypt(const QString& sngFileName) const
             }
         }
     }
+
+    qCritical() << "Can't decrypt file " << sngFileName;
     return false;
 }
 
@@ -85,38 +88,115 @@ bool SNG::parse(const QString& decryptedSngFileName) const
     {
         uint32_t count;
 
-        if (not dummyRead(sngDecryptedFile, 16, 0, count)) return false;       // Beat
-        if (not dummyRead(sngDecryptedFile, 44, 0, count)) return false;       // Phrase
-        if (not parseChords(sngDecryptedFile, m_chords)) return false;         // Chord
-        if (not parseChordNotes(sngDecryptedFile, m_chordNotes)) return false; // ChordsNote
-        if (not dummyRead(sngDecryptedFile, 60, 0, count)) return false;       // Vocals
+        if (not dummyRead(sngDecryptedFile, 16, 0, count)) // Beat
+        {
+            qCritical() << "Can't parse Beat in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not dummyRead(sngDecryptedFile, 44, 0, count)) // Phrase
+        {
+            qCritical() << "Can't parse Phrase in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not parseChords(sngDecryptedFile, m_chords)) // Chord
+        {
+            qCritical() << "Can't parse Chords in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not parseChordNotes(sngDecryptedFile, m_chordNotes)) // ChordsNote
+        {
+            qCritical() << "Can't parse ChordNotes in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not dummyRead(sngDecryptedFile, 60, 0, count)) // Vocals
+        {
+            qCritical() << "Can't parse Vocals in file " << sngDecryptedFile;
+            return false;
+        };
         if (count > 0)
         {
             uint32_t localCount;
-            if (not dummyRead(sngDecryptedFile, 32, 0, localCount)) return false;  // Header
-            if (not dummyRead(sngDecryptedFile, 144, 0, localCount)) return false; // Texture
-            if (not dummyRead(sngDecryptedFile, 44, 0, localCount)) return false;  // Definition
+            if (not dummyRead(sngDecryptedFile, 32, 0, localCount)) // Header
+            {
+                qCritical() << "Can't parse Header in file " << sngDecryptedFile;
+                return false;
+            };
+            if (not dummyRead(sngDecryptedFile, 144, 0, localCount)) // Texture
+            {
+                qCritical() << "Can't parse Texture in file " << sngDecryptedFile;
+                return false;
+            };
+            if (not dummyRead(sngDecryptedFile, 44, 0, localCount)) // Definition
+            {
+                qCritical() << "Can't parse Definition in file " << sngDecryptedFile;
+                return false;
+            };
         }
-        if (not dummyRead(sngDecryptedFile, 24, 0, count)) return false; // PhrasesIter
-        if (not dummyRead(sngDecryptedFile, 16, 0, count)) return false; // PhraseExtraInfo
-        if (not dummyRead(sngDecryptedFile, 0, 0, count)) return false;  // LinkedDifficulty
+        if (not dummyRead(sngDecryptedFile, 24, 0, count)) // PhrasesIter
+        {
+            qCritical() << "Can't parse PhrasesIter in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not dummyRead(sngDecryptedFile, 16, 0, count)) // PhraseExtraInfo
+        {
+            qCritical() << "Can't parse PhraseExtraInfo in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not dummyRead(sngDecryptedFile, 0, 0, count)) // LinkedDifficulty
+        {
+            qCritical() << "Can't parse LinkedDifficulty in file " << sngDecryptedFile;
+            return false;
+        };
         for (uint32_t i = 0; i < count; ++i)
         {
             uint32_t localCount;
             sngDecryptedFile.seek(sngDecryptedFile.pos() + 4);
-            if (not dummyRead(sngDecryptedFile, 4, 0, localCount)) return false; // NdlPhrase
+            if (not dummyRead(sngDecryptedFile, 4, 0, localCount)) // NdlPhrase
+            {
+                qCritical() << "Can't parse NdlPhrase in file " << sngDecryptedFile;
+                return false;
+            };
         }
-        if (not dummyRead(sngDecryptedFile, 256, 0, count)) return false;          // Action
-        if (not dummyRead(sngDecryptedFile, 260, 0, count)) return false;          // Event
-        if (not dummyRead(sngDecryptedFile, 8, 0, count)) return false;            // Tone
-        if (not dummyRead(sngDecryptedFile, 8, 0, count)) return false;            // DNA
-        if (not dummyRead(sngDecryptedFile, 88, 0, count)) return false;           // Section
-        if (not parseArrangements(sngDecryptedFile, m_arrangements)) return false; // Arrangement
-        if (not parseMetadata(sngDecryptedFile, m_metadata)) return false;         // Metadata
+        if (not dummyRead(sngDecryptedFile, 256, 0, count)) // Action
+        {
+            qCritical() << "Can't parse Action in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not dummyRead(sngDecryptedFile, 260, 0, count)) // Event
+        {
+            qCritical() << "Can't parse Event in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not dummyRead(sngDecryptedFile, 8, 0, count)) // Tone
+        {
+            qCritical() << "Can't parse Tone in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not dummyRead(sngDecryptedFile, 8, 0, count)) // DNA
+        {
+            qCritical() << "Can't parse DNA in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not dummyRead(sngDecryptedFile, 88, 0, count)) // Section
+        {
+            qCritical() << "Can't parse Section in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not parseArrangements(sngDecryptedFile, m_arrangements)) // Arrangement
+        {
+            qCritical() << "Can't parse Arrangements in file " << sngDecryptedFile;
+            return false;
+        };
+        if (not parseMetadata(sngDecryptedFile, m_metadata)) // Metadata
+        {
+            qCritical() << "Can't parse Metadata in file " << sngDecryptedFile;
+            return false;
+        }
 
         return sngDecryptedFile.pos() == sngDecryptedFile.size();
     }
 
+    qCritical() << "Can't parse file " << decryptedSngFileName;
     return false;
 }
 

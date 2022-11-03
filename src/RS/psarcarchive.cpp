@@ -1,5 +1,6 @@
 #include "psarcarchive.h"
 
+#include <QDebug>
 #include <QDir>
 
 #include "3rdparty/Rijndael/Rijndael.h"
@@ -78,6 +79,9 @@ bool RS::PSARCArchive::inflateEntry(uint32_t&            entry,
             return true;
         }
     }
+    else
+        qCritical() << "Can't create path " << QFileInfo(fileName).path();
+
     return false;
 }
 
@@ -190,7 +194,11 @@ bool RS::PSARCArchive::unarchive(const QString& archiveName, const QString& unpa
                                                      (i == 0 ? "psarc.temp" : entries[i].m_name),
                                                  psarcFile,
                                                  entries))
+                            {
+                                qWarning() << "Can't inflate "
+                                           << unpackDir + "/" + songName + (i == 0 ? "psarc.temp" : entries[i].m_name);
                                 return false;
+                            }
                         }
                     }
                 }
@@ -201,5 +209,8 @@ bool RS::PSARCArchive::unarchive(const QString& archiveName, const QString& unpa
 
         psarcFile.close();
     }
+    else
+        qCritical() << "Can't open " << archiveName;
+
     return false;
 }

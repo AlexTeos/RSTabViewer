@@ -4,10 +4,14 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
+#include "logger.h"
 #include "musiclibrary.h"
 
 int main(int argc, char* argv[])
 {
+    qInstallMessageHandler(Logger::myMessageOutput);
+    qInfo() << "Start application";
+
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
@@ -15,7 +19,7 @@ int main(int argc, char* argv[])
 #ifdef Q_OS_ANDROID
     QDir workDirectory("/sdcard/RSTabsData/");
 #else
-    QDir workDirectory("./RSTabsData");
+    QDir workDirectory("./RSTabsData/");
 #endif
 
     MusicLibrary library(workDirectory);

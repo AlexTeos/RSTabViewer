@@ -14,7 +14,6 @@ class MusicLibrary : public QAbstractListModel
 public:
     explicit MusicLibrary(const QDir& libDir, QObject* parent = nullptr);
 
-    // Basic functionality:
     int                            rowCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant                       data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     Qt::ItemFlags                  flags(const QModelIndex& index) const override;
@@ -40,6 +39,7 @@ public slots:
     void setTablature(int index, int type);
     void load();
 
+    // TODO: Split model and logic
 private:
     void loadNArchives(QVector<RS::PSARC>::Iterator psarcIter, QStringList::ConstIterator nameIter, int count) const;
     void unarchiveNArchives(QStringList::ConstIterator nameIter, int count) const;

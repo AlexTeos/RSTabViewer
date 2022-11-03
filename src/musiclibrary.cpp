@@ -73,6 +73,7 @@ void MusicLibrary::unarchiveNArchives(QStringList::ConstIterator nameIter, int c
     {
         QString archiveFullName = m_libraryDir.path() + "/" + *nameIter;
         QString unpackPath      = m_libraryDir.path() + "/" + QFileInfo(archiveFullName).baseName();
+        qDebug() << "Unzip psarc: " << *nameIter;
         if (*nameIter == "rs1compatibilitydlc_p.psarc" or *nameIter == "songs.psarc")
         {
             QMutexLocker locker(&m_songDlc);
@@ -92,6 +93,8 @@ void MusicLibrary::loadNArchives(QVector<RS::PSARC>::Iterator psarcIter,
     for (int i = 0; i < count; ++i, ++psarcIter, ++nameIter)
     {
         // TODO: is it a best way?
+        qDebug() << "Load psarc: " << *nameIter;
+        // TODO: check psarc
         RS::PSARC psarc(*nameIter);
         *psarcIter = std::move(psarc);
     }
@@ -102,24 +105,33 @@ void MusicLibrary::load()
     if (not m_libraryDir.exists())
     {
         QDir().mkdir(m_libraryDir.path());
+        qCritical() << "Library directory doesn't exist";
         return;
     }
 
     beginResetModel();
 
     // TODO: use QFuture
-    qint16                         threadCount = std::thread::hardware_concurrency();
+    // TODO: threadCount = 1 in debug
+    qint16 threadCount = std::thread::hardware_concurrency();
+    qInfo() << "Thread count: " << threadCount;
     std::vector<std::future<void>> results;
 
     // Unarchive
+    qInfo() << "Start unzipping";
     QStringList archiveNames = m_libraryDir.entryList(QStringList() << "*.psarc", QDir::Files);
     QStringList unarchivedArchiveNames;
     for (const auto& archive : archiveNames)
     {
         QString unarchiveDest =
             m_libraryDir.path() + "/" + QFileInfo(m_libraryDir.path() + "/" + archive).completeBaseName();
-        if (not QDir(unarchiveDest).exists()) unarchivedArchiveNames += archive;
+        if (not QDir(unarchiveDest).exists())
+        {
+            unarchivedArchiveNames += archive;
+            qInfo() << "Archive to unzip: " << archive;
+        };
     }
+    qInfo() << "Archive to unzip: " << unarchivedArchiveNames.size();
 
     qsizetype archivesPerThread =
         unarchivedArchiveNames.size() >= threadCount ? unarchivedArchiveNames.size() / threadCount : 1;
@@ -138,6 +150,7 @@ void MusicLibrary::load()
     }
 
     // Load
+    qInfo() << "Start sng loading";
     QStringList songPaths;
 
     QDirIterator psarcLevel(m_libraryDir.path(), QDir::Dirs | QDir::NoDotAndDotDot);
@@ -149,11 +162,13 @@ void MusicLibrary::load()
             songsLevel.next();
             if (not songsLevel.fileName().contains("audio"))
             {
+                qInfo() << "Path to load: " << songsLevel.filePath();
                 songPaths.push_back(songsLevel.filePath());
             }
         }
     }
 
+    qInfo() << "Paths to load: " << songPaths.length();
     m_psarcs.resize(songPaths.length());
 
     qsizetype songsPerThread = songPaths.size() >= threadCount ? songPaths.size() / threadCount : 1;
@@ -191,5 +206,7 @@ Tablature* MusicLibrary::tablature()
 
 void MusicLibrary::setTablature(int psarcIndex, int sngIndex)
 {
+    qDebug() << "Set sng to tablature; song name: " << m_psarcs[psarcIndex].songName()
+             << " instrument id: " << sngIndex;
     m_tablature.setSNG(m_psarcs[psarcIndex].sng(sngIndex));
 }
