@@ -4,15 +4,17 @@ Logger* Logger::log_instance = nullptr;
 
 Logger::Logger(QObject* parent) : QObject(parent)
 {
-    QString workDirectory;
 #ifdef Q_OS_ANDROID
-    workDirectory = "/sdcard/RSTabsData/";
+    m_logFile.setFileName("/sdcard/RSTabsData/RSTabs.log");
 #else
-    workDirectory = "./RSTabsData/";
+    m_logFile.setFileName("./RSTabsData/RSTabs.log");
 #endif
-    m_logFileName = workDirectory + "RSTabs.log";
+    m_logFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+}
 
-    QFile::remove(m_logFileName);
+Logger::~Logger()
+{
+    m_logFile.close();
 }
 
 Logger& Logger::GetInstance()
@@ -21,57 +23,51 @@ Logger& Logger::GetInstance()
     return the_instance;
 }
 
-QString Logger::Add(const QString& type, const char* function, const QString& msg, const char* file, int line)
-{
-    QString date_time_string = Logger::GetInstance().m_dateTime.currentDateTime().toString("<dd-MM-yyyy hh:mm:ss>");
-    QString out              = QString("%1 %2: [%3] \"%4\" at file: %5:%6")
-                      .arg(date_time_string, type, function, msg, file, QString::number(line));
-
-    // TODO: to constructor
-    QFile logFile(Logger::GetInstance().m_logFileName);
-    if (logFile.open(QIODevice::Append))
-    {
-        // TODO: WTF is that?
-        QTextStream stream(&logFile);
-        stream << out << Qt::endl;
-    }
-    // TODO: flush instead open/close
-    logFile.close();
-
-    return out;
-}
+const std::array<QString, 5> QtMsgTypeString{"Debug", "Warning", "Critical", "Fatal", "Info"};
 
 void Logger::myMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
-    // TODO: fprintf only in debug
+#ifdef QT_NO_DEBUG
+    if (type == QtDebugMsg) return;
+#endif
+
+    QString date_time_string = QDateTime::currentDateTime().toString("<dd-MM-yyyy hh:mm:ss>");
+
+#ifdef QT_DEBUG
+    QByteArray out = QString("%1 %2: [%3] %4 at file: %5:%6\n")
+                         .arg(date_time_string,
+                              QtMsgTypeString[type],
+                              context.function,
+                              msg,
+                              context.file,
+                              QString::number(context.line))
+                         .toLatin1();
+#else
+    QByteArray out = QString("%1 %2: %4\n").arg(date_time_string, QtMsgTypeString[type], msg).toLatin1();
+#endif
+
+    if (GetInstance().m_logFile.isOpen())
+    {
+        GetInstance().m_logFile.write(out);
+        GetInstance().m_logFile.flush();
+    }
+
+#ifdef QT_DEBUG
     switch (type)
     {
         case QtDebugMsg:
-            // TODO: skip n release mod
-            fprintf(stdout,
-                    "%s\n",
-                    Logger::Add("Debug", context.function, msg, context.file, context.line).toLocal8Bit().data());
-            break;
         case QtInfoMsg:
-            fprintf(stdout,
-                    "%s\n",
-                    Logger::Add("Info", context.function, msg, context.file, context.line).toLocal8Bit().data());
+            fprintf(stdout, "%s", out.data());
             break;
         case QtWarningMsg:
-            fprintf(stderr,
-                    "%s\n",
-                    Logger::Add("Warning", context.function, msg, context.file, context.line).toLocal8Bit().data());
-            break;
         case QtCriticalMsg:
-            fprintf(stderr,
-                    "%s\n",
-                    Logger::Add("Critical", context.function, msg, context.file, context.line).toLocal8Bit().data());
-            break;
         case QtFatalMsg:
-            fprintf(stderr,
-                    "%s\n",
-                    Logger::Add("Fatal", context.function, msg, context.file, context.line).toLocal8Bit().data());
-            abort();
+            fprintf(stderr, "%s", out.data());
+            break;
+        default:
+            return;
     }
+#endif
+
     fflush(stderr);
 }

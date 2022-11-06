@@ -112,9 +112,12 @@ void MusicLibrary::load()
     beginResetModel();
 
     // TODO: use QFuture
-    // TODO: threadCount = 1 in debug
+#ifdef QT_DEBUG
+    qint16 threadCount = 1;
+#else
     qint16 threadCount = std::thread::hardware_concurrency();
-    qInfo() << "Thread count: " << threadCount;
+#endif
+    qInfo() << "Thread count:" << threadCount;
     std::vector<std::future<void>> results;
 
     // Unarchive
@@ -128,10 +131,10 @@ void MusicLibrary::load()
         if (not QDir(unarchiveDest).exists())
         {
             unarchivedArchiveNames += archive;
-            qInfo() << "Archive to unzip: " << archive;
+            qInfo() << "Archive to unzip:" << archive;
         };
     }
-    qInfo() << "Archive to unzip: " << unarchivedArchiveNames.size();
+    qInfo() << "Archive to unzip:" << unarchivedArchiveNames.size();
 
     qsizetype archivesPerThread =
         unarchivedArchiveNames.size() >= threadCount ? unarchivedArchiveNames.size() / threadCount : 1;
@@ -162,13 +165,13 @@ void MusicLibrary::load()
             songsLevel.next();
             if (not songsLevel.fileName().contains("audio"))
             {
-                qInfo() << "Path to load: " << songsLevel.filePath();
+                qInfo() << "Path to load:" << songsLevel.filePath();
                 songPaths.push_back(songsLevel.filePath());
             }
         }
     }
 
-    qInfo() << "Paths to load: " << songPaths.length();
+    qInfo() << "Paths to load:" << songPaths.length();
     m_psarcs.resize(songPaths.length());
 
     qsizetype songsPerThread = songPaths.size() >= threadCount ? songPaths.size() / threadCount : 1;
